@@ -29,3 +29,5 @@ out/artifacts/gift_certificates_parent1_war_exploded/WEB-INF/index.jsp
 out/artifacts/gift_certificates_parent1_war_exploded/WEB-INF/web.xml
 target/mentoring-rest-api-basics-task-1.0-SNAPSHOT/WEB-INF/index.jsp
 target/mentoring-rest-api-basics-task-1.0-SNAPSHOT/WEB-INF/web.xml
+/target/
+/out/
