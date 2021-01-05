@@ -10,7 +10,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class RootConfig implements WebMvcConfigurer {
     @Bean
     public GiftCertificate createGiftCertificate(){
-        return new GiftCertificate(12,"certificate","description",15.22);
+        return new GiftCertificate();
     }
     @Bean
     public Tag createTag(){
