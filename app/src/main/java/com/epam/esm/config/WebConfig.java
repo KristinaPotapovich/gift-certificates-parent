@@ -9,13 +9,8 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 @Configuration
 @EnableWebMvc
-@ComponentScan(basePackages = "com.epam.esm.controller")
+@ComponentScan(basePackages = {"com.epam.esm","com.epam.esm.service","com.epam.esm.controller","com.epam.esm.repository"})
 public class WebConfig {
-//    @Bean
-//    ViewResolver viewResolver(){
-//        InternalResourceViewResolver resolver = new InternalResourceViewResolver();
-//        resolver.setPrefix("/WEB-INF/");
-//        resolver.setSuffix(".jsp");
-//        return resolver;
-//    }
+
+
 }

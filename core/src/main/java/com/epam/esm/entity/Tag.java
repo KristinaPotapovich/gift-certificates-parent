@@ -1,5 +1,6 @@
 package com.epam.esm.entity;
 
+
 public class Tag {
     private long id;
     private String name;
@@ -7,6 +8,9 @@ public class Tag {
     public Tag(long id, String name) {
         this.id = id;
         this.name = name;
+    }
+    public Tag(){
+
     }
 
     public long getId() {
