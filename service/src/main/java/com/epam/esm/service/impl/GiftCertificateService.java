@@ -33,6 +33,6 @@ public class GiftCertificateService implements BaseService<GiftCertificate> {
         return Optional.empty();
     }
     public Optional<GiftCertificate> findCertificate(long id){
-        return Optional.of(giftCertificateRepository.findCertificate(id));
+        return Optional.ofNullable(giftCertificateRepository.findCertificate(id));
     }
 }
