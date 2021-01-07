@@ -1,7 +1,6 @@
 package com.epam.esm.repository.impl;
 
 
-import com.epam.esm.config.JdbcConfig;
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.mapper.GiftCertificateMapper;
 import com.epam.esm.repository.BaseRepository;
@@ -21,8 +20,8 @@ public class GiftCertificateRepository implements BaseRepository<GiftCertificate
                     "WHERE id_certificate = ?";
 
     @Autowired
-    public GiftCertificateRepository(JdbcConfig jdbcConfig) {
-        jdbcTemplate = new JdbcTemplate(jdbcConfig.getDataSource());
+    public GiftCertificateRepository(DataSource dataSource) {
+        jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
     @Override
