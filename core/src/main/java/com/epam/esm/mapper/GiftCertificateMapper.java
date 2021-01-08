@@ -5,7 +5,7 @@ import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.Instant;
+
 
 import static com.epam.esm.repository.ColumnName.*;
 
@@ -18,8 +18,8 @@ public class GiftCertificateMapper implements RowMapper<GiftCertificate> {
         giftCertificate.setDescription(resultSet.getString(DESCRIPTION));
         giftCertificate.setPrice(resultSet.getDouble(PRICE));
         giftCertificate.setDurationInDays(resultSet.getInt(DURATION_IN_DAYS));
-        giftCertificate.setCreateDate(resultSet.getTimestamp(CREATE_DATE).toInstant());
-        giftCertificate.setLastUpdateDate(resultSet.getTimestamp(LAST_UPDATE_DATE).toInstant());
+        giftCertificate.setCreateDate(resultSet.getTimestamp(CREATE_DATE));
+        giftCertificate.setLastUpdateDate(resultSet.getTimestamp(LAST_UPDATE_DATE));
         return giftCertificate;
     }
 }

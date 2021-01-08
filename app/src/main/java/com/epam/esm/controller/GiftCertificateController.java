@@ -1,6 +1,7 @@
 package com.epam.esm.controller;
 
 
+import com.epam.esm.dto.GiftCertificateDto;
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.service.impl.GiftCertificateService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +25,8 @@ public class GiftCertificateController {
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<GiftCertificate> findGiftCertificate(@PathVariable("id") long id) {
-        return giftCertificateService.findCertificate(id).map(giftCertificate -> new ResponseEntity<>(giftCertificate, HttpStatus.OK))
+    public ResponseEntity<GiftCertificateDto> findGiftCertificate(@PathVariable("id") long id) {
+        return giftCertificateService.findCertificate(id).map(giftCertificateDto -> new ResponseEntity<>(giftCertificateDto, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 

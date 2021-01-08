@@ -1,7 +1,7 @@
 package com.epam.esm.entity;
 
 
-import java.time.Instant;
+import java.util.Date;
 
 public class GiftCertificate {
     private long id;
@@ -9,21 +9,8 @@ public class GiftCertificate {
     private String description;
     private double price;
     private int durationInDays;
-    private Instant createDate;
-    private Instant lastUpdateDate;
-
-
-    public GiftCertificate(long id, String name, String description,
-                           double price, int durationInDays, Instant createDate,
-                           Instant lastUpdateDate) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.price = price;
-        this.durationInDays = durationInDays;
-        this.createDate = createDate;
-        this.lastUpdateDate = lastUpdateDate;
-    }
+    private Date createDate;
+    private Date lastUpdateDate;
 
     public GiftCertificate() {
 
@@ -69,19 +56,19 @@ public class GiftCertificate {
         this.durationInDays = durationInDays;
     }
 
-    public Instant getCreateDate() {
+    public Date getCreateDate() {
         return createDate;
     }
 
-    public void setCreateDate(Instant createDate) {
+    public void setCreateDate(Date createDate) {
         this.createDate = createDate;
     }
 
-    public Instant getLastUpdateDate() {
+    public Date getLastUpdateDate() {
         return lastUpdateDate;
     }
 
-    public void setLastUpdateDate(Instant lastUpdateDate) {
+    public void setLastUpdateDate(Date lastUpdateDate) {
         this.lastUpdateDate = lastUpdateDate;
     }
 

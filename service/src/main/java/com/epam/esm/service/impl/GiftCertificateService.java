@@ -1,6 +1,8 @@
 package com.epam.esm.service.impl;
 
+import com.epam.esm.dto.GiftCertificateDto;
 import com.epam.esm.entity.GiftCertificate;
+import com.epam.esm.mapper.GiftCertificateConverter;
 import com.epam.esm.repository.impl.GiftCertificateRepository;
 import com.epam.esm.service.BaseService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +34,8 @@ public class GiftCertificateService implements BaseService<GiftCertificate> {
     public Optional<GiftCertificate> delete(GiftCertificate giftCertificate) {
         return Optional.empty();
     }
-    public Optional<GiftCertificate> findCertificate(long id){
-        return Optional.ofNullable(giftCertificateRepository.findCertificate(id));
+    public Optional<GiftCertificateDto> findCertificate(long id){
+        GiftCertificateDto giftCertificateDto = GiftCertificateConverter.mapToGiftCertificateDto(giftCertificateRepository.findCertificate(id));
+        return Optional.of(giftCertificateDto);
     }
 }
