@@ -1,48 +1,67 @@
 package com.epam.esm.controller;
 
-import com.epam.esm.config.RootConfig;
-import com.epam.esm.entity.Tag;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+import com.epam.esm.dto.TagDto;
+import com.epam.esm.service.impl.TagService;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
+import javax.ws.rs.QueryParam;
+import java.util.List;
+
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
-@RequestMapping(path = "/tag",
+@RequestMapping(path = "/tags",
         produces = APPLICATION_JSON_VALUE)
 public class TagController {
-    ApplicationContext javaConfigContext =
-            new AnnotationConfigApplicationContext(RootConfig.class);
-    @GetMapping(value = "/{id}")
-    public Tag findTag(@PathVariable("id") long id) {
-        return javaConfigContext.getBean(Tag.class);
+
+    private TagService tagService;
+
+    @Autowired
+    public TagController(TagService tagService) {
+        this.tagService = tagService;
+    }
+
+    @GetMapping(value = "/query")
+    public ResponseEntity<TagDto> findTagByParam(@QueryParam("name") String name) {
+        return tagService.findTagByName(name)
+                .map(tagDto -> new ResponseEntity<>(tagDto, HttpStatus.OK))
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @GetMapping
-    public ResponseEntity<Tag> findAllTags() {
-        Tag tag = javaConfigContext.getBean(Tag.class);
-        return ResponseEntity.ok(tag);
+    public @ResponseBody
+    ResponseEntity<List<TagDto>> findAllTags() {
+        return tagService.findAllTags().map(tagDto -> new ResponseEntity<>(tagDto, HttpStatus.OK))
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
     public @ResponseBody
-    Tag createTag(@RequestBody Tag tag) {
-        return tag;
+    ResponseEntity<TagDto> createTag(@RequestBody TagDto tagDto) {
+        return tagService.create(tagDto).map(tagDto1 -> new ResponseEntity<>(tagDto1, HttpStatus.CREATED))
+                .orElse(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
     }
 
     @PutMapping(value = "/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateTag(@PathVariable("id") long id) {
+    public @ResponseBody
+    ResponseEntity<TagDto> updateTag(@PathVariable("id") long id, @RequestBody TagDto tagDto) {
+        tagDto.setId(id);
+        return tagService.update(tagDto).map(tagDto1 -> new ResponseEntity<>(tagDto1, HttpStatus.OK))
+                .orElse(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
     }
 
     @DeleteMapping(value = "/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteTag(@PathVariable("id") long id) {
-
+    public ResponseEntity<Long> deleteTag(@PathVariable("id") long id) {
+        boolean delete = tagService.delete(id);
+        if (!delete) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
 }

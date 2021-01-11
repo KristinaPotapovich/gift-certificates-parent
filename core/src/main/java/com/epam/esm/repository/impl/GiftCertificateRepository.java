@@ -30,12 +30,12 @@ public class GiftCertificateRepository implements BaseRepository<GiftCertificate
     }
 
     @Override
-    public GiftCertificate update(GiftCertificate giftCertificate) {
-        return null;
+    public void update(GiftCertificate giftCertificate) {
+
     }
 
     @Override
-    public void delete(GiftCertificate giftCertificate) {
+    public void delete(long id) {
 
     }
 

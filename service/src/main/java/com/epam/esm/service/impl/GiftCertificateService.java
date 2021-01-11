@@ -1,7 +1,6 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.dto.GiftCertificateDto;
-import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.mapper.GiftCertificateConverter;
 import com.epam.esm.repository.impl.GiftCertificateRepository;
 import com.epam.esm.service.BaseService;
@@ -11,7 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-public class GiftCertificateService implements BaseService<GiftCertificate> {
+public class GiftCertificateService implements BaseService<GiftCertificateDto> {
 
     private final GiftCertificateRepository giftCertificateRepository;
 
@@ -21,20 +20,21 @@ public class GiftCertificateService implements BaseService<GiftCertificate> {
     }
 
     @Override
-    public Optional<GiftCertificate> create(GiftCertificate giftCertificate) {
+    public Optional<GiftCertificateDto> create(GiftCertificateDto giftCertificateDto) {
         return Optional.empty();
     }
 
     @Override
-    public Optional<GiftCertificate> update(GiftCertificate giftCertificate) {
+    public Optional<GiftCertificateDto> update(GiftCertificateDto giftCertificateDto) {
         return Optional.empty();
     }
 
     @Override
-    public Optional<GiftCertificate> delete(GiftCertificate giftCertificate) {
-        return Optional.empty();
+    public boolean delete(long id) {
+        return false;
     }
-    public Optional<GiftCertificateDto> findCertificate(long id){
+
+    public Optional<GiftCertificateDto> findCertificate(long id) {
         GiftCertificateDto giftCertificateDto = GiftCertificateConverter.mapToGiftCertificateDto(giftCertificateRepository.findCertificate(id));
         return Optional.of(giftCertificateDto);
     }
