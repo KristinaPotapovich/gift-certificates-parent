@@ -24,7 +24,6 @@
 hs_err_pid*
 
 .idea/
-*.iml
 target/
 gift-certificates-parent.iml
 out/artifacts/gift_certificates_parent1_war_exploded/WEB-INF/index.jsp
