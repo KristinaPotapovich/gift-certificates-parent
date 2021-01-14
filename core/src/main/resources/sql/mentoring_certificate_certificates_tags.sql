@@ -15,4 +15,3 @@ create index id_certificate
 
 create index id_tag
     on certificates_tags (id_tag);
-

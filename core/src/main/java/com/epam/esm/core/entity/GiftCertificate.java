@@ -1,7 +1,9 @@
 package com.epam.esm.core.entity;
 
 
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.util.List;
+
 
 public class GiftCertificate {
     private long id;
@@ -9,8 +11,9 @@ public class GiftCertificate {
     private String description;
     private double price;
     private int durationInDays;
-    private Date createDate;
-    private Date lastUpdateDate;
+    private LocalDateTime createDate;
+    private LocalDateTime lastUpdateDate;
+    private List<Tag> tags;
 
     public GiftCertificate() {
 
@@ -56,19 +59,27 @@ public class GiftCertificate {
         this.durationInDays = durationInDays;
     }
 
-    public Date getCreateDate() {
+    public List<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<Tag> tags) {
+        this.tags = tags;
+    }
+
+    public LocalDateTime getCreateDate() {
         return createDate;
     }
 
-    public void setCreateDate(Date createDate) {
+    public void setCreateDate(LocalDateTime createDate) {
         this.createDate = createDate;
     }
 
-    public Date getLastUpdateDate() {
+    public LocalDateTime getLastUpdateDate() {
         return lastUpdateDate;
     }
 
-    public void setLastUpdateDate(Date lastUpdateDate) {
+    public void setLastUpdateDate(LocalDateTime lastUpdateDate) {
         this.lastUpdateDate = lastUpdateDate;
     }
 
@@ -103,5 +114,19 @@ public class GiftCertificate {
         result = 31 * result + (getCreateDate() != null ? getCreateDate().hashCode() : 0);
         result = 31 * result + (getLastUpdateDate() != null ? getLastUpdateDate().hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        return stringBuilder.append("GiftCertificate{")
+                .append("id=").append(id).append(", name='")
+                .append(name).append('\'').append(", description='")
+                .append(description).append('\'').append(", price=")
+                .append(", durationInDays=").append(durationInDays)
+                .append(", createDate=").append(durationInDays)
+                .append(createDate).append(", lastUpdateDate=")
+                .append(", tags=").append(tags)
+                .append(lastUpdateDate).append('}').toString();
     }
 }

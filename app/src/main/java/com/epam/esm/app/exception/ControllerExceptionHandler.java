@@ -1,7 +1,5 @@
 package com.epam.esm.app.exception;
 
-import com.epam.esm.service.exception.ServiceException;
-import com.epam.esm.service.exception.ValidationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -12,12 +10,8 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @RestControllerAdvice
 public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler (value = ValidationException.class)
-    public ResponseEntity<String> validationError (ValidationException e){
+    @ExceptionHandler(value = ControllerException.class)
+    public ResponseEntity<String> controllerError(ControllerException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-    }
-    @ExceptionHandler (value = ServiceException.class)
-    public ResponseEntity<String> findEntity (ServiceException e){
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 }

@@ -5,11 +5,7 @@ public class Tag {
     private long id;
     private String name;
 
-    public Tag(long id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-    public Tag(){
+    public Tag() {
 
     }
 
@@ -45,5 +41,13 @@ public class Tag {
         int result = (int) (getId() ^ (getId() >>> 32));
         result = 31 * result + (getName() != null ? getName().hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        return stringBuilder.append("Tag{").append("id=")
+                .append(id).append(", name='").append(name)
+                .append('\'').append('}').toString();
     }
 }

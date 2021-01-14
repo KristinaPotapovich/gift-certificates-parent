@@ -25,6 +25,7 @@ public class JdbcConfig extends HikariConfig {
     private String password;
     @Value("${poolsize}")
     private int maxPoolSize;
+
     @Bean
     public DataSource getDataSource() {
         HikariDataSource ds = new HikariDataSource();

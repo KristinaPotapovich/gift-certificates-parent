@@ -1,9 +1,10 @@
 package com.epam.esm.service.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.OptBoolean;
 
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.util.List;
+
 
 public class GiftCertificateDto {
     private long id;
@@ -11,10 +12,11 @@ public class GiftCertificateDto {
     private String description;
     private double price;
     private int durationInDays;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.XXX", lenient = OptBoolean.TRUE)
-    private Date createDate;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.XXX", lenient = OptBoolean.TRUE)
-    private Date lastUpdateDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
+    private LocalDateTime createDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
+    private LocalDateTime lastUpdateDate;
+    private List<TagDto> tags;
 
     public long getId() {
         return id;
@@ -56,19 +58,27 @@ public class GiftCertificateDto {
         this.durationInDays = durationInDays;
     }
 
-    public Date getCreateDate() {
+    public LocalDateTime getCreateDate() {
         return createDate;
     }
 
-    public void setCreateDate(Date createDate) {
+    public void setCreateDate(LocalDateTime createDate) {
         this.createDate = createDate;
     }
 
-    public Date getLastUpdateDate() {
+    public LocalDateTime getLastUpdateDate() {
         return lastUpdateDate;
     }
 
-    public void setLastUpdateDate(Date lastUpdateDate) {
+    public void setLastUpdateDate(LocalDateTime lastUpdateDate) {
         this.lastUpdateDate = lastUpdateDate;
+    }
+
+    public List<TagDto> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<TagDto> tags) {
+        this.tags = tags;
     }
 }
