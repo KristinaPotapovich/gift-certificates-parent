@@ -7,7 +7,7 @@ import java.util.List;
 public interface BaseRepository<T> {
     T create(T t) throws RepositoryException;
 
-    T update(T t) throws RepositoryException;
+    boolean update(T t) throws RepositoryException;
 
     boolean delete(long id) throws RepositoryException;
 

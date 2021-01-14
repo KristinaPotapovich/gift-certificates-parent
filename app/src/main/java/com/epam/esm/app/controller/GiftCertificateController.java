@@ -83,15 +83,13 @@ public class GiftCertificateController {
     }
 
     @PutMapping(value = "/{id}")
-    public @ResponseBody
-    ResponseEntity<GiftCertificateDto> updateGiftCertificate(@PathVariable("id") long id,
-                                                             @RequestBody GiftCertificateDto giftCertificateDto) throws ControllerException {
+    @ResponseStatus(HttpStatus.OK)
+    public void updateGiftCertificate(@PathVariable("id") long id,
+                                      @RequestBody GiftCertificateDto giftCertificateDto) throws ControllerException {
         giftCertificateDto.setId(id);
         try {
-            return giftCertificateServiceImpl
-                    .update(giftCertificateDto)
-                    .map(giftCertificateDto1 -> new ResponseEntity<>(giftCertificateDto1, HttpStatus.OK))
-                    .orElse(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
+            giftCertificateServiceImpl.update(giftCertificateDto);
+
         } catch (ServiceException e) {
             throw new ControllerException("Gift certificate update failed");
         }

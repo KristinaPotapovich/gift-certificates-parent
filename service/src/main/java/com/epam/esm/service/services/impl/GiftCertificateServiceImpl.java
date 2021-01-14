@@ -45,43 +45,45 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         try {
             giftCertificateValidation.validate(giftCertificateDto);
             giftCertificate = GiftCertificateConverter.mapToGiftCertificate(giftCertificateDto);
+            GiftCertificate createdGiftCertificate = giftCertificateRepositoryImpl.create(giftCertificate);
             giftCertificateDto = GiftCertificateConverter
-                    .mapToGiftCertificateDto(giftCertificateRepositoryImpl.create(giftCertificate));
+                    .mapToGiftCertificateDto(createdGiftCertificate);
             List<Tag> tags = giftCertificate.getTags();
-            List<TagDto> tagDtos = new ArrayList<>();
-            for (Tag tag : tags) {
-                TagDto tagDto = TagConverter.mapToTagDto(tag);
-                Optional<TagDto> tagDtoOptional = Optional.empty();
-                if (!tagService.isTagExistByName(tagDto.getName())) {
-                    tagDtoOptional = tagService.create(tagDto);
-                }
-                if (tagService.isTagExistByName(tagDto.getName())) {
-                    tagDtoOptional = tagService.findTagByName(tagDto.getName());
-                }
-                tagDto = tagDtoOptional.orElseThrow(() -> new ServiceException("Tag not found"));
-                giftCertificateRepositoryImpl
-                        .createCertificateAndTagRelationship(giftCertificateDto.getId(), tagDto.getId());
-                tagDtos.add(tagDto);
-            }
+            List<TagDto> tagDtos = createTagsAndRelations(giftCertificateDto, tags);
             giftCertificateDto.setTags(tagDtos);
         } catch (RepositoryException | ValidationException e) {
             throw new ServiceException("Gift certificate creation failed");
         }
-        return Optional.ofNullable(giftCertificateDto);
+        return Optional.of(giftCertificateDto);
+    }
+
+    private List<TagDto> createTagsAndRelations(GiftCertificateDto giftCertificateDto, List<Tag> tags) throws ServiceException, RepositoryException {
+        List<TagDto> tagDtos = new ArrayList<>();
+        for (Tag tag : tags) {
+            Optional<TagDto> tagDtoOptional = tagService.findTagByName(tag.getName());
+            if (!tagDtoOptional.isPresent()) {
+                tagDtoOptional = tagService.create(TagConverter.mapToTagDto(tag));
+                TagDto tagDto = tagDtoOptional.orElseThrow(() -> new ServiceException("Tag creation error"));
+                giftCertificateRepositoryImpl
+                        .createCertificateAndTagRelationship(giftCertificateDto.getId(), tagDto.getId());
+                tagDtos.add(tagDto);
+            } else {
+                tagDtos.add(tagDtoOptional.get());
+            }
+        }
+        return tagDtos;
     }
 
     @Override
-    public Optional<GiftCertificateDto> update(GiftCertificateDto giftCertificateDto) throws ServiceException {
+    public void update(GiftCertificateDto giftCertificateDto) throws ServiceException {
         GiftCertificate giftCertificate;
         try {
             giftCertificateValidation.validate(giftCertificateDto);
             giftCertificate = GiftCertificateConverter.mapToGiftCertificate(giftCertificateDto);
-            giftCertificate = giftCertificateRepositoryImpl.update(giftCertificate);
-            giftCertificateDto = GiftCertificateConverter.mapToGiftCertificateDto(giftCertificate);
+            giftCertificateRepositoryImpl.update(giftCertificate);
         } catch (ValidationException | RepositoryException e) {
             throw new ServiceException("Gift certificate update failed");
         }
-        return Optional.ofNullable(giftCertificateDto);
     }
 
     @Override

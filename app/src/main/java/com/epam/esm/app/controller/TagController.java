@@ -33,10 +33,10 @@ public class TagController {
     public ResponseEntity<TagDto> findTagByName(@QueryParam("name") String name) throws ControllerException {
         try {
             return tagServiceImpl.findTagByName(name)
-                    .map(tagDto -> new ResponseEntity<>(tagDto, HttpStatus.OK))
+                    .map(tagDtoResponse -> new ResponseEntity<>(tagDtoResponse, HttpStatus.OK))
                     .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
         } catch (ServiceException e) {
-            throw new ControllerException("Tag not found" + name);
+            throw new ControllerException("Tag not found " + name);
         }
     }
 
@@ -59,7 +59,7 @@ public class TagController {
         try {
             return tagServiceImpl
                     .create(tagDto)
-                    .map(tagDto1 -> new ResponseEntity<>(tagDto1, HttpStatus.CREATED))
+                    .map(tagDtoResponse -> new ResponseEntity<>(tagDtoResponse, HttpStatus.CREATED))
                     .orElse(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
         } catch (ServiceException e) {
             throw new ControllerException("Tag creation failed");
@@ -67,15 +67,12 @@ public class TagController {
     }
 
     @PutMapping(value = "/{id}")
-    public @ResponseBody
-    ResponseEntity<TagDto> updateTag(@PathVariable("id") long id,
-                                     @RequestBody TagDto tagDto) throws ControllerException {
-        tagDto.setId(id);
+    @ResponseStatus(HttpStatus.OK)
+    public void updateTag(@PathVariable("id") long id,
+                          @RequestBody TagDto tagDto) throws ControllerException {
         try {
-            return tagServiceImpl
-                    .update(tagDto)
-                    .map(tagDto1 -> new ResponseEntity<>(tagDto1, HttpStatus.OK))
-                    .orElse(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
+            tagDto.setId(id);
+            tagServiceImpl.update(tagDto);
         } catch (ServiceException e) {
             throw new ControllerException("Tag update failed");
         }

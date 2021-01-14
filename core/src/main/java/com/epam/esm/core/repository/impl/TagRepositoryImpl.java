@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Optional;
 
 @Repository("tagRepository")
 public class TagRepositoryImpl implements TagRepository {
@@ -21,7 +22,7 @@ public class TagRepositoryImpl implements TagRepository {
     private static final String CREATE_TAG =
             "INSERT INTO tag(name) VALUES (?)";
     private static final String UPDATE_TAG =
-            "UPDATE tag SET name = ? WHERE id_tag = ?";
+            "UPDATE tag SET name = ? WHERE id_tag = ? if @@rowcount = 0";
     private static final String DELETE_TAG =
             "DELETE FROM tag WHERE id_tag = ?";
     private static final String SELECT_TAG_BY_NAME =
@@ -59,14 +60,12 @@ public class TagRepositoryImpl implements TagRepository {
     }
 
     @Override
-    public Tag update(Tag tag) throws RepositoryException {
+    public boolean update(Tag tag) throws RepositoryException {
         try {
-            jdbcTemplate.update(UPDATE_TAG, tag.getName(), tag.getId());
-            tag = findTagByName(tag.getName());
+            return jdbcTemplate.update(UPDATE_TAG, tag.getName(), tag.getId()) > 0;
         } catch (DataAccessException e) {
             throw new RepositoryException("Tag update failed");
         }
-        return tag;
     }
 
     @Override
@@ -78,11 +77,12 @@ public class TagRepositoryImpl implements TagRepository {
         }
     }
 
-    public Tag findTagByName(String name) throws RepositoryException {
+    public Optional<Tag> findTagByName(String name) throws RepositoryException {
         try {
-            return jdbcTemplate.queryForObject(SELECT_TAG_BY_NAME, new TagMapper(), name);
+           return jdbcTemplate.query(SELECT_TAG_BY_NAME, new TagMapper(), name)
+                   .stream().findFirst();
         } catch (DataAccessException e) {
-            throw new RepositoryException("Tag by name not found" + name);
+            throw new RepositoryException("Tag by name not found" + " " + name);
         }
     }
 

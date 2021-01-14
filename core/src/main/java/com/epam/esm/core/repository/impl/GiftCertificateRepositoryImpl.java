@@ -15,7 +15,6 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
 import java.sql.Types;
@@ -55,7 +54,6 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
     }
 
-    @Transactional
     @Override
     public GiftCertificate create(GiftCertificate giftCertificate) throws RepositoryException {
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -80,7 +78,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     }
 
     @Override
-    public GiftCertificate update(GiftCertificate giftCertificate) throws RepositoryException {
+    public boolean update(GiftCertificate giftCertificate) throws RepositoryException {
         SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
                 .addValue("name", giftCertificate.getName())
                 .addValue("description", giftCertificate.getDescription())
@@ -88,12 +86,10 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
                 .addValue("duration", giftCertificate.getDurationInDays())
                 .addValue("id_certificate", giftCertificate.getId());
         try {
-            namedParameterJdbcTemplate.update(UPDATE_CERTIFICATE, sqlParameterSource);
+            return namedParameterJdbcTemplate.update(UPDATE_CERTIFICATE, sqlParameterSource) > 0;
         } catch (DataAccessException e) {
             throw new RepositoryException("Gift certificate update failed");
         }
-        giftCertificate = findCertificateById(giftCertificate.getId());
-        return giftCertificate;
     }
 
     @Override

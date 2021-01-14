@@ -10,6 +10,7 @@ import com.epam.esm.service.mapper.TagConverter;
 import com.epam.esm.service.services.TagService;
 import com.epam.esm.service.util.Validation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -36,29 +37,22 @@ public class TagServiceImpl implements TagService {
         try {
             tagValidation.validate(tagDto);
             tag = TagConverter.mapToTag(tagDto);
-            if (tagRepository.isTagExistByName(tag.getName())) {
-                tagDto = TagConverter.mapToTagDto(tagRepository.create(tag));
-            } else {
-                throw new ServiceException("Tag is exists");
-            }
+            return Optional.ofNullable(TagConverter.mapToTagDto(tagRepository.create(tag)));
         } catch (RepositoryException | ValidationException e) {
             throw new ServiceException("TagDto creation failed");
         }
-        return Optional.ofNullable(tagDto);
     }
 
     @Override
-    public Optional<TagDto> update(TagDto tagDto) throws ServiceException {
+    public void update(TagDto tagDto) throws ServiceException {
         Tag tag;
         try {
             tagValidation.validate(tagDto);
             tag = TagConverter.mapToTag(tagDto);
-            tag = tagRepository.update(tag);
-            tagDto = TagConverter.mapToTagDto(tag);
+            tagRepository.update(tag);
         } catch (RepositoryException | ValidationException e) {
             throw new ServiceException("Tag update failed");
         }
-        return Optional.ofNullable(tagDto);
     }
 
     @Override
@@ -70,16 +64,20 @@ public class TagServiceImpl implements TagService {
         }
     }
 
+    @Nullable
     public Optional<TagDto> findTagByName(String name) throws ServiceException {
         TagDto tagDto = new TagDto();
         try {
             tagDto.setName(name);
             tagValidation.validate(tagDto);
-            tagDto = TagConverter.mapToTagDto(tagRepository.findTagByName(name));
+            Optional<Tag> tagOptional = tagRepository.findTagByName(name);
+            if (tagOptional.isPresent()) {
+                return tagOptional.map(TagConverter::mapToTagDto);
+            }
         } catch (RepositoryException | ValidationException e) {
-            throw new ServiceException("Tag not found" + name);
+            throw new ServiceException("Tag not found " + name);
         }
-        return Optional.ofNullable(tagDto);
+        return Optional.empty();
     }
 
     public Optional<List<TagDto>> findAll() throws ServiceException {
