@@ -39,7 +39,7 @@ public class TagServiceImpl implements TagService {
             tag = TagConverter.mapToTag(tagDto);
             return Optional.ofNullable(TagConverter.mapToTagDto(tagRepository.create(tag)));
         } catch (RepositoryException | ValidationException e) {
-            throw new ServiceException("TagDto creation failed");
+            throw new ServiceException(e.getMessage());
         }
     }
 
@@ -51,7 +51,7 @@ public class TagServiceImpl implements TagService {
             tag = TagConverter.mapToTag(tagDto);
             tagRepository.update(tag);
         } catch (RepositoryException | ValidationException e) {
-            throw new ServiceException("Tag update failed");
+            throw new ServiceException(e.getMessage());
         }
     }
 
@@ -60,7 +60,7 @@ public class TagServiceImpl implements TagService {
         try {
             return tagRepository.delete(id);
         } catch (RepositoryException e) {
-            throw new ServiceException("Tag not found");
+            throw new ServiceException(e.getMessage());
         }
     }
 
@@ -75,7 +75,7 @@ public class TagServiceImpl implements TagService {
                 return tagOptional.map(TagConverter::mapToTagDto);
             }
         } catch (RepositoryException | ValidationException e) {
-            throw new ServiceException("Tag not found " + name);
+            throw new ServiceException(e.getMessage());
         }
         return Optional.empty();
     }
@@ -85,7 +85,7 @@ public class TagServiceImpl implements TagService {
         try {
             tags = tagRepository.findAll();
         } catch (RepositoryException e) {
-            throw new ServiceException("Tags not found");
+            throw new ServiceException(e.getMessage());
         }
         return Optional.of(tags.stream()
                 .map(TagConverter::mapToTagDto)

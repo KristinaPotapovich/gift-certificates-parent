@@ -27,6 +27,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     private GiftCertificateRepository giftCertificateRepositoryImpl;
     private Validation<GiftCertificateDto> giftCertificateValidation;
     private TagService tagService;
+    private static final String CREATE_CERTIFICATE_FAIL = "giftCertificate_create_fail";
 
     @Autowired
     public GiftCertificateServiceImpl(GiftCertificateRepository giftCertificateRepositoryImpl,
@@ -51,7 +52,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             List<TagDto> tagDtos = createTagsAndRelations(giftCertificateDto, tags);
             giftCertificateDto.setTags(tagDtos);
         } catch (RepositoryException | ValidationException e) {
-            throw new ServiceException("Gift certificate creation failed");
+            throw new ServiceException(e.getMessage());
         }
         return Optional.of(giftCertificateDto);
     }
@@ -82,7 +83,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     private TagDto processExceptionForThrowException(Optional<TagDto> tagDtoOptional) {
         try {
-            return tagDtoOptional.orElseThrow(() -> new ServiceException("Tag creation error"));
+            return tagDtoOptional.orElseThrow(() -> new ServiceException(CREATE_CERTIFICATE_FAIL));
         } catch (ServiceException e) {
             throw new RuntimeException(e);
         }
@@ -116,7 +117,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             giftCertificate = GiftCertificateConverter.mapToGiftCertificate(giftCertificateDto);
             giftCertificateRepositoryImpl.update(giftCertificate);
         } catch (ValidationException | RepositoryException e) {
-            throw new ServiceException("Gift certificate update failed");
+            throw new ServiceException(e.getMessage());
         }
     }
 
@@ -125,7 +126,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         try {
             return giftCertificateRepositoryImpl.delete(id);
         } catch (RepositoryException e) {
-            throw new ServiceException("Gift certificates delete failed");
+            throw new ServiceException(e.getMessage());
         }
     }
 
@@ -135,7 +136,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         try {
             giftCertificates = giftCertificateRepositoryImpl.findAll();
         } catch (RepositoryException e) {
-            throw new ServiceException("Gift certificates not found");
+            throw new ServiceException(e.getMessage());
         }
         return Optional.of(giftCertificates.stream()
                 .map(GiftCertificateConverter::mapToGiftCertificateDto)
@@ -147,7 +148,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         try {
             giftCertificates = giftCertificateRepositoryImpl.findCertificateByParam(param);
         } catch (RepositoryException e) {
-            throw new ServiceException("Gift certificate not found" + param);
+            throw new ServiceException(e.getMessage());
         }
         return Optional.of(giftCertificates.stream()
                 .map(GiftCertificateConverter::mapToGiftCertificateDto)
@@ -161,7 +162,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             giftCertificateDto = GiftCertificateConverter
                     .mapToGiftCertificateDto(giftCertificateRepositoryImpl.findCertificateById(id));
         } catch (RepositoryException e) {
-            throw new ServiceException("Gift certificate not found");
+            throw new ServiceException(e.getMessage());
         }
         return Optional.of(giftCertificateDto);
     }
@@ -214,7 +215,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
                     .peek(this::injectTags)
                     .collect(Collectors.toList());
         } catch (RepositoryException e) {
-            throw new ServiceException("Gift certificate cannot be sorted");
+            throw new ServiceException(e.getMessage());
         }
         return Optional.of(giftCertificateDtos);
     }

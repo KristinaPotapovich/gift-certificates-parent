@@ -19,6 +19,11 @@ import java.util.Optional;
 @Repository("tagRepository")
 public class TagRepositoryImpl implements TagRepository {
     private JdbcTemplate jdbcTemplate;
+    private static final String CREATE_TAG_FAIL = "tag_create_fail";
+    private static final String UPDATE_TAG_FAIL = "tag_update_fail";
+    private static final String DELETE_TAG_FAIL = "tag_delete_fail";
+    private static final String FIND_BY_NAME_TAG_FAIL = "tag_find_by_name_fail";
+    private static final String FIND_ALL_TAG_FAIL = "tag_find_all_fail";
     private static final String CREATE_TAG =
             "INSERT INTO tag(name) VALUES (?)";
     private static final String UPDATE_TAG =
@@ -52,7 +57,7 @@ public class TagRepositoryImpl implements TagRepository {
                 return ps;
             }, keyHolder);
         } catch (DataAccessException e) {
-            throw new RepositoryException("Tag creation failed");
+            throw new RepositoryException(CREATE_TAG_FAIL);
         }
         tag.setName(tag.getName());
         tag.setId(keyHolder.getKey().intValue());
@@ -64,7 +69,7 @@ public class TagRepositoryImpl implements TagRepository {
         try {
             return jdbcTemplate.update(UPDATE_TAG, tag.getName(), tag.getId()) > 0;
         } catch (DataAccessException e) {
-            throw new RepositoryException("Tag update failed");
+            throw new RepositoryException(UPDATE_TAG_FAIL);
         }
     }
 
@@ -73,7 +78,7 @@ public class TagRepositoryImpl implements TagRepository {
         try {
             return jdbcTemplate.update(DELETE_TAG, id) > 0;
         } catch (DataAccessException e) {
-            throw new RepositoryException("Tag delete failed");
+            throw new RepositoryException(DELETE_TAG_FAIL);
         }
     }
 
@@ -82,7 +87,7 @@ public class TagRepositoryImpl implements TagRepository {
            return jdbcTemplate.query(SELECT_TAG_BY_NAME, new TagMapper(), name)
                    .stream().findFirst();
         } catch (DataAccessException e) {
-            throw new RepositoryException("Tag by name not found" + " " + name);
+            throw new RepositoryException(FIND_BY_NAME_TAG_FAIL, name);
         }
     }
 
@@ -90,7 +95,7 @@ public class TagRepositoryImpl implements TagRepository {
         try {
             return jdbcTemplate.query(SELECT_ALL_TAGS, new TagMapper());
         } catch (DataAccessException e) {
-            throw new RepositoryException("Tags not found");
+            throw new RepositoryException(FIND_ALL_TAG_FAIL);
         }
     }
 

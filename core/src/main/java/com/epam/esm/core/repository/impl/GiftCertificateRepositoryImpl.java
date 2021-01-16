@@ -26,8 +26,15 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
 
     private JdbcTemplate jdbcTemplate;
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-
-
+    private static final String CREATE_CERTIFICATE_FAIL = "giftCertificate_create_fail";
+    private static final String UPDATE_CERTIFICATE_FAIL = "giftCertificate_update_fail";
+    private static final String DELETE_CERTIFICATE_FAIL = "giftCertificate_delete_fail";
+    private static final String FIND_ALL_CERTIFICATES_FAIL = "giftCertificate_find_all_certificates_fail";
+    private static final String FIND_CERTIFICATE_BY_PARAM_FAIL = "giftCertificate_find_certificate_by_param_fail";
+    private static final String CREATE_RELATION_CERTIFICATE_TAG_FAIL = "giftCertificate_create_relation_certificate_tag_fail";
+    private static final String DELETE_RELATION_CERTIFICATE_TAG_FAIL = "giftCertificate_delete_relation_certificate_tag_fail";
+    private static final String SORT_CERTIFICATE_FAIL = "giftCertificate_sort_certificate_fail";
+    private static final String ID = "id";
     private static final String SELECT_ALL_CERTIFICATES =
             "SELECT id_certificate, name, description, price,duration,create_date, last_update_date " +
                     "FROM gift_certificate";
@@ -66,7 +73,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
             namedParameterJdbcTemplate.update(CREATE_GIFT_CERTIFICATE, sqlParameterSource,
                     keyHolder, new String[]{"id"});
         } catch (DataAccessException e) {
-            throw new RepositoryException("Gift certificate creation failed");
+            throw new RepositoryException(CREATE_CERTIFICATE_FAIL);
         }
         giftCertificate.setName(giftCertificate.getName());
         giftCertificate.setDescription(giftCertificate.getDescription());
@@ -88,7 +95,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         try {
             return namedParameterJdbcTemplate.update(UPDATE_CERTIFICATE, sqlParameterSource) > 0;
         } catch (DataAccessException e) {
-            throw new RepositoryException("Gift certificate update failed");
+            throw new RepositoryException(UPDATE_CERTIFICATE_FAIL);
         }
     }
 
@@ -97,7 +104,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         try {
             return jdbcTemplate.update(DELETE_CERTIFICATE, id) > 0;
         } catch (DataAccessException e) {
-            throw new RepositoryException("Gift certificate delete failed");
+            throw new RepositoryException(DELETE_CERTIFICATE_FAIL);
         }
     }
 
@@ -106,7 +113,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         try {
             return jdbcTemplate.query(SELECT_ALL_CERTIFICATES, new GiftCertificateMapper());
         } catch (DataAccessException e) {
-            throw new RepositoryException("Gift certificates not found");
+            throw new RepositoryException(FIND_ALL_CERTIFICATES_FAIL);
         }
     }
 
@@ -126,7 +133,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         try {
             jdbcTemplate.update(CREATE_CERTIFICATE_TAGS, idCertificate, idTag);
         } catch (DataAccessException e) {
-            throw new RepositoryException("Creation in certificates_tags failed");
+            throw new RepositoryException(CREATE_RELATION_CERTIFICATE_TAG_FAIL);
         }
     }
 
