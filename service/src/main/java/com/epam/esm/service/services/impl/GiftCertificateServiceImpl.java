@@ -4,6 +4,7 @@ import com.epam.esm.core.entity.GiftCertificate;
 import com.epam.esm.core.entity.Tag;
 import com.epam.esm.core.exception.RepositoryException;
 import com.epam.esm.core.repository.GiftCertificateRepository;
+import com.epam.esm.core.repository.specification.SortByParamSpecification;
 import com.epam.esm.service.dto.GiftCertificateDto;
 import com.epam.esm.service.dto.TagDto;
 import com.epam.esm.service.exception.ServiceException;
@@ -17,9 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -59,19 +58,54 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     private List<TagDto> createTagsAndRelations(GiftCertificateDto giftCertificateDto, List<Tag> tags) throws ServiceException, RepositoryException {
         List<TagDto> tagDtos = new ArrayList<>();
-        for (Tag tag : tags) {
-            Optional<TagDto> tagDtoOptional = tagService.findTagByName(tag.getName());
-            if (!tagDtoOptional.isPresent()) {
-                tagDtoOptional = tagService.create(TagConverter.mapToTagDto(tag));
-                TagDto tagDto = tagDtoOptional.orElseThrow(() -> new ServiceException("Tag creation error"));
-                giftCertificateRepositoryImpl
-                        .createCertificateAndTagRelationship(giftCertificateDto.getId(), tagDto.getId());
-                tagDtos.add(tagDto);
-            } else {
-                tagDtos.add(tagDtoOptional.get());
-            }
-        }
+        tags.forEach(tag -> createRelationsBetweenTagAndCertificate(giftCertificateDto, tagDtos, tag));
         return tagDtos;
+    }
+
+    private void createRelationsBetweenTagAndCertificate(GiftCertificateDto giftCertificateDto, List<TagDto> tagDtos, Tag tag) {
+        Optional<TagDto> tagDtoOptional = processExceptionForFindTagByName(tag);
+        if (!tagDtoOptional.isPresent()) {
+            tagDtoOptional = processExceptionForCreate(tag);
+        }
+        TagDto tagDto = processExceptionForThrowException(tagDtoOptional);
+        processExceptionForCreateRelationTagAndCertificate(giftCertificateDto, tagDto, tagDtos);
+        tagDtos.add(tagDto);
+    }
+
+    private Optional<TagDto> processExceptionForFindTagByName(Tag tag) {
+        try {
+            return tagService.findTagByName(tag.getName());
+        } catch (ServiceException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private TagDto processExceptionForThrowException(Optional<TagDto> tagDtoOptional) {
+        try {
+            return tagDtoOptional.orElseThrow(() -> new ServiceException("Tag creation error"));
+        } catch (ServiceException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private Optional<TagDto> processExceptionForCreate(Tag tag) {
+        try {
+            return tagService.create(TagConverter.mapToTagDto(tag));
+        } catch (ServiceException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void processExceptionForCreateRelationTagAndCertificate(GiftCertificateDto giftCertificateDto,
+                                                                    TagDto tagDto, List<TagDto> tagDtos) {
+        try {
+            giftCertificateRepositoryImpl
+                    .createCertificateAndTagRelation(giftCertificateDto.getId(), tagDto.getId());
+            tagDtos.add(tagDto);
+        } catch (RepositoryException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     @Override
@@ -120,6 +154,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
                 .collect(Collectors.toList()));
     }
 
+    @Override
     public Optional<GiftCertificateDto> findCertificateById(long id) throws ServiceException {
         GiftCertificateDto giftCertificateDto;
         try {
@@ -129,5 +164,58 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             throw new ServiceException("Gift certificate not found");
         }
         return Optional.of(giftCertificateDto);
+    }
+
+    @Transactional
+    @Override
+    public Optional<List<GiftCertificateDto>> searchAllCertificatesByTagName(String tagName) {
+        List<GiftCertificateDto> giftCertificateDtos;
+        List<GiftCertificate> giftCertificates = processExceptionSearchCertificate(tagName);
+        giftCertificateDtos = giftCertificates.stream()
+                .map(GiftCertificateConverter::mapToGiftCertificateDto)
+                .peek(this::injectTags)
+                .collect(Collectors.toList());
+
+        return Optional.of(giftCertificateDtos);
+
+    }
+
+    private List<GiftCertificate> processExceptionSearchCertificate(String tagName) {
+        try {
+            return giftCertificateRepositoryImpl
+                    .searchAllCertificatesByTagName(tagName);
+        } catch (RepositoryException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void injectTags(GiftCertificateDto giftCertificateDto) {
+        Optional<List<TagDto>> tagDtos = processExceptionForFindAllCertificates(giftCertificateDto);
+        tagDtos.ifPresent(giftCertificateDto::setTags);
+    }
+
+    private Optional<List<TagDto>> processExceptionForFindAllCertificates(GiftCertificateDto giftCertificateDto) {
+        try {
+            return tagService.findAllTagsByCertificateId(giftCertificateDto.getId());
+        } catch (ServiceException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Optional<List<GiftCertificateDto>> sortByParam(String paramForSorting, String order) throws
+            ServiceException {
+        List<GiftCertificateDto> giftCertificateDtos;
+        SortByParamSpecification sortByParamSpecification = new SortByParamSpecification(paramForSorting, order);
+        List<GiftCertificate> giftCertificates;
+        try {
+            giftCertificates = giftCertificateRepositoryImpl.sortByParam(sortByParamSpecification);
+            giftCertificateDtos = giftCertificates.stream()
+                    .map(GiftCertificateConverter::mapToGiftCertificateDto)
+                    .peek(this::injectTags)
+                    .collect(Collectors.toList());
+        } catch (RepositoryException e) {
+            throw new ServiceException("Gift certificate cannot be sorted");
+        }
+        return Optional.of(giftCertificateDtos);
     }
 }

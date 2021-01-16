@@ -29,7 +29,7 @@ public class GiftCertificateController {
         this.giftCertificateServiceImpl = giftCertificateService;
     }
 
-    @GetMapping(value = "/query")
+    @GetMapping(value = "/setParam")
     public ResponseEntity<List<GiftCertificateDto>> findGiftCertificateByParam
             (@QueryParam("param") String param) throws ControllerException {
         try {
@@ -64,6 +64,28 @@ public class GiftCertificateController {
                     .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
         } catch (ServiceException e) {
             throw new ControllerException("Gift certificates not found");
+        }
+    }
+
+    @GetMapping(value = "/tagParam")
+    public ResponseEntity<List<GiftCertificateDto>> findGiftCertificateByTagName
+            (@QueryParam("name") String name) {
+        return giftCertificateServiceImpl
+                .searchAllCertificatesByTagName(name)
+                .map(giftCertificateDto -> new ResponseEntity<>(giftCertificateDto, HttpStatus.OK))
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    @GetMapping(value = "/sortBy")
+    public ResponseEntity<List<GiftCertificateDto>> sortCertificateByParam
+            (@QueryParam("paramForSorting") String paramForSorting,
+                    @QueryParam("order") String order) throws ControllerException {
+        try {
+            return giftCertificateServiceImpl.sortByParam(paramForSorting,order)
+                    .map(giftCertificateDto -> new ResponseEntity<>(giftCertificateDto, HttpStatus.OK))
+                    .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        } catch (ServiceException e) {
+            throw new ControllerException("Gift certificate cannot be sorted");
         }
     }
 

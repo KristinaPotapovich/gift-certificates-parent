@@ -10,4 +10,8 @@ public interface GiftCertificateService extends BaseService<GiftCertificateDto> 
     Optional<GiftCertificateDto> findCertificateById(long id) throws ServiceException;
 
     Optional<List<GiftCertificateDto>> findCertificateByParam(String param) throws ServiceException;
+
+    Optional<List<GiftCertificateDto>> searchAllCertificatesByTagName(String tagName);
+
+    Optional<List<GiftCertificateDto>> sortByParam(String paramForSorting, String order) throws ServiceException;
 }

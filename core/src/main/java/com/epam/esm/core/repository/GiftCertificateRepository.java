@@ -2,6 +2,7 @@ package com.epam.esm.core.repository;
 
 import com.epam.esm.core.entity.GiftCertificate;
 import com.epam.esm.core.exception.RepositoryException;
+import com.epam.esm.core.repository.specification.SortByParamSpecification;
 
 import java.util.List;
 
