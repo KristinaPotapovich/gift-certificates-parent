@@ -1,11 +1,13 @@
 package com.epam.esm.service.mapper;
 
 
+import com.epam.esm.core.entity.Tag;
 import com.epam.esm.service.dto.GiftCertificateDto;
 import com.epam.esm.core.entity.GiftCertificate;
 import com.epam.esm.service.dto.TagDto;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 
@@ -19,11 +21,15 @@ public class GiftCertificateConverter {
         giftCertificateDto.setDurationInDays(giftCertificate.getDurationInDays());
         giftCertificateDto.setCreateDate(giftCertificate.getCreateDate());
         giftCertificateDto.setLastUpdateDate(giftCertificate.getLastUpdateDate());
-        List<TagDto> tagDto = giftCertificate.getTags()
-                .stream()
-                .map(TagConverter::mapToTagDto)
-                .collect(Collectors.toList());
-        giftCertificateDto.setTags(tagDto);
+        List<Tag> tags = giftCertificate.getTags();
+        if (tags != null) {
+            List<TagDto> tagDto = tags
+                    .stream()
+                    .filter(Objects::nonNull)
+                    .map(TagConverter::mapToTagDto)
+                    .collect(Collectors.toList());
+            giftCertificateDto.setTags(tagDto);
+        }
         return giftCertificateDto;
     }
 

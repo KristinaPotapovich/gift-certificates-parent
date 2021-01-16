@@ -49,11 +49,24 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     private static final String DELETE_CERTIFICATE =
             "DELETE FROM gift_certificate WHERE id_certificate = ?";
     private static final String SELECT_CERTIFICATE_BY_PARAM =
-            "SELECT DISTINCT id_certificate, name, description, price,duration,create_date, last_update_date " +
-                    "FROM gift_certificate WHERE name LIKE ? OR description LIKE ?";
+            "SELECT DISTINCT gc.id_certificate,gc.name,gc.description,gc.price,gc.duration,gc.create_date," +
+                    "gc.last_update_date FROM gift_certificate gc " +
+                    "INNER JOIN certificates_tags ct ON gc.id_certificate = ct.id_certificate " +
+                    "WHERE gc.name LIKE ? OR gc.description LIKE ? ";
     private static final String CREATE_CERTIFICATE_TAGS =
             "INSERT INTO certificates_tags (id_certificate, id_tag) VALUES (?,?)";
-
+    private static final String RELATION_DELETE_BY_CERTIFICATE_ID =
+            "DELETE FROM certificates_tags WHERE id_certificate = ?";
+    private static final String SEARCH_ALL_CERTIFICATES_BY_TAG_NAME =
+            "SELECT DISTINCT gc.id_certificate,gc.name,gc.description,gc.price,gc.duration,gc.create_date," +
+                    "gc.last_update_date, t.name FROM gift_certificate gc " +
+                    "INNER JOIN certificates_tags ct ON gc.id_certificate = ct.id_certificate " +
+                    "INNER JOIN tag t ON t.id_tag = ct.id_tag " +
+                    "WHERE t.name LIKE ? ";
+    private static final String SORT_CERTIFICATE =
+            "SELECT id_certificate, name, description, price,duration,create_date, last_update_date " +
+                    "FROM gift_certificate " +
+                    "ORDER BY ";
 
     @Autowired
     public GiftCertificateRepositoryImpl(DataSource dataSource) {
@@ -121,15 +134,14 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     public List<GiftCertificate> findCertificateByParam(String param) throws RepositoryException {
         try {
             return jdbcTemplate.query(SELECT_CERTIFICATE_BY_PARAM,
-                    new GiftCertificateMapper(), SearchHelper.buildAppealForDataBase(param),
-                    SearchHelper.buildAppealForDataBase(param));
+                    new GiftCertificateMapper(), "%" + param + "%", "%" + param + "%");
         } catch (DataAccessException e) {
-            throw new RepositoryException("Gift certificate not found" + param);
+            throw new RepositoryException(FIND_CERTIFICATE_BY_PARAM_FAIL,param);
         }
     }
 
     @Override
-    public void createCertificateAndTagRelationship(long idCertificate, long idTag) throws RepositoryException {
+    public void createCertificateAndTagRelation(long idCertificate, long idTag) throws RepositoryException {
         try {
             jdbcTemplate.update(CREATE_CERTIFICATE_TAGS, idCertificate, idTag);
         } catch (DataAccessException e) {
@@ -143,7 +155,34 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
             return jdbcTemplate.queryForObject(SELECT_CERTIFICATE_BY_ID,
                     new GiftCertificateMapper(), id);
         } catch (DataAccessException e) {
-            throw new RepositoryException("Gift certificate not found" + id);
+            throw new RepositoryException(FIND_CERTIFICATE_BY_PARAM_FAIL,ID);
+        }
+    }
+
+    public void deleteCertificateAndTagRelation(long idCertificate) throws RepositoryException {
+        try {
+            jdbcTemplate.update(RELATION_DELETE_BY_CERTIFICATE_ID, idCertificate);
+        } catch (DataAccessException e) {
+            throw new RepositoryException(DELETE_RELATION_CERTIFICATE_TAG_FAIL);
+        }
+    }
+
+    public List<GiftCertificate> searchAllCertificatesByTagName(String tagName) throws RepositoryException {
+        try {
+            return jdbcTemplate.query(SEARCH_ALL_CERTIFICATES_BY_TAG_NAME,
+                    new GiftCertificateMapper(), "%" + tagName + "%");
+        } catch (DataAccessException e) {
+            throw new RepositoryException(FIND_CERTIFICATE_BY_PARAM_FAIL,tagName);
+        }
+    }
+
+    public List<GiftCertificate> sortByParam(SortByParamSpecification sortByParamSpecification) throws
+            RepositoryException {
+        try {
+            return jdbcTemplate.query(sortByParamSpecification.buildQueryForSorting(SORT_CERTIFICATE), new GiftCertificateMapper());
+        } catch (DataAccessException e) {
+            throw new RepositoryException(SORT_CERTIFICATE_FAIL);
         }
     }
 }
+
