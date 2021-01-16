@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
 import java.time.LocalDateTime;
 import java.util.Locale;
 
@@ -15,32 +16,36 @@ import java.util.Locale;
 public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
     private static final String MESSAGE = ".message";
     private static final String CODE = ".code";
+    private MessageSource messageSource;
 
     @Autowired
-    private MessageSource messageSource;
+    public ControllerExceptionHandler(MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = ControllerException.class)
     public ErrorResponseMessage controllerError(ControllerException e, Locale locale) {
-      ErrorResponseMessage errorResponseMessage = new ErrorResponseMessage();
-      errorResponseMessage.setTimestamp(LocalDateTime.now());
-      errorResponseMessage.setCode(messageSource.getMessage(e.getMessage()+CODE,
-              new Object[]{},locale));
-      errorResponseMessage.setError(HttpStatus.BAD_REQUEST.toString());
-      errorResponseMessage.setMessage(messageSource.getMessage(e.getMessage()+MESSAGE,
-              new Object[]{},locale));
-      return errorResponseMessage;
+        ErrorResponseMessage errorResponseMessage = new ErrorResponseMessage();
+        errorResponseMessage.setTimestamp(LocalDateTime.now());
+        errorResponseMessage.setCode(messageSource.getMessage(e.getMessage() + CODE,
+                new Object[]{}, locale));
+        errorResponseMessage.setError(HttpStatus.BAD_REQUEST.toString());
+        errorResponseMessage.setMessage(messageSource.getMessage(e.getMessage() + MESSAGE,
+                new Object[]{}, locale));
+        return errorResponseMessage;
     }
+
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ExceptionHandler({ RuntimeException.class })
+    @ExceptionHandler({RuntimeException.class})
     public ErrorResponseMessage handleIllegalArgumentException(RuntimeException e, Locale locale) {
         ErrorResponseMessage errorResponseMessage = new ErrorResponseMessage();
         errorResponseMessage.setTimestamp(LocalDateTime.now());
         errorResponseMessage.setCode(messageSource.getMessage(e.getMessage(),
-                new Object[]{},locale));
+                new Object[]{}, locale));
         errorResponseMessage.setError(HttpStatus.BAD_REQUEST.toString());
         errorResponseMessage.setMessage(messageSource.getMessage(e.getMessage(),
-                new Object[]{},locale));
+                new Object[]{}, locale));
         return errorResponseMessage;
     }
 }

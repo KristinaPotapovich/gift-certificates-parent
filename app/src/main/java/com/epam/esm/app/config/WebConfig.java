@@ -14,8 +14,8 @@ public class WebConfig {
     @Bean
     public MessageSource messageSource() {
         ResourceBundleMessageSource source = new ResourceBundleMessageSource();
-        source.setBasename("message_en.properties");
-        source.setUseCodeAsDefaultMessage(true);
+        source.setBasename("message");
+        source.setDefaultEncoding("UTF-8");
         return source;
     }
 }

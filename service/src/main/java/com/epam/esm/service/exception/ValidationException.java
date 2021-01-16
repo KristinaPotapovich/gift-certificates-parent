@@ -1,14 +1,8 @@
 package com.epam.esm.service.exception;
 
 public class ValidationException extends Exception {
-    private String argument;
 
     public ValidationException() {
-    }
-
-    public ValidationException(String message,String argument) {
-        super(message);
-        this.argument = argument;
     }
 
     public ValidationException(String message) {

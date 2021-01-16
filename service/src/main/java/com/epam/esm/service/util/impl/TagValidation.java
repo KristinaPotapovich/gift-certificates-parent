@@ -15,7 +15,7 @@ public class TagValidation implements Validation<TagDto> {
     public void validate(TagDto tagDto) throws ValidationException {
         if (tagDto.getName() == null || tagDto.getName().trim().isEmpty() ||
                 !tagDto.getName().matches(TAG_NAME_REGEX) || tagDto.getName().length() > MAX_SIZE_NAME) {
-            throw new ValidationException(WRONG_NAME, tagDto.getName());
+            throw new ValidationException(WRONG_NAME);
         }
     }
 }

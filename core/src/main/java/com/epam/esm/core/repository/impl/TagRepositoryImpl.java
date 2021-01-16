@@ -86,7 +86,7 @@ public class TagRepositoryImpl implements TagRepository {
             return jdbcTemplate.query(SELECT_TAG_BY_NAME, new TagMapper(), name)
                     .stream().findFirst();
         } catch (DataAccessException e) {
-            throw new RepositoryException(FIND_BY_NAME_TAG_FAIL, name);
+            throw new RepositoryException(FIND_BY_NAME_TAG_FAIL);
         }
     }
 

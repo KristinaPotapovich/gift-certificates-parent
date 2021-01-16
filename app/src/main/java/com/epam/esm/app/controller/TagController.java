@@ -36,7 +36,7 @@ public class TagController {
                     .map(tagDtoResponse -> new ResponseEntity<>(tagDtoResponse, HttpStatus.OK))
                     .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
         } catch (ServiceException e) {
-            throw new ControllerException("Tag not found " + name);
+            throw new ControllerException(e.getMessage());
         }
     }
 
@@ -49,7 +49,7 @@ public class TagController {
                     .map(tagDto -> new ResponseEntity<>(tagDto, HttpStatus.OK))
                     .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
         } catch (ServiceException e) {
-            throw new ControllerException("Tags not found");
+            throw new ControllerException(e.getMessage());
         }
     }
 
@@ -62,7 +62,7 @@ public class TagController {
                     .map(tagDtoResponse -> new ResponseEntity<>(tagDtoResponse, HttpStatus.CREATED))
                     .orElse(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
         } catch (ServiceException e) {
-            throw new ControllerException("Tag creation failed");
+            throw new ControllerException(e.getMessage());
         }
     }
 
@@ -74,7 +74,7 @@ public class TagController {
             tagDto.setId(id);
             tagServiceImpl.update(tagDto);
         } catch (ServiceException e) {
-            throw new ControllerException("Tag update failed");
+            throw new ControllerException(e.getMessage());
         }
     }
 
@@ -87,7 +87,7 @@ public class TagController {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         } catch (ServiceException e) {
-            throw new ControllerException("Tag delete found");
+            throw new ControllerException(e.getMessage());
         }
 
     }

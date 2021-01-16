@@ -136,7 +136,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
             return jdbcTemplate.query(SELECT_CERTIFICATE_BY_PARAM,
                     new GiftCertificateMapper(), "%" + param + "%", "%" + param + "%");
         } catch (DataAccessException e) {
-            throw new RepositoryException(FIND_CERTIFICATE_BY_PARAM_FAIL,param);
+            throw new RepositoryException(FIND_CERTIFICATE_BY_PARAM_FAIL);
         }
     }
 
@@ -155,7 +155,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
             return jdbcTemplate.queryForObject(SELECT_CERTIFICATE_BY_ID,
                     new GiftCertificateMapper(), id);
         } catch (DataAccessException e) {
-            throw new RepositoryException(FIND_CERTIFICATE_BY_PARAM_FAIL,ID);
+            throw new RepositoryException(FIND_CERTIFICATE_BY_PARAM_FAIL);
         }
     }
 
@@ -172,7 +172,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
             return jdbcTemplate.query(SEARCH_ALL_CERTIFICATES_BY_TAG_NAME,
                     new GiftCertificateMapper(), "%" + tagName + "%");
         } catch (DataAccessException e) {
-            throw new RepositoryException(FIND_CERTIFICATE_BY_PARAM_FAIL,tagName);
+            throw new RepositoryException(FIND_CERTIFICATE_BY_PARAM_FAIL);
         }
     }
 
