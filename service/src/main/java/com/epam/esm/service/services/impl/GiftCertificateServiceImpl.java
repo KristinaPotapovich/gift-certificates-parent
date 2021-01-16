@@ -56,7 +56,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         return Optional.of(giftCertificateDto);
     }
 
-    private List<TagDto> createTagsAndRelations(GiftCertificateDto giftCertificateDto, List<Tag> tags) throws ServiceException, RepositoryException {
+    private List<TagDto> createTagsAndRelations(GiftCertificateDto giftCertificateDto, List<Tag> tags) {
         List<TagDto> tagDtos = new ArrayList<>();
         tags.forEach(tag -> createRelationsBetweenTagAndCertificate(giftCertificateDto, tagDtos, tag));
         return tagDtos;
@@ -202,8 +202,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         }
     }
 
-    public Optional<List<GiftCertificateDto>> sortByParam(String paramForSorting, String order) throws
-            ServiceException {
+    public Optional<List<GiftCertificateDto>> sortByParam(String paramForSorting, String order)
+            throws ServiceException {
         List<GiftCertificateDto> giftCertificateDtos;
         SortByParamSpecification sortByParamSpecification = new SortByParamSpecification(paramForSorting, order);
         List<GiftCertificate> giftCertificates;
