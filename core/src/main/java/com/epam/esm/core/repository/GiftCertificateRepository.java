@@ -11,5 +11,11 @@ public interface GiftCertificateRepository extends BaseRepository<GiftCertificat
 
     List<GiftCertificate> findCertificateByParam(String param) throws RepositoryException;
 
-    void createCertificateAndTagRelationship(long idCertificate, long idTag) throws RepositoryException;
+    void createCertificateAndTagRelation(long idCertificate, long idTag) throws RepositoryException;
+
+    void deleteCertificateAndTagRelation(long idCertificate) throws RepositoryException;
+
+    List<GiftCertificate> searchAllCertificatesByTagName(String tagName) throws RepositoryException;
+
+    List<GiftCertificate> sortByParam(SortByParamSpecification sortByParamSpecification) throws RepositoryException;
 }

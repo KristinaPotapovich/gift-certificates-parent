@@ -34,10 +34,9 @@ public class TagRepositoryImpl implements TagRepository {
             "SELECT id_tag, name FROM tag WHERE name = ?";
     private static final String SELECT_ALL_TAGS =
             "SELECT id_tag, name FROM tag";
-    private static final String SELECT_TAG_BY_ID =
-            "SELECT COUNT(*) FROM tag WHERE id_tag = ?";
-    private static final String SELECT_COUNT_TAG_BY_NAME =
-            "SELECT COUNT(*) FROM tag WHERE name = ?";
+    private static final String GET_CERTIFICATES_TAGS =
+            "SELECT t.id_tag,t.name FROM tag t LEFT JOIN certificates_tags ct ON t.id_tag = ct.id_tag " +
+                    "WHERE ct.id_certificate = ?";
 
 
     @Autowired
@@ -84,8 +83,8 @@ public class TagRepositoryImpl implements TagRepository {
 
     public Optional<Tag> findTagByName(String name) throws RepositoryException {
         try {
-           return jdbcTemplate.query(SELECT_TAG_BY_NAME, new TagMapper(), name)
-                   .stream().findFirst();
+            return jdbcTemplate.query(SELECT_TAG_BY_NAME, new TagMapper(), name)
+                    .stream().findFirst();
         } catch (DataAccessException e) {
             throw new RepositoryException(FIND_BY_NAME_TAG_FAIL, name);
         }
@@ -99,11 +98,11 @@ public class TagRepositoryImpl implements TagRepository {
         }
     }
 
-    public boolean isTagExistByName(String name) throws RepositoryException {
+    public List<Tag> findAllTagsByCertificateId(long idCertificate) throws RepositoryException {
         try {
-            return jdbcTemplate.queryForObject(SELECT_COUNT_TAG_BY_NAME, Boolean.class, name);
+            return jdbcTemplate.query(GET_CERTIFICATES_TAGS, new TagMapper(), idCertificate);
         } catch (DataAccessException e) {
-            throw new RepositoryException("Incorrect data");
+            throw new RepositoryException(FIND_ALL_TAG_FAIL);
         }
     }
 }

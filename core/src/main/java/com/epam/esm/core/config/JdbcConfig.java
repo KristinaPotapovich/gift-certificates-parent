@@ -7,6 +7,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 
 
 import javax.sql.DataSource;
@@ -35,6 +37,11 @@ public class JdbcConfig extends HikariConfig {
         ds.setUsername(user);
         ds.setPassword(password);
         return ds;
+    }
+
+    @Bean
+    public PlatformTransactionManager transactionManager() {
+        return new DataSourceTransactionManager(getDataSource());
     }
 }
 

@@ -109,6 +109,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     }
 
+    @Transactional
     @Override
     public void update(GiftCertificateDto giftCertificateDto) throws ServiceException {
         GiftCertificate giftCertificate;
@@ -116,14 +117,19 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             giftCertificateValidation.validate(giftCertificateDto);
             giftCertificate = GiftCertificateConverter.mapToGiftCertificate(giftCertificateDto);
             giftCertificateRepositoryImpl.update(giftCertificate);
+            giftCertificateRepositoryImpl.deleteCertificateAndTagRelation(giftCertificate.getId());
+            List<TagDto> tagsResult = createTagsAndRelations(giftCertificateDto, giftCertificate.getTags());
+            giftCertificateDto.setTags(tagsResult);
         } catch (ValidationException | RepositoryException e) {
             throw new ServiceException(e.getMessage());
         }
     }
 
+    @Transactional
     @Override
     public boolean delete(long id) throws ServiceException {
         try {
+            giftCertificateRepositoryImpl.deleteCertificateAndTagRelation(id);
             return giftCertificateRepositoryImpl.delete(id);
         } catch (RepositoryException e) {
             throw new ServiceException(e.getMessage());
@@ -143,16 +149,21 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
                 .collect(Collectors.toList()));
     }
 
+    @Transactional
+    @Override
     public Optional<List<GiftCertificateDto>> findCertificateByParam(String param) throws ServiceException {
-        List<GiftCertificate> giftCertificates;
+        List<GiftCertificateDto> giftCertificateDtos;
         try {
-            giftCertificates = giftCertificateRepositoryImpl.findCertificateByParam(param);
+            List<GiftCertificate> giftCertificates = giftCertificateRepositoryImpl
+                    .findCertificateByParam(param);
+            giftCertificateDtos = giftCertificates.stream()
+                    .map(GiftCertificateConverter::mapToGiftCertificateDto)
+                    .peek(this::injectTags)
+                    .collect(Collectors.toList());
         } catch (RepositoryException e) {
             throw new ServiceException(e.getMessage());
         }
-        return Optional.of(giftCertificates.stream()
-                .map(GiftCertificateConverter::mapToGiftCertificateDto)
-                .collect(Collectors.toList()));
+        return Optional.of(giftCertificateDtos);
     }
 
     @Override

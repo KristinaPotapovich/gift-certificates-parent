@@ -64,6 +64,7 @@ public class TagServiceImpl implements TagService {
         }
     }
 
+    @Override
     @Nullable
     public Optional<TagDto> findTagByName(String name) throws ServiceException {
         TagDto tagDto = new TagDto();
@@ -80,6 +81,7 @@ public class TagServiceImpl implements TagService {
         return Optional.empty();
     }
 
+    @Override
     public Optional<List<TagDto>> findAll() throws ServiceException {
         List<Tag> tags;
         try {
@@ -92,12 +94,17 @@ public class TagServiceImpl implements TagService {
                 .collect(Collectors.toList()));
     }
 
-    public boolean isTagExistByName(String name) throws ServiceException {
+    @Override
+    public Optional<List<TagDto>> findAllTagsByCertificateId(long idCertificate) throws ServiceException {
+        List<Tag> tags;
         try {
-            return tagRepository.isTagExistByName(name);
+            tags = tagRepository.findAllTagsByCertificateId(idCertificate);
         } catch (RepositoryException e) {
-            throw new ServiceException("Incorrect data");
+            throw new ServiceException(e.getMessage());
         }
+        return Optional.of(tags.stream()
+                .map(TagConverter::mapToTagDto)
+                .collect(Collectors.toList()));
     }
 }
 
