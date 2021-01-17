@@ -7,6 +7,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 
+/**
+ * The type Tag mapper.
+ */
 public class TagMapper implements RowMapper<Tag> {
     private static final String NAME = "name";
     private static final String ID_TAG = "id_tag";

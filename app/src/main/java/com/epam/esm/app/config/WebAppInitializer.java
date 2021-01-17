@@ -4,6 +4,9 @@ import com.epam.esm.core.config.JdbcConfig;
 import com.epam.esm.service.config.ServiceConfig;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
+/**
+ * The type Web app initializer.
+ */
 public class WebAppInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
     @Override
     protected Class<?>[] getRootConfigClasses() {

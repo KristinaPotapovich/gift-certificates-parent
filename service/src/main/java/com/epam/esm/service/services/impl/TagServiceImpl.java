@@ -20,6 +20,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * The type Tag service.
+ */
 @Service
 public class TagServiceImpl implements TagService {
 
@@ -28,6 +31,13 @@ public class TagServiceImpl implements TagService {
     private Validation<TagDto> tagValidation;
     private GiftCertificateRepository giftCertificateRepository;
 
+    /**
+     * Instantiates a new Tag service.
+     *
+     * @param tagRepository             the tag repository
+     * @param tagValidation             the tag validation
+     * @param giftCertificateRepository the gift certificate repository
+     */
     @Autowired
     public TagServiceImpl(TagRepository tagRepository, Validation<TagDto> tagValidation,
                           GiftCertificateRepository giftCertificateRepository) {

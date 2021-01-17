@@ -21,6 +21,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * The type Gift certificate service.
+ */
 @Service
 public class GiftCertificateServiceImpl implements GiftCertificateService {
 
@@ -29,6 +32,13 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     private TagService tagService;
     private static final String CREATE_CERTIFICATE_FAIL = "giftCertificate_create_fail";
 
+    /**
+     * Instantiates a new Gift certificate service.
+     *
+     * @param giftCertificateRepositoryImpl the gift certificate repository
+     * @param giftCertificateValidation     the gift certificate validation
+     * @param tagService                    the tag service
+     */
     @Autowired
     public GiftCertificateServiceImpl(GiftCertificateRepository giftCertificateRepositoryImpl,
                                       Validation<GiftCertificateDto> giftCertificateValidation,

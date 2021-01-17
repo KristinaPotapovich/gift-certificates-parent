@@ -11,7 +11,16 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 
+/**
+ * The type Gift certificate converter.
+ */
 public class GiftCertificateConverter {
+    /**
+     * Map to gift certificate dto gift certificate dto.
+     *
+     * @param giftCertificate the gift certificate
+     * @return the gift certificate dto
+     */
     public static GiftCertificateDto mapToGiftCertificateDto(GiftCertificate giftCertificate) {
         GiftCertificateDto giftCertificateDto = new GiftCertificateDto();
         giftCertificateDto.setId(giftCertificate.getId());
@@ -33,6 +42,12 @@ public class GiftCertificateConverter {
         return giftCertificateDto;
     }
 
+    /**
+     * Map to gift certificate gift certificate.
+     *
+     * @param giftCertificateDto the gift certificate dto
+     * @return the gift certificate
+     */
     public static GiftCertificate mapToGiftCertificate(GiftCertificateDto giftCertificateDto) {
         GiftCertificate giftCertificate = new GiftCertificate();
         giftCertificate.setId(giftCertificateDto.getId());

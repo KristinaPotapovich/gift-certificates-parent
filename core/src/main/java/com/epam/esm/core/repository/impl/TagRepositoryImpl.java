@@ -16,6 +16,9 @@ import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * The type Tag repository.
+ */
 @Repository
 public class TagRepositoryImpl implements TagRepository {
     private JdbcTemplate jdbcTemplate;
@@ -40,6 +43,11 @@ public class TagRepositoryImpl implements TagRepository {
                     "WHERE ct.id_certificate = ?";
 
 
+    /**
+     * Instantiates a new Tag repository.
+     *
+     * @param dataSource the data source
+     */
     @Autowired
     public TagRepositoryImpl(DataSource dataSource) {
         jdbcTemplate = new JdbcTemplate(dataSource);

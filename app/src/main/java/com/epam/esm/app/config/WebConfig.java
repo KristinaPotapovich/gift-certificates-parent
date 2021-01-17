@@ -7,10 +7,18 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
+/**
+ * The type Web config.
+ */
 @Configuration
 @EnableWebMvc
 @ComponentScan("com.epam.esm.app")
 public class WebConfig {
+    /**
+     * Message source message source.
+     *
+     * @return the message source
+     */
     @Bean
     public MessageSource messageSource() {
         ResourceBundleMessageSource source = new ResourceBundleMessageSource();

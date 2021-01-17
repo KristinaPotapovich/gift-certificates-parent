@@ -5,6 +5,9 @@ import com.epam.esm.service.exception.ValidationException;
 import com.epam.esm.service.util.Validation;
 import org.springframework.stereotype.Component;
 
+/**
+ * The type Tag validation.
+ */
 @Component("tagValidation")
 public class TagValidation implements Validation<TagDto> {
     private static String TAG_NAME_REGEX = "[a-zA-Zа-яА-Я]+";

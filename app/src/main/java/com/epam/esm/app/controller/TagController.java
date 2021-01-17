@@ -17,6 +17,9 @@ import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+/**
+ * The type Tag controller.
+ */
 @RestController
 @RequestMapping(path = "/tags",
         produces = APPLICATION_JSON_VALUE)
@@ -24,11 +27,23 @@ public class TagController {
 
     private TagService tagServiceImpl;
 
+    /**
+     * Instantiates a new Tag controller.
+     *
+     * @param tagServiceImpl the tag service
+     */
     @Autowired
     public TagController(TagService tagServiceImpl) {
         this.tagServiceImpl = tagServiceImpl;
     }
 
+    /**
+     * Find tag by name response entity.
+     *
+     * @param name the name
+     * @return the response entity
+     * @throws ControllerException the controller exception
+     */
     @GetMapping(value = "/query")
     public ResponseEntity<TagDto> findTagByName(@QueryParam("name") String name) throws ControllerException {
         try {
@@ -40,6 +55,12 @@ public class TagController {
         }
     }
 
+    /**
+     * Find all tags response entity.
+     *
+     * @return the response entity
+     * @throws ControllerException the controller exception
+     */
     @GetMapping
     public @ResponseBody
     ResponseEntity<List<TagDto>> findAllTags() throws ControllerException {
@@ -53,6 +74,13 @@ public class TagController {
         }
     }
 
+    /**
+     * Create tag response entity.
+     *
+     * @param tagDto the tag dto
+     * @return the response entity
+     * @throws ControllerException the controller exception
+     */
     @PostMapping
     public @ResponseBody
     ResponseEntity<TagDto> createTag(@RequestBody TagDto tagDto) throws ControllerException {
@@ -66,6 +94,13 @@ public class TagController {
         }
     }
 
+    /**
+     * Update tag.
+     *
+     * @param id     the id
+     * @param tagDto the tag dto
+     * @throws ControllerException the controller exception
+     */
     @PutMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.OK)
     public void updateTag(@PathVariable("id") long id,
@@ -78,6 +113,13 @@ public class TagController {
         }
     }
 
+    /**
+     * Delete tag response entity.
+     *
+     * @param id the id
+     * @return the response entity
+     * @throws ControllerException the controller exception
+     */
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Long> deleteTag(@PathVariable("id") long id) throws ControllerException {
         try {

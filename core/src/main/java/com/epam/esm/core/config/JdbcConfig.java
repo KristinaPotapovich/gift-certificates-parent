@@ -13,6 +13,9 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
 
+/**
+ * The type Jdbc config.
+ */
 @Configuration
 @ComponentScan("com.epam.esm.core")
 @PropertySource("classpath:dataBase.properties")
@@ -39,6 +42,11 @@ public class JdbcConfig extends HikariConfig {
         return ds;
     }
 
+    /**
+     * Transaction manager platform transaction manager.
+     *
+     * @return the platform transaction manager
+     */
     @Bean
     public PlatformTransactionManager transactionManager() {
         return new DataSourceTransactionManager(getDataSource());

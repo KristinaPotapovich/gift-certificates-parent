@@ -1,6 +1,9 @@
 package com.epam.esm.service.dto;
 
 
+/**
+ * The type Tag dto.
+ */
 public class TagDto {
     private long id;
 

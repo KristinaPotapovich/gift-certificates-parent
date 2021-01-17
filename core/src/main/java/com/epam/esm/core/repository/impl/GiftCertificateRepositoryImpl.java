@@ -20,6 +20,9 @@ import javax.sql.DataSource;
 import java.sql.Types;
 import java.util.List;
 
+/**
+ * The type Gift certificate repository.
+ */
 @Repository
 public class GiftCertificateRepositoryImpl implements GiftCertificateRepository {
 
@@ -71,6 +74,11 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
                     "FROM gift_certificate " +
                     "ORDER BY ";
 
+    /**
+     * Instantiates a new Gift certificate repository.
+     *
+     * @param dataSource the data source
+     */
     @Autowired
     public GiftCertificateRepositoryImpl(DataSource dataSource) {
         jdbcTemplate = new JdbcTemplate(dataSource);

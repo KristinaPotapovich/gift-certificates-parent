@@ -5,6 +5,9 @@ import com.epam.esm.service.exception.ValidationException;
 import com.epam.esm.service.util.Validation;
 import org.springframework.stereotype.Component;
 
+/**
+ * The type Gift certificate validation.
+ */
 @Component
 public class GiftCertificateValidation implements Validation<GiftCertificateDto> {
     private static final String WRONG_NAME = "validation_certificate_wrong_name";
