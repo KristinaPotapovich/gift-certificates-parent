@@ -136,16 +136,4 @@ class GiftCertificateServiceImplTest {
         verify(giftCertificateRepository).findCertificateByParam(anyString());
         Assertions.assertTrue(expected.isPresent());
     }
-
-    @Test
-    void findCertificateById() {
-    }
-
-    @Test
-    void searchAllCertificatesByTagName() {
-    }
-
-    @Test
-    void sortByParam() {
-    }
 }
