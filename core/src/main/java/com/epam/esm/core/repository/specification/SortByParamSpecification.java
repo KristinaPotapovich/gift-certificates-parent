@@ -1,6 +1,10 @@
 package com.epam.esm.core.repository.specification;
 
 public class SortByParamSpecification {
+    private static final String CREATE_DATE = "create_date";
+    private static final String CREATE_DATE_DESC = "create_date DESC";
+    private static final String NAME = "name";
+    private static final String NAME_DESC = "name DESC";
     private String paramForSorting;
     private String order;
 
@@ -13,19 +17,19 @@ public class SortByParamSpecification {
         String fullQuery = null;
         if (ParamForSort.DATE.name().toLowerCase().equals(paramForSorting)
                 && Order.ASC.name().toLowerCase().equals(order)) {
-            fullQuery = new StringBuilder().append(query).append("create_date").toString();
+            fullQuery = new StringBuilder().append(query).append(CREATE_DATE).toString();
         }
         if (ParamForSort.DATE.name().toLowerCase().equals(paramForSorting)
                 && Order.DESC.name().toLowerCase().equals(order)) {
-            fullQuery = new StringBuilder().append(query).append("create_date DESC").toString();
+            fullQuery = new StringBuilder().append(query).append(CREATE_DATE_DESC).toString();
         }
         if (ParamForSort.NAME.name().toLowerCase().equals(paramForSorting)
                 && Order.ASC.name().toLowerCase().equals(order)) {
-            fullQuery = new StringBuilder().append(query).append("name").toString();
+            fullQuery = new StringBuilder().append(query).append(NAME).toString();
         }
         if (ParamForSort.NAME.name().toLowerCase().equals(paramForSorting)
                 && Order.DESC.name().toLowerCase().equals(order)) {
-            fullQuery = new StringBuilder().append(query).append("name DESC").toString();
+            fullQuery = new StringBuilder().append(query).append(NAME_DESC).toString();
         }
         return fullQuery;
     }

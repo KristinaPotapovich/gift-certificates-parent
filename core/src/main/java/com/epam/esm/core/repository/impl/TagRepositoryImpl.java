@@ -16,7 +16,7 @@ import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
 
-@Repository("tagRepository")
+@Repository
 public class TagRepositoryImpl implements TagRepository {
     private JdbcTemplate jdbcTemplate;
     private static final String CREATE_TAG_FAIL = "tag_create_fail";
@@ -24,6 +24,7 @@ public class TagRepositoryImpl implements TagRepository {
     private static final String DELETE_TAG_FAIL = "tag_delete_fail";
     private static final String FIND_BY_NAME_TAG_FAIL = "tag_find_by_name_fail";
     private static final String FIND_ALL_TAG_FAIL = "tag_find_all_fail";
+    private static final String ID_TAG = "id_tag";
     private static final String CREATE_TAG =
             "INSERT INTO tag(name) VALUES (?)";
     private static final String UPDATE_TAG =
@@ -51,7 +52,7 @@ public class TagRepositoryImpl implements TagRepository {
             jdbcTemplate.update(connection -> {
                 PreparedStatement ps = connection.prepareStatement(
                         CREATE_TAG,
-                        new String[]{"id"});
+                        new String[]{ID_TAG});
                 ps.setString(1, tag.getName());
                 return ps;
             }, keyHolder);
@@ -75,6 +76,7 @@ public class TagRepositoryImpl implements TagRepository {
     @Override
     public boolean delete(long id) throws RepositoryException {
         try {
+
             return jdbcTemplate.update(DELETE_TAG, id) > 0;
         } catch (DataAccessException e) {
             throw new RepositoryException(DELETE_TAG_FAIL);

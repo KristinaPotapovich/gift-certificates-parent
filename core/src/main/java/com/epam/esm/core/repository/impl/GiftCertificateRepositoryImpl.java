@@ -18,7 +18,6 @@ import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.Types;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -34,7 +33,11 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     private static final String CREATE_RELATION_CERTIFICATE_TAG_FAIL = "giftCertificate_create_relation_certificate_tag_fail";
     private static final String DELETE_RELATION_CERTIFICATE_TAG_FAIL = "giftCertificate_delete_relation_certificate_tag_fail";
     private static final String SORT_CERTIFICATE_FAIL = "giftCertificate_sort_certificate_fail";
-    private static final String ID = "id";
+    private static final String NAME = "name";
+    private static final String DESCRIPTION = "description";
+    private static final String PRICE = "price";
+    private static final String DURATION_IN_DAYS = "duration";
+    private static final String ID_CERTIFICATE = "id_certificate";
     private static final String SELECT_ALL_CERTIFICATES =
             "SELECT id_certificate, name, description, price,duration,create_date, last_update_date " +
                     "FROM gift_certificate";
@@ -78,13 +81,13 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     public GiftCertificate create(GiftCertificate giftCertificate) throws RepositoryException {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
-                .addValue("name", giftCertificate.getName(), Types.VARCHAR)
-                .addValue("description", giftCertificate.getDescription(), Types.VARCHAR)
-                .addValue("price", giftCertificate.getPrice(), Types.DOUBLE)
-                .addValue("duration", giftCertificate.getDurationInDays(), Types.INTEGER);
+                .addValue(NAME, giftCertificate.getName(), Types.VARCHAR)
+                .addValue(DESCRIPTION, giftCertificate.getDescription(), Types.VARCHAR)
+                .addValue(PRICE, giftCertificate.getPrice(), Types.DOUBLE)
+                .addValue(DURATION_IN_DAYS, giftCertificate.getDurationInDays(), Types.INTEGER);
         try {
             namedParameterJdbcTemplate.update(CREATE_GIFT_CERTIFICATE, sqlParameterSource,
-                    keyHolder, new String[]{"id"});
+                    keyHolder, new String[]{ID_CERTIFICATE});
         } catch (DataAccessException e) {
             throw new RepositoryException(CREATE_CERTIFICATE_FAIL);
         }
@@ -92,19 +95,20 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         giftCertificate.setDescription(giftCertificate.getDescription());
         giftCertificate.setPrice(giftCertificate.getPrice());
         giftCertificate.setDurationInDays(giftCertificate.getDurationInDays());
-        giftCertificate.setCreateDate(LocalDateTime.now());
-        giftCertificate.setId(keyHolder.getKey().intValue());
+        if (keyHolder.getKey() != null) {
+            giftCertificate.setId(keyHolder.getKey().intValue());
+        }
         return giftCertificate;
     }
 
     @Override
     public boolean update(GiftCertificate giftCertificate) throws RepositoryException {
         SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
-                .addValue("name", giftCertificate.getName())
-                .addValue("description", giftCertificate.getDescription())
-                .addValue("price", giftCertificate.getPrice())
-                .addValue("duration", giftCertificate.getDurationInDays())
-                .addValue("id_certificate", giftCertificate.getId());
+                .addValue(NAME, giftCertificate.getName())
+                .addValue(DESCRIPTION, giftCertificate.getDescription())
+                .addValue(PRICE, giftCertificate.getPrice())
+                .addValue(DURATION_IN_DAYS, giftCertificate.getDurationInDays())
+                .addValue(ID_CERTIFICATE, giftCertificate.getId());
         try {
             return namedParameterJdbcTemplate.update(UPDATE_CERTIFICATE, sqlParameterSource) > 0;
         } catch (DataAccessException e) {

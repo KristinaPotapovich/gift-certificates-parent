@@ -1,12 +1,15 @@
 package com.epam.esm.service.services.impl;
 
+import com.epam.esm.core.entity.GiftCertificate;
 import com.epam.esm.core.exception.RepositoryException;
+import com.epam.esm.core.repository.GiftCertificateRepository;
 import com.epam.esm.core.repository.TagRepository;
 import com.epam.esm.service.dto.TagDto;
 import com.epam.esm.core.entity.Tag;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.exception.ValidationException;
 import com.epam.esm.service.mapper.TagConverter;
+import com.epam.esm.service.services.GiftCertificateService;
 import com.epam.esm.service.services.TagService;
 import com.epam.esm.service.util.Validation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,11 +26,14 @@ public class TagServiceImpl implements TagService {
     private TagRepository tagRepository;
 
     private Validation<TagDto> tagValidation;
+    private GiftCertificateRepository giftCertificateRepository;
 
     @Autowired
-    public TagServiceImpl(TagRepository tagRepository, Validation<TagDto> tagValidation) {
+    public TagServiceImpl(TagRepository tagRepository, Validation<TagDto> tagValidation,
+                          GiftCertificateRepository giftCertificateRepository) {
         this.tagRepository = tagRepository;
         this.tagValidation = tagValidation;
+        this.giftCertificateRepository = giftCertificateRepository;
     }
 
 
@@ -37,7 +43,8 @@ public class TagServiceImpl implements TagService {
         try {
             tagValidation.validate(tagDto);
             tag = TagConverter.mapToTag(tagDto);
-            return Optional.ofNullable(TagConverter.mapToTagDto(tagRepository.create(tag)));
+            tagDto = TagConverter.mapToTagDto(tagRepository.create(tag));
+            return Optional.ofNullable(tagDto);
         } catch (RepositoryException | ValidationException e) {
             throw new ServiceException(e.getMessage());
         }
@@ -58,6 +65,7 @@ public class TagServiceImpl implements TagService {
     @Override
     public boolean delete(long id) throws ServiceException {
         try {
+            giftCertificateRepository.deleteCertificateAndTagRelation(id);
             return tagRepository.delete(id);
         } catch (RepositoryException e) {
             throw new ServiceException(e.getMessage());
