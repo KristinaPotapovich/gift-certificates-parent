@@ -18,6 +18,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.Types;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -103,6 +104,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         giftCertificate.setDescription(giftCertificate.getDescription());
         giftCertificate.setPrice(giftCertificate.getPrice());
         giftCertificate.setDurationInDays(giftCertificate.getDurationInDays());
+        giftCertificate.setCreateDate(LocalDateTime.now());
         if (keyHolder.getKey() != null) {
             giftCertificate.setId(keyHolder.getKey().intValue());
         }
