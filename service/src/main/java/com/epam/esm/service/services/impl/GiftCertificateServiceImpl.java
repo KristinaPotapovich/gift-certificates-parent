@@ -80,7 +80,6 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         }
         TagDto tagDto = processExceptionForThrowException(tagDtoOptional);
         processExceptionForCreateRelationTagAndCertificate(giftCertificateDto, tagDto, tagDtos);
-        tagDtos.add(tagDto);
     }
 
     private Optional<TagDto> processExceptionForFindTagByName(Tag tag) {
