@@ -181,6 +181,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         try {
             giftCertificateDto = GiftCertificateConverter
                     .mapToGiftCertificateDto(giftCertificateRepositoryImpl.findCertificateById(id));
+            injectTags(giftCertificateDto);
         } catch (RepositoryException e) {
             throw new ServiceException(e.getMessage());
         }

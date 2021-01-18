@@ -7,6 +7,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
+import java.util.Locale;
+
 /**
  * The type Web config.
  */
@@ -24,6 +26,7 @@ public class WebConfig {
         ResourceBundleMessageSource source = new ResourceBundleMessageSource();
         source.setBasename("message");
         source.setDefaultEncoding("UTF-8");
+        source.setDefaultLocale(Locale.ENGLISH);
         return source;
     }
 }
