@@ -62,4 +62,13 @@ public interface GiftCertificateRepository extends BaseRepository<GiftCertificat
      * @throws RepositoryException the repository exception
      */
     List<GiftCertificate> sortByParam(SortByParamSpecification sortByParamSpecification) throws RepositoryException;
+
+    /**
+     * Is certificate exist boolean.
+     *
+     * @param giftCertificate the gift certificate
+     * @return the boolean
+     * @throws RepositoryException the repository exception
+     */
+    boolean isCertificateExist(GiftCertificate giftCertificate) throws RepositoryException;
 }

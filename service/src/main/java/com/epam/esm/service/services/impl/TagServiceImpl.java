@@ -1,6 +1,5 @@
 package com.epam.esm.service.services.impl;
 
-import com.epam.esm.core.entity.GiftCertificate;
 import com.epam.esm.core.exception.RepositoryException;
 import com.epam.esm.core.repository.GiftCertificateRepository;
 import com.epam.esm.core.repository.TagRepository;
@@ -9,7 +8,6 @@ import com.epam.esm.core.entity.Tag;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.exception.ValidationException;
 import com.epam.esm.service.mapper.TagConverter;
-import com.epam.esm.service.services.GiftCertificateService;
 import com.epam.esm.service.services.TagService;
 import com.epam.esm.service.util.Validation;
 import org.springframework.beans.factory.annotation.Autowired;

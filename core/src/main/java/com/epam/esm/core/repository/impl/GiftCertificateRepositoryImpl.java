@@ -18,7 +18,6 @@ import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.Types;
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -41,6 +40,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     private static final String DESCRIPTION = "description";
     private static final String PRICE = "price";
     private static final String DURATION_IN_DAYS = "duration";
+    private static final String CREATE_DATE = "create_date";
     private static final String ID_CERTIFICATE = "id_certificate";
     private static final String SELECT_ALL_CERTIFICATES =
             "SELECT id_certificate, name, description, price,duration,create_date, last_update_date " +
@@ -49,7 +49,8 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
             "SELECT id_certificate, name, description, price,duration,create_date, last_update_date " +
                     "FROM gift_certificate WHERE id_certificate = ?";
     private static final String CREATE_GIFT_CERTIFICATE =
-            "INSERT INTO gift_certificate(name,description,price,duration) VALUES (:name,:description,:price,:duration)";
+            "INSERT INTO gift_certificate(name,description,price,duration,create_date) VALUES (:name,:description,:price" +
+                    ",:duration,:create_date)";
     private static final String UPDATE_CERTIFICATE =
             "UPDATE gift_certificate SET name = :name,description = :description,price = :price,duration = :duration " +
                     "WHERE id_certificate = :id_certificate";
@@ -70,6 +71,9 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
                     "INNER JOIN certificates_tags ct ON gc.id_certificate = ct.id_certificate " +
                     "INNER JOIN tag t ON t.id_tag = ct.id_tag " +
                     "WHERE t.name LIKE ? ";
+    private static final String IS_CERTIFICATE_EXIST =
+            "SELECT COUNT(*) FROM gift_certificate WHERE name = :name AND description = :description AND " +
+                    "price = :price AND duration = :duration";
     private static final String SORT_CERTIFICATE =
             "SELECT id_certificate, name, description, price,duration,create_date, last_update_date " +
                     "FROM gift_certificate " +
@@ -93,18 +97,14 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
                 .addValue(NAME, giftCertificate.getName(), Types.VARCHAR)
                 .addValue(DESCRIPTION, giftCertificate.getDescription(), Types.VARCHAR)
                 .addValue(PRICE, giftCertificate.getPrice(), Types.DOUBLE)
-                .addValue(DURATION_IN_DAYS, giftCertificate.getDurationInDays(), Types.INTEGER);
+                .addValue(DURATION_IN_DAYS, giftCertificate.getDurationInDays(), Types.INTEGER)
+                .addValue(CREATE_DATE,giftCertificate.getCreateDate());
         try {
             namedParameterJdbcTemplate.update(CREATE_GIFT_CERTIFICATE, sqlParameterSource,
                     keyHolder, new String[]{ID_CERTIFICATE});
         } catch (DataAccessException e) {
             throw new RepositoryException(CREATE_CERTIFICATE_FAIL);
         }
-        giftCertificate.setName(giftCertificate.getName());
-        giftCertificate.setDescription(giftCertificate.getDescription());
-        giftCertificate.setPrice(giftCertificate.getPrice());
-        giftCertificate.setDurationInDays(giftCertificate.getDurationInDays());
-        giftCertificate.setCreateDate(LocalDateTime.now());
         if (keyHolder.getKey() != null) {
             giftCertificate.setId(keyHolder.getKey().intValue());
         }
@@ -196,6 +196,18 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
             return jdbcTemplate.query(sortByParamSpecification.buildQueryForSorting(SORT_CERTIFICATE), new GiftCertificateMapper());
         } catch (DataAccessException e) {
             throw new RepositoryException(SORT_CERTIFICATE_FAIL);
+        }
+    }
+    public boolean isCertificateExist(GiftCertificate giftCertificate) throws RepositoryException {
+        try {
+            SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                    .addValue(NAME, giftCertificate.getName(), Types.VARCHAR)
+                    .addValue(DESCRIPTION, giftCertificate.getDescription(), Types.VARCHAR)
+                    .addValue(PRICE, giftCertificate.getPrice(), Types.DOUBLE)
+                    .addValue(DURATION_IN_DAYS, giftCertificate.getDurationInDays(), Types.INTEGER);
+            return namedParameterJdbcTemplate.queryForObject(IS_CERTIFICATE_EXIST,sqlParameterSource,Integer.class) > 0;
+        } catch (DataAccessException e) {
+            throw new RepositoryException(FIND_CERTIFICATE_BY_PARAM_FAIL);
         }
     }
 }

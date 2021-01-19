@@ -31,6 +31,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     private Validation<GiftCertificateDto> giftCertificateValidation;
     private TagService tagService;
     private static final String CREATE_CERTIFICATE_FAIL = "giftCertificate_create_fail";
+    private static final String CERTIFICATE_IS_EXISTS = "certificate_is_exist";
 
     /**
      * Instantiates a new Gift certificate service.
@@ -55,12 +56,16 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         try {
             giftCertificateValidation.validate(giftCertificateDto);
             giftCertificate = GiftCertificateConverter.mapToGiftCertificate(giftCertificateDto);
+            if (!giftCertificateRepositoryImpl.isCertificateExist(giftCertificate)) {
             GiftCertificate createdGiftCertificate = giftCertificateRepositoryImpl.create(giftCertificate);
-            giftCertificateDto = GiftCertificateConverter
-                    .mapToGiftCertificateDto(createdGiftCertificate);
-            List<Tag> tags = giftCertificate.getTags();
-            List<TagDto> tagDtos = createTagsAndRelations(giftCertificateDto, tags);
-            giftCertificateDto.setTags(tagDtos);
+                giftCertificateDto = GiftCertificateConverter
+                        .mapToGiftCertificateDto(createdGiftCertificate);
+                List<Tag> tags = giftCertificate.getTags();
+                List<TagDto> tagDtos = createTagsAndRelations(giftCertificateDto, tags);
+                giftCertificateDto.setTags(tagDtos);
+            } else {
+                throw new ServiceException(CERTIFICATE_IS_EXISTS);
+            }
         } catch (RepositoryException | ValidationException e) {
             throw new ServiceException(e.getMessage());
         }
