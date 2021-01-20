@@ -14,7 +14,7 @@
 
 <dependencies>
     <dependency>
-        <groupId>com.example</groupId>
+        <groupId>com.epam.esm</groupId>
         <artifactId>core</artifactId>
         <version>1.0-SNAPSHOT</version>
         <scope>compile</scope>
