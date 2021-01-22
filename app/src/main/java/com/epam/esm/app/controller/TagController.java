@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
+import javax.validation.Valid;
 import javax.ws.rs.QueryParam;
 import java.util.List;
 
@@ -45,7 +46,7 @@ public class TagController {
      * @throws ControllerException the controller exception
      */
     @GetMapping(value = "/query")
-    public ResponseEntity<TagDto> findTagByName(@QueryParam("name") String name) throws ControllerException {
+    public ResponseEntity<TagDto> findTagByName(@Valid @QueryParam("name") String name) throws ControllerException {
         try {
             return tagServiceImpl.findTagByName(name)
                     .map(tagDtoResponse -> new ResponseEntity<>(tagDtoResponse, HttpStatus.OK))
@@ -83,7 +84,7 @@ public class TagController {
      */
     @PostMapping
     public @ResponseBody
-    ResponseEntity<TagDto> createTag(@RequestBody TagDto tagDto) throws ControllerException {
+    ResponseEntity<TagDto> createTag(@Valid @RequestBody TagDto tagDto) throws ControllerException {
         try {
             return tagServiceImpl
                     .create(tagDto)
@@ -103,8 +104,8 @@ public class TagController {
      */
     @PutMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public void updateTag(@PathVariable("id") long id,
-                          @RequestBody TagDto tagDto) throws ControllerException {
+    public void updateTag(@Valid @PathVariable("id") long id,
+                          @Valid @RequestBody TagDto tagDto) throws ControllerException {
         try {
             tagDto.setId(id);
             tagServiceImpl.update(tagDto);
@@ -121,16 +122,12 @@ public class TagController {
      * @throws ControllerException the controller exception
      */
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Long> deleteTag(@PathVariable("id") long id) throws ControllerException {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteTag(@Valid @PathVariable("id") long id) throws ControllerException {
         try {
-            if (tagServiceImpl.delete(id)) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            } else {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
+            tagServiceImpl.delete(id);
         } catch (ServiceException e) {
             throw new ControllerException(e.getMessage());
         }
-
     }
 }

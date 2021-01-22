@@ -9,7 +9,7 @@ import javax.sql.DataSource;
 
 @Configuration
 @ComponentScan(basePackages = "com.epam.esm",excludeFilters = {
-@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,classes = JdbcConfig.class)
+//@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,classes = JdbcConfig.class)
 })
 public class TestConfig {
 

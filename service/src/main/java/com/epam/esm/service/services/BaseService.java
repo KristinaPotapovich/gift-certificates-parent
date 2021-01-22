@@ -36,7 +36,7 @@ public interface BaseService<T> {
      * @return the boolean
      * @throws ServiceException the service exception
      */
-    boolean delete(long id) throws ServiceException;
+    void delete(long id) throws ServiceException;
 
     /**
      * Find all optional.

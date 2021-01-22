@@ -36,10 +36,11 @@ public class TagRepositoryImplTest {
 
     @Test
     public void delete() throws RepositoryException {
+        Tag tag = new Tag();
+        tag.setId(7);
         int expectedSizeOfList = tagRepository.findAll().size() -1;
-        boolean result = tagRepository.delete(5);
+        tagRepository.delete(tag);
         int actualSizeOfList = tagRepository.findAll().size();
-        Assertions.assertTrue(result);
         Assertions.assertEquals(expectedSizeOfList, actualSizeOfList);
     }
 

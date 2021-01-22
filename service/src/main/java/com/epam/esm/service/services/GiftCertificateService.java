@@ -45,4 +45,6 @@ public interface GiftCertificateService extends BaseService<GiftCertificateDto> 
      * @throws ServiceException the service exception
      */
     Optional<List<GiftCertificateDto>> sortByParam(String paramForSorting, String order) throws ServiceException;
+
+    void patch(GiftCertificateDto giftCertificateDto) throws ServiceException;
 }

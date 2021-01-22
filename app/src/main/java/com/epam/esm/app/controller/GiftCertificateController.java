@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import javax.ws.rs.QueryParam;
 
 import java.util.List;
@@ -46,7 +47,7 @@ public class GiftCertificateController {
      */
     @GetMapping(value = "/setParam")
     public ResponseEntity<List<GiftCertificateDto>> findGiftCertificateByParam
-            (@QueryParam("param") String param) throws ControllerException {
+            (@Valid @QueryParam("param") String param) throws ControllerException {
         try {
             return giftCertificateServiceImpl
                     .findCertificateByParam(param)
@@ -65,7 +66,7 @@ public class GiftCertificateController {
      * @throws ControllerException the controller exception
      */
     @GetMapping(value = "/{id}")
-    public ResponseEntity<GiftCertificateDto> findGiftCertificateById(@PathVariable("id") long id)
+    public ResponseEntity<GiftCertificateDto> findGiftCertificateById(@Valid @PathVariable("id") long id)
             throws ControllerException {
         try {
             return giftCertificateServiceImpl
@@ -103,7 +104,7 @@ public class GiftCertificateController {
      */
     @GetMapping(value = "/tagParam")
     public ResponseEntity<List<GiftCertificateDto>> findGiftCertificateByTagName
-            (@QueryParam("name") String name) {
+            (@Valid @QueryParam("name") String name) {
         return giftCertificateServiceImpl
                 .searchAllCertificatesByTagName(name)
                 .map(giftCertificateDto -> new ResponseEntity<>(giftCertificateDto, HttpStatus.OK))
@@ -120,8 +121,8 @@ public class GiftCertificateController {
      */
     @GetMapping(value = "/sortBy")
     public ResponseEntity<List<GiftCertificateDto>> sortCertificateByParam
-            (@QueryParam("paramForSorting") String paramForSorting,
-             @QueryParam("order") String order) throws ControllerException {
+            (@Valid @QueryParam("paramForSorting") String paramForSorting,
+             @Valid @QueryParam("order") String order) throws ControllerException {
         try {
             return giftCertificateServiceImpl.sortByParam(paramForSorting, order)
                     .map(giftCertificateDto -> new ResponseEntity<>(giftCertificateDto, HttpStatus.OK))
@@ -141,7 +142,7 @@ public class GiftCertificateController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public @ResponseBody
-    ResponseEntity<GiftCertificateDto> createGiftCertificate(@RequestBody GiftCertificateDto giftCertificateDto)
+    ResponseEntity<GiftCertificateDto> createGiftCertificate(@Valid @RequestBody GiftCertificateDto giftCertificateDto)
             throws ControllerException {
         try {
             return giftCertificateServiceImpl
@@ -162,8 +163,8 @@ public class GiftCertificateController {
      */
     @PutMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public void updateGiftCertificate(@PathVariable("id") long id,
-                                      @RequestBody GiftCertificateDto giftCertificateDto) throws ControllerException {
+    public void updateGiftCertificate(@Valid @PathVariable("id") long id,
+                                      @Valid  @RequestBody GiftCertificateDto giftCertificateDto) throws ControllerException {
         giftCertificateDto.setId(id);
         try {
             giftCertificateServiceImpl.update(giftCertificateDto);
@@ -173,21 +174,29 @@ public class GiftCertificateController {
         }
     }
 
+    @PatchMapping(value = "/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void updateOneFieldGiftCertificate(@Valid @PathVariable("id") long id,
+                                              @Valid @RequestBody GiftCertificateDto giftCertificateDto) throws ControllerException {
+        giftCertificateDto.setId(id);
+        try {
+            giftCertificateServiceImpl.patch(giftCertificateDto);
+        } catch (ServiceException e) {
+            throw new ControllerException(e.getMessage());
+        }
+    }
+
     /**
      * Delete gift certificate response entity.
      *
      * @param id the id
-     * @return the response entity
      * @throws ControllerException the controller exception
      */
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Long> deleteGiftCertificate(@PathVariable("id") long id) throws ControllerException {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteGiftCertificate(@Valid @PathVariable("id") long id) throws ControllerException {
         try {
-            if (giftCertificateServiceImpl.delete(id)) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            } else {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
+            giftCertificateServiceImpl.delete(id);
         } catch (ServiceException e) {
             throw new ControllerException(e.getMessage());
         }

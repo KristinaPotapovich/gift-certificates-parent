@@ -1,6 +1,5 @@
 package com.epam.esm.service.services.impl;
 
-import com.epam.esm.core.entity.GiftCertificate;
 import com.epam.esm.core.entity.Tag;
 import com.epam.esm.core.exception.RepositoryException;
 import com.epam.esm.core.repository.GiftCertificateRepository;
@@ -11,7 +10,6 @@ import com.epam.esm.service.dto.TagDto;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.mapper.TagConverter;
 import com.epam.esm.service.services.TagService;
-import com.epam.esm.service.util.impl.TagValidation;
 import org.junit.jupiter.api.*;
 
 import java.util.ArrayList;
@@ -25,7 +23,6 @@ import static org.mockito.Mockito.*;
 class TagServiceImplTest {
     TagService tagService;
     TagRepository tagRepository;
-    TagValidation tagValidation;
     TagDto tagDto;
     TagDto tagDto2;
     List<TagDto> tagDtos;
@@ -38,8 +35,7 @@ class TagServiceImplTest {
     void setUp() {
         giftCertificateRepository = mock(GiftCertificateRepositoryImpl.class);
         tagRepository = mock(TagRepositoryImpl.class);
-        tagValidation = new TagValidation();
-        tagService = new TagServiceImpl(tagRepository, tagValidation, giftCertificateRepository);
+        tagService = new TagServiceImpl(tagRepository, giftCertificateRepository);
         tagDto = new TagDto();
         tagDto.setId(1);
         tagDto.setName("testTag");
@@ -60,7 +56,6 @@ class TagServiceImplTest {
     void tearDown() {
         giftCertificateRepository = null;
         tagRepository = null;
-        tagValidation = null;
         tagService = null;
     }
 
@@ -74,17 +69,16 @@ class TagServiceImplTest {
 
     @Test
     void update() throws RepositoryException, ServiceException {
-        when(tagRepository.update(tag)).thenReturn(true);
+        doNothing().when(tagRepository).update(tag);
         tagService.update(tagDto);
         verify(tagRepository).update(tag);
     }
 
     @Test
     void delete() throws RepositoryException, ServiceException {
-        when(giftCertificateRepository.delete(anyLong())).thenReturn(true);
-        when(tagRepository.delete(tag.getId())).thenReturn(true);
+        doNothing().when(tagRepository).delete(tag);
         tagService.delete(tag.getId());
-        verify(tagRepository).delete(tag.getId());
+        verify(tagRepository).delete(tag);
     }
 
     @Test

@@ -2,7 +2,7 @@ package com.epam.esm.core.repository;
 
 import com.epam.esm.core.entity.GiftCertificate;
 import com.epam.esm.core.exception.RepositoryException;
-import com.epam.esm.core.repository.specification.SortByParamSpecification;
+import com.epam.esm.core.repository.specification.OrderBySpecification;
 
 import java.util.List;
 
@@ -29,23 +29,6 @@ public interface GiftCertificateRepository extends BaseRepository<GiftCertificat
     List<GiftCertificate> findCertificateByParam(String param) throws RepositoryException;
 
     /**
-     * Create certificate and tag relation.
-     *
-     * @param idCertificate the id certificate
-     * @param idTag         the id tag
-     * @throws RepositoryException the repository exception
-     */
-    void createCertificateAndTagRelation(long idCertificate, long idTag) throws RepositoryException;
-
-    /**
-     * Delete certificate and tag relation.
-     *
-     * @param idCertificate the id certificate
-     * @throws RepositoryException the repository exception
-     */
-    void deleteCertificateAndTagRelation(long idCertificate) throws RepositoryException;
-
-    /**
      * Search all certificates by tag name list.
      *
      * @param tagName the tag name
@@ -54,21 +37,5 @@ public interface GiftCertificateRepository extends BaseRepository<GiftCertificat
      */
     List<GiftCertificate> searchAllCertificatesByTagName(String tagName) throws RepositoryException;
 
-    /**
-     * Sort by param list.
-     *
-     * @param sortByParamSpecification the sort by param specification
-     * @return the list
-     * @throws RepositoryException the repository exception
-     */
-    List<GiftCertificate> sortByParam(SortByParamSpecification sortByParamSpecification) throws RepositoryException;
-
-    /**
-     * Is certificate exist boolean.
-     *
-     * @param giftCertificate the gift certificate
-     * @return the boolean
-     * @throws RepositoryException the repository exception
-     */
-    boolean isCertificateExist(GiftCertificate giftCertificate) throws RepositoryException;
+    List<GiftCertificate> sortByParam(OrderBySpecification orderBySpecification) throws RepositoryException;
 }

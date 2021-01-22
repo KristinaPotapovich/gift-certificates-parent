@@ -46,10 +46,9 @@ public class GiftCertificateRepositoryImplTest {
         giftCertificate.setDescription("description");
         giftCertificate.setPrice(14.5);
         giftCertificate.setDurationInDays(6);
-        boolean result = giftCertificateRepository.update(giftCertificate);
+        giftCertificateRepository.update(giftCertificate);
         List<GiftCertificate> certificates = giftCertificateRepository.findAll();
         GiftCertificate updated = certificates.get(2);
-        Assertions.assertTrue(result);
         Assertions.assertEquals(updated.getName(), "new name");
         Assertions.assertEquals(updated.getPrice(), 14.5);
 
@@ -57,10 +56,11 @@ public class GiftCertificateRepositoryImplTest {
 
     @Test
     public void delete() throws RepositoryException {
+        GiftCertificate giftCertificate = new GiftCertificate();
+        giftCertificate.setId(3);
         int expectedSizeOfList = giftCertificateRepository.findAll().size() - 1;
-        boolean result = giftCertificateRepository.delete(4);
+        giftCertificateRepository.delete(giftCertificate);
         int actualSizeOfList = giftCertificateRepository.findAll().size();
-        Assertions.assertTrue(result);
         Assertions.assertEquals(expectedSizeOfList, actualSizeOfList);
     }
 

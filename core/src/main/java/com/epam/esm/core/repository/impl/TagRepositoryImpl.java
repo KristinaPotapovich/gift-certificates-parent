@@ -2,17 +2,15 @@ package com.epam.esm.core.repository.impl;
 
 import com.epam.esm.core.entity.Tag;
 import com.epam.esm.core.exception.RepositoryException;
-import com.epam.esm.core.mapper.TagMapper;
 import com.epam.esm.core.repository.TagRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.hibernate.Session;
 import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import javax.sql.DataSource;
-import java.sql.PreparedStatement;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,71 +19,39 @@ import java.util.Optional;
  */
 @Repository
 public class TagRepositoryImpl implements TagRepository {
-    private JdbcTemplate jdbcTemplate;
+    @PersistenceContext
+    private Session session;
     private static final String CREATE_TAG_FAIL = "tag_create_fail";
     private static final String UPDATE_TAG_FAIL = "tag_update_fail";
     private static final String DELETE_TAG_FAIL = "tag_delete_fail";
     private static final String FIND_BY_NAME_TAG_FAIL = "tag_find_by_name_fail";
     private static final String FIND_ALL_TAG_FAIL = "tag_find_all_fail";
-    private static final String ID_TAG = "id_tag";
-    private static final String CREATE_TAG =
-            "INSERT INTO tag(name) VALUES (?)";
-    private static final String UPDATE_TAG =
-            "UPDATE tag SET name = ? WHERE id_tag = ? if @@rowcount = 0";
-    private static final String DELETE_TAG =
-            "DELETE FROM tag WHERE id_tag = ?";
-    private static final String SELECT_TAG_BY_NAME =
-            "SELECT id_tag, name FROM tag WHERE name = ?";
-    private static final String SELECT_ALL_TAGS =
-            "SELECT id_tag, name FROM tag";
-    private static final String GET_CERTIFICATES_TAGS =
-            "SELECT t.id_tag,t.name FROM tag t LEFT JOIN certificates_tags ct ON t.id_tag = ct.id_tag " +
-                    "WHERE ct.id_certificate = ?";
+    private static final String NAME = "name";
 
-
-    /**
-     * Instantiates a new Tag repository.
-     *
-     * @param dataSource the data source
-     */
-    @Autowired
-    public TagRepositoryImpl(DataSource dataSource) {
-        jdbcTemplate = new JdbcTemplate(dataSource);
-    }
 
     @Override
     public Tag create(Tag tag) throws RepositoryException {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
         try {
-            jdbcTemplate.update(connection -> {
-                PreparedStatement ps = connection.prepareStatement(
-                        CREATE_TAG,
-                        new String[]{ID_TAG});
-                ps.setString(1, tag.getName());
-                return ps;
-            }, keyHolder);
+            session.persist(tag);
         } catch (DataAccessException e) {
             throw new RepositoryException(CREATE_TAG_FAIL);
         }
-        tag.setName(tag.getName());
-        tag.setId(keyHolder.getKey().intValue());
         return tag;
     }
 
     @Override
-    public boolean update(Tag tag) throws RepositoryException {
+    public void update(Tag tag) throws RepositoryException {
         try {
-            return jdbcTemplate.update(UPDATE_TAG, tag.getName(), tag.getId()) > 0;
+            session.merge(tag);
         } catch (DataAccessException e) {
             throw new RepositoryException(UPDATE_TAG_FAIL);
         }
     }
 
     @Override
-    public boolean delete(long id) throws RepositoryException {
+    public void delete(Tag tag) throws RepositoryException {
         try {
-
-            return jdbcTemplate.update(DELETE_TAG, id) > 0;
+            session.remove(tag);
         } catch (DataAccessException e) {
             throw new RepositoryException(DELETE_TAG_FAIL);
         }
@@ -93,8 +59,12 @@ public class TagRepositoryImpl implements TagRepository {
 
     public Optional<Tag> findTagByName(String name) throws RepositoryException {
         try {
-            return jdbcTemplate.query(SELECT_TAG_BY_NAME, new TagMapper(), name)
-                    .stream().findFirst();
+            CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+            CriteriaQuery<Tag> tagCriteriaQuery = criteriaBuilder.createQuery(Tag.class);
+            Root<Tag> tagRoot = tagCriteriaQuery.from(Tag.class);
+            tagCriteriaQuery.where(criteriaBuilder.equal(tagRoot.get(NAME), name));
+            Tag tag = session.createQuery(tagCriteriaQuery).getSingleResult();
+            return Optional.of(tag);
         } catch (DataAccessException e) {
             throw new RepositoryException(FIND_BY_NAME_TAG_FAIL);
         }
@@ -102,15 +72,26 @@ public class TagRepositoryImpl implements TagRepository {
 
     public List<Tag> findAll() throws RepositoryException {
         try {
-            return jdbcTemplate.query(SELECT_ALL_TAGS, new TagMapper());
-        } catch (DataAccessException e) {
+            CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+            CriteriaQuery<Tag>tagCriteriaQuery =
+                    criteriaBuilder.createQuery(Tag.class);
+            Root<Tag>tagRootRoot = tagCriteriaQuery.from(Tag.class);
+            tagCriteriaQuery.select(tagRootRoot);
+            return session.createQuery(tagCriteriaQuery).getResultList();
+        } catch (DataAccessException e)
+        {
             throw new RepositoryException(FIND_ALL_TAG_FAIL);
         }
     }
 
     public List<Tag> findAllTagsByCertificateId(long idCertificate) throws RepositoryException {
         try {
-            return jdbcTemplate.query(GET_CERTIFICATES_TAGS, new TagMapper(), idCertificate);
+            CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+            CriteriaQuery<Tag> criteriaQuery = criteriaBuilder.createQuery(Tag.class);
+            Root<Tag> tagRoot = criteriaQuery.from(Tag.class);
+            criteriaQuery.select(tagRoot)
+                    .where(criteriaBuilder.equal(tagRoot.join("certificates").get("id"),idCertificate));
+            return session.createQuery(criteriaQuery).getResultList();
         } catch (DataAccessException e) {
             throw new RepositoryException(FIND_ALL_TAG_FAIL);
         }
