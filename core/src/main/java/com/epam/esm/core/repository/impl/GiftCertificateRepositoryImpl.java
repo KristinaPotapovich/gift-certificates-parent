@@ -38,7 +38,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         try {
             LocalDateTime createDate = LocalDateTime.now();
             giftCertificate.setCreateDate(createDate);
-            session.persist(giftCertificate);
+            session.merge(giftCertificate);
         } catch (DataAccessException e) {
             throw new RepositoryException(CREATE_CERTIFICATE_FAIL);
         }
@@ -126,7 +126,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         }
     }
 
-    public List<GiftCertificate> sortByParam(OrderBySpecification orderBySpecification) throws
+    public List<GiftCertificate> sortByParam(OrderBySpecification<GiftCertificate> orderBySpecification) throws
             RepositoryException {
         try {
             CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();

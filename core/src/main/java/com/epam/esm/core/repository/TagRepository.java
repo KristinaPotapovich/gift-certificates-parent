@@ -28,4 +28,6 @@ public interface TagRepository extends BaseRepository<Tag> {
      * @throws RepositoryException the repository exception
      */
     List<Tag> findAllTagsByCertificateId(long idCertificate) throws RepositoryException;
+
+    Tag findPopularTag();
 }

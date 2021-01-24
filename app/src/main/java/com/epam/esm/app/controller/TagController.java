@@ -130,4 +130,11 @@ public class TagController {
             throw new ControllerException(e.getMessage());
         }
     }
+    @GetMapping(value = "/queryPopularTag")
+    public ResponseEntity<TagDto> findPopularTag(){
+        return tagServiceImpl
+                .findPopularTag()
+                .map(tagDto -> new ResponseEntity<>(tagDto, HttpStatus.OK))
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
 }

@@ -6,5 +6,7 @@ import com.epam.esm.core.exception.RepositoryException;
 import java.util.List;
 
 public interface OrderRepository extends BaseRepository<Order> {
-List<Order> findAllOrdersByUser(long id) throws RepositoryException;
+    List<Order> findAllOrdersByUser(long id) throws RepositoryException;
+
+    Order findOrderById(long id) throws RepositoryException;
 }

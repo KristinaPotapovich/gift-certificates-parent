@@ -1,6 +1,5 @@
 package com.epam.esm.core.repository.impl;
 
-import com.epam.esm.core.entity.GiftCertificate;
 import com.epam.esm.core.entity.Order;
 import com.epam.esm.core.exception.RepositoryException;
 import com.epam.esm.core.repository.OrderRepository;
@@ -20,6 +19,9 @@ public class OrderRepositoryImpl implements OrderRepository {
     @PersistenceContext
     private Session session;
     private static final String CREATE_ORDER_FAIL = "order_create_fail";
+    private static final String FIND_ORDER_BY_ID_FAIL = "order_find_by_id";
+    private static final String FIND__ALL_ORDER_BY_USER_FAIL = "order_find_all_by_user";
+    private static final String ID_ORDER = "id";
 
 
     @Override
@@ -57,7 +59,19 @@ public class OrderRepositoryImpl implements OrderRepository {
                     .where(criteriaBuilder.equal(orderRoot.join("user").get("id"), id));
             return session.createQuery(criteriaQuery).getResultList();
         } catch (DataAccessException e) {
-            throw new RepositoryException();
+            throw new RepositoryException(FIND__ALL_ORDER_BY_USER_FAIL);
+        }
+    }
+    @Override
+    public Order findOrderById(long id) throws RepositoryException {
+        try {
+            CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+            CriteriaQuery<Order> criteriaQuery = criteriaBuilder.createQuery(Order.class);
+            Root<Order> orderRoot = criteriaQuery.from(Order.class);
+            criteriaQuery.where(criteriaBuilder.equal(orderRoot.get(ID_ORDER), id));
+            return session.createQuery(criteriaQuery).getSingleResult();
+        } catch (DataAccessException e) {
+            throw new RepositoryException(FIND_ORDER_BY_ID_FAIL);
         }
     }
 }

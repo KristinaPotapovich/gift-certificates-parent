@@ -107,5 +107,12 @@ public class TagServiceImpl implements TagService {
                 .map(TagConverter::mapToTagDto)
                 .collect(Collectors.toList()));
     }
+
+    @Override
+    public Optional<TagDto> findPopularTag(){
+        Tag tag = tagRepository.findPopularTag();
+        TagDto tagDto = TagConverter.mapToTagDto(tag);
+        return Optional.ofNullable(tagDto);
+    }
 }
 

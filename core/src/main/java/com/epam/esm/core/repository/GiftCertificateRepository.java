@@ -37,5 +37,5 @@ public interface GiftCertificateRepository extends BaseRepository<GiftCertificat
      */
     List<GiftCertificate> searchAllCertificatesByTagName(String tagName) throws RepositoryException;
 
-    List<GiftCertificate> sortByParam(OrderBySpecification orderBySpecification) throws RepositoryException;
+    List<GiftCertificate> sortByParam(OrderBySpecification<GiftCertificate> orderBySpecification) throws RepositoryException;
 }

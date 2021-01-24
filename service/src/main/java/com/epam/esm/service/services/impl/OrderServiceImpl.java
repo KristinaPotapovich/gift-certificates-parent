@@ -3,10 +3,7 @@ package com.epam.esm.service.services.impl;
 import com.epam.esm.core.entity.Order;
 import com.epam.esm.core.exception.RepositoryException;
 import com.epam.esm.core.repository.OrderRepository;
-import com.epam.esm.service.dto.GiftCertificateDto;
-import com.epam.esm.service.dto.OrderDto;
-import com.epam.esm.service.dto.PurchaseParam;
-import com.epam.esm.service.dto.UserDto;
+import com.epam.esm.service.dto.*;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.mapper.OrderConverter;
 import com.epam.esm.service.services.GiftCertificateService;
@@ -17,7 +14,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -92,7 +92,7 @@ public class OrderServiceImpl implements OrderService {
         return Optional.empty();
     }
 
-
+    @Override
     public Optional<List<OrderDto>> findAllByUser(long id) throws ServiceException {
         try {
             List<OrderDto> orderDtos;
@@ -102,6 +102,20 @@ public class OrderServiceImpl implements OrderService {
                     .map(OrderConverter::mapToOrderDto)
                     .collect(Collectors.toList());
             return Optional.of(orderDtos);
+        } catch (RepositoryException e) {
+            throw new ServiceException(e.getMessage());
+        }
+    }
+
+    @Override
+    public Optional<Map<String, Object>> findOrderById(long id) throws ServiceException {
+        try {
+            Order order = orderRepository.findOrderById(id);
+            OrderDto orderDto = OrderConverter.mapToOrderDto(order);
+            Map<String, Object> dataOrder = new HashMap<>();
+            dataOrder.put("time_of_purchase", orderDto.getTimeOfPurchase());
+            dataOrder.put("price", orderDto.getPrice());
+            return Optional.ofNullable(dataOrder);
         } catch (RepositoryException e) {
             throw new ServiceException(e.getMessage());
         }

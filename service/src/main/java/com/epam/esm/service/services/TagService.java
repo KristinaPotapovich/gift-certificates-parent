@@ -27,4 +27,6 @@ public interface TagService extends BaseService<TagDto> {
      * @throws ServiceException the service exception
      */
     Optional<List<TagDto>> findAllTagsByCertificateId(long idCertificate) throws ServiceException;
+
+    Optional<TagDto> findPopularTag();
 }

@@ -14,6 +14,7 @@ import javax.validation.Valid;
 import javax.ws.rs.QueryParam;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -47,6 +48,18 @@ public class OrderController {
         try {
             return orderService
                     .findAllByUser(idUser)
+                    .map(orderDtoResponse -> new ResponseEntity<>(orderDtoResponse, HttpStatus.CREATED))
+                    .orElse(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
+        } catch (ServiceException e) {
+            throw new ControllerException(e.getMessage());
+        }
+    }
+    @GetMapping(value = "/{id}")
+    public @ResponseBody
+    ResponseEntity<Map<String,Object>> findCertificateById(@Valid @PathVariable("id") long id)
+            throws ControllerException {
+        try {
+            return orderService.findOrderById(id)
                     .map(orderDtoResponse -> new ResponseEntity<>(orderDtoResponse, HttpStatus.CREATED))
                     .orElse(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
         } catch (ServiceException e) {
