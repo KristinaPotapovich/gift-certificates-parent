@@ -26,7 +26,8 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User create(User user) throws RepositoryException {
-        return null;
+        session.persist(user);
+       return user;
     }
 
     @Override

@@ -5,6 +5,7 @@ import lombok.*;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -28,9 +29,8 @@ public class GiftCertificate {
     @NonNull
     @Column(name = "description")
     private String description;
-    @NonNull
     @Column(name = "price")
-    private double price;
+    private BigDecimal price;
     @NonNull
     @Column(name = "duration")
     private int durationInDays;

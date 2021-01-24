@@ -6,6 +6,7 @@ import lombok.NonNull;
 import lombok.Setter;
 
 import javax.validation.constraints.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -27,9 +28,8 @@ public class GiftCertificateDto {
     @Size(min = 3,max = 250)
     @Pattern(regexp = "^[a-zA-Zа-яА-ЯёЁ0-9\\s?!,.:'\\-]+$")
     private String description;
-    @NonNull
-    @Min(1)
-    private double price;
+    @DecimalMin("0.0")
+    private BigDecimal price;
     @Min(1)
     private int durationInDays;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")

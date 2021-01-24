@@ -7,8 +7,8 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-import static com.epam.esm.core.repository.specification.OrderParam.ASC;
-import static com.epam.esm.core.repository.specification.OrderParam.DESC;
+import static com.epam.esm.core.repository.specification.OrderByParam.ASC;
+import static com.epam.esm.core.repository.specification.OrderByParam.DESC;
 
 public class OrderByNameSpecification implements OrderBySpecification<GiftCertificate> {
     private String order;

@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -170,7 +171,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             long id = giftCertificateDto.getId();
             String nameUpdate = giftCertificateDto.getName();
             String descriptionUpdate = giftCertificateDto.getDescription();
-            double priceUpdate = giftCertificateDto.getPrice();
+            BigDecimal priceUpdate = giftCertificateDto.getPrice();
             int durationUpdate = giftCertificateDto.getDurationInDays();
             GiftCertificate giftCertificate = giftCertificateRepositoryImpl
                     .findCertificateById(id);
@@ -180,7 +181,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             if (descriptionUpdate != null) {
                 giftCertificate.setDescription(descriptionUpdate);
             }
-            if (priceUpdate != 0) {
+            if (priceUpdate != null) {
                 giftCertificate.setPrice(priceUpdate);
             }
             if (durationUpdate != 0) {

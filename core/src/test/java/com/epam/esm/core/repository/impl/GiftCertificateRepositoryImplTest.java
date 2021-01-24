@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 
@@ -30,7 +31,7 @@ public class GiftCertificateRepositoryImplTest {
         giftCertificate.setId(5);
         giftCertificate.setName("certificate five");
         giftCertificate.setDescription("description");
-        giftCertificate.setPrice(12.5);
+        giftCertificate.setPrice(BigDecimal.valueOf(12.5));
         giftCertificate.setDurationInDays(6);
         GiftCertificate expected = giftCertificateRepository.create(giftCertificate);
         List<GiftCertificate> certificates = giftCertificateRepository.findAll();
@@ -44,7 +45,7 @@ public class GiftCertificateRepositoryImplTest {
         giftCertificate.setId(3);
         giftCertificate.setName("new name");
         giftCertificate.setDescription("description");
-        giftCertificate.setPrice(14.5);
+        giftCertificate.setPrice(BigDecimal.valueOf(14.5));
         giftCertificate.setDurationInDays(6);
         giftCertificateRepository.update(giftCertificate);
         List<GiftCertificate> certificates = giftCertificateRepository.findAll();

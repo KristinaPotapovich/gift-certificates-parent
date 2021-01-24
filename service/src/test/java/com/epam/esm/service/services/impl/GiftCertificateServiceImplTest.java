@@ -16,6 +16,7 @@ import com.epam.esm.service.services.GiftCertificateService;
 import com.epam.esm.service.services.TagService;
 import org.junit.jupiter.api.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +51,7 @@ class GiftCertificateServiceImplTest {
         giftCertificateDto1.setId(1);
         giftCertificateDto1.setName("testCertificate1");
         giftCertificateDto1.setDescription("testDescription1");
-        giftCertificateDto1.setPrice(15.22);
+        giftCertificateDto1.setPrice(BigDecimal.valueOf(15.22));
         giftCertificateDto1.setDurationInDays(5);
         giftCertificateDto1.setCreateDate(LocalDateTime.of(2021, 1, 16, 19, 6));
         giftCertificateDto1.setLastUpdateDate(LocalDateTime.of(2021, 1, 16, 19, 10));
@@ -58,7 +59,7 @@ class GiftCertificateServiceImplTest {
         giftCertificateDto2.setId(2);
         giftCertificateDto2.setName("testCertificate2");
         giftCertificateDto2.setDescription("testDescription2");
-        giftCertificateDto2.setPrice(22);
+        giftCertificateDto2.setPrice(BigDecimal.valueOf(22));
         giftCertificateDto2.setDurationInDays(2);
         giftCertificateDto2.setCreateDate(LocalDateTime.of(2021, 1, 16, 19, 8));
         giftCertificateDto2.setLastUpdateDate(LocalDateTime.of(2021, 1, 16, 19, 15));

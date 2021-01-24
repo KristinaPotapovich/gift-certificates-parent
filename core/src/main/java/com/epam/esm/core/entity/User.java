@@ -4,6 +4,7 @@ import lombok.*;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
+import java.util.List;
 
 @NoArgsConstructor
 @Getter
@@ -11,7 +12,7 @@ import javax.persistence.*;
 @EqualsAndHashCode
 @ToString
 @Component
-@Table(name = "user", schema = "mentoring_certificate")
+@Table(name = "user")
 @Entity
 public class User {
     @Id
@@ -28,4 +29,6 @@ public class User {
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
+    @OneToMany(cascade = {CascadeType.MERGE}, fetch = FetchType.LAZY,mappedBy = "user")
+    private List<Order> orders;
 }
