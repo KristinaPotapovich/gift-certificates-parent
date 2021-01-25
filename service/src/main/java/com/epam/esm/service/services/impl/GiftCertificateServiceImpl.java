@@ -193,4 +193,15 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             throw new ServiceException(e.getMessage());
         }
     }
+   public Optional<List<GiftCertificateDto>> findAllBySeveralTags(List<Long> tags) throws ServiceException {
+       List<GiftCertificate> giftCertificates;
+       try {
+           giftCertificates = giftCertificateRepositoryImpl.findAllBySeveralTags(tags);
+       } catch (RepositoryException e) {
+           throw new ServiceException(e.getMessage());
+       }
+       return Optional.of(giftCertificates.stream()
+               .map(GiftCertificateConverter::mapToGiftCertificateDto)
+               .collect(Collectors.toList()));
+   }
 }

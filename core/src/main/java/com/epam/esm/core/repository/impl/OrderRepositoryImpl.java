@@ -29,11 +29,10 @@ public class OrderRepositoryImpl implements OrderRepository {
         try {
             LocalDateTime createOrder = LocalDateTime.now();
             order.setTimeOfPurchase(createOrder);
-            session.merge(order);
+            return (Order)session.merge(order);
         } catch (DataAccessException e) {
             throw new RepositoryException(CREATE_ORDER_FAIL);
         }
-        return order;
     }
 
     @Override

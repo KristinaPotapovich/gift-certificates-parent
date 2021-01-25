@@ -2,7 +2,9 @@ package com.epam.esm.app.controller;
 
 
 import com.epam.esm.app.exception.ControllerException;
+import com.epam.esm.core.entity.Tag;
 import com.epam.esm.service.dto.GiftCertificateDto;
+import com.epam.esm.service.dto.TagDto;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.services.GiftCertificateService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.ws.rs.QueryParam;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -47,7 +50,7 @@ public class GiftCertificateController {
      */
     @GetMapping(value = "/setParam")
     public ResponseEntity<List<GiftCertificateDto>> findGiftCertificateByParam
-            (@Valid @QueryParam("param") String param) throws ControllerException {
+    (@Valid @QueryParam("param") String param) throws ControllerException {
         try {
             return giftCertificateServiceImpl
                     .findCertificateByParam(param)
@@ -104,7 +107,7 @@ public class GiftCertificateController {
      */
     @GetMapping(value = "/tagParam")
     public ResponseEntity<List<GiftCertificateDto>> findGiftCertificateByTagName
-            (@Valid @QueryParam("name") String name) {
+    (@Valid @QueryParam("name") String name) {
         return giftCertificateServiceImpl
                 .searchAllCertificatesByTagName(name)
                 .map(giftCertificateDto -> new ResponseEntity<>(giftCertificateDto, HttpStatus.OK))
@@ -121,8 +124,8 @@ public class GiftCertificateController {
      */
     @GetMapping(value = "/sortBy")
     public ResponseEntity<List<GiftCertificateDto>> sortCertificateByParam
-            (@Valid @QueryParam("paramForSorting") String paramForSorting,
-             @Valid @QueryParam("order") String order) throws ControllerException {
+    (@Valid @QueryParam("paramForSorting") String paramForSorting,
+     @Valid @QueryParam("order") String order) throws ControllerException {
         try {
             return giftCertificateServiceImpl.sortByParam(paramForSorting, order)
                     .map(giftCertificateDto -> new ResponseEntity<>(giftCertificateDto, HttpStatus.OK))
@@ -164,7 +167,7 @@ public class GiftCertificateController {
     @PutMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.OK)
     public void updateGiftCertificate(@Valid @PathVariable("id") long id,
-                                      @Valid  @RequestBody GiftCertificateDto giftCertificateDto) throws ControllerException {
+                                      @Valid @RequestBody GiftCertificateDto giftCertificateDto) throws ControllerException {
         giftCertificateDto.setId(id);
         try {
             giftCertificateServiceImpl.update(giftCertificateDto);
@@ -197,6 +200,18 @@ public class GiftCertificateController {
     public void deleteGiftCertificate(@Valid @PathVariable("id") long id) throws ControllerException {
         try {
             giftCertificateServiceImpl.delete(id);
+        } catch (ServiceException e) {
+            throw new ControllerException(e.getMessage());
+        }
+    }
+
+    @GetMapping(value = "/findAllBySeveralTags")
+    public ResponseEntity<List<GiftCertificateDto>> findAllBySeveralTags(@Valid @RequestParam (value = "tags",required = false) List<Long>tags) throws ControllerException {
+        try {
+            return giftCertificateServiceImpl
+                    .findAllBySeveralTags(tags)
+                    .map(tagDto -> new ResponseEntity<>(tagDto, HttpStatus.OK))
+                    .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
         } catch (ServiceException e) {
             throw new ControllerException(e.getMessage());
         }

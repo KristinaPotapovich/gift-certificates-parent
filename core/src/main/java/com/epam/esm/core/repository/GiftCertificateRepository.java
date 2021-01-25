@@ -1,6 +1,7 @@
 package com.epam.esm.core.repository;
 
 import com.epam.esm.core.entity.GiftCertificate;
+import com.epam.esm.core.entity.Tag;
 import com.epam.esm.core.exception.RepositoryException;
 import com.epam.esm.core.repository.specification.OrderBySpecification;
 
@@ -37,5 +38,8 @@ public interface GiftCertificateRepository extends BaseRepository<GiftCertificat
      */
     List<GiftCertificate> searchAllCertificatesByTagName(String tagName) throws RepositoryException;
 
-    List<GiftCertificate> sortByParam(OrderBySpecification<GiftCertificate> orderBySpecification) throws RepositoryException;
+    List<GiftCertificate> sortByParam(OrderBySpecification<GiftCertificate> orderBySpecification)
+            throws RepositoryException;
+
+    List<GiftCertificate> findAllBySeveralTags(List<Long> tags) throws RepositoryException;
 }

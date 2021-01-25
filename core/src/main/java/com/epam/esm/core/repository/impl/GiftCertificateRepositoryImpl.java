@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -38,11 +39,10 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         try {
             LocalDateTime createDate = LocalDateTime.now();
             giftCertificate.setCreateDate(createDate);
-            session.merge(giftCertificate);
+            return (GiftCertificate) session.merge(giftCertificate);
         } catch (DataAccessException e) {
             throw new RepositoryException(CREATE_CERTIFICATE_FAIL);
         }
-        return giftCertificate;
     }
 
     @Override
@@ -141,6 +141,30 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         } catch (DataAccessException e) {
             throw new RepositoryException(SORT_CERTIFICATE_FAIL);
         }
+    }
+    @Override
+    public List<GiftCertificate> findAllBySeveralTags(List<Long> tags) throws RepositoryException {
+        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaQuery<GiftCertificate> giftCertificateCriteriaQuery =
+                criteriaBuilder.createQuery(GiftCertificate.class);
+        Root<GiftCertificate> giftCertificateRoot = giftCertificateCriteriaQuery.from(GiftCertificate.class);
+        try {
+            giftCertificateCriteriaQuery.select(giftCertificateRoot);
+            List<Predicate> predicates = new ArrayList<>();
+            if (tags != null) {
+                Expression<Long> countCertificates = criteriaBuilder.count(giftCertificateRoot);
+                Predicate joinCertificateAndTag = giftCertificateRoot.join("tags").get("id").in(tags);
+                predicates.add(joinCertificateAndTag);
+                giftCertificateCriteriaQuery.where(criteriaBuilder.and(predicates.toArray(new Predicate[0])))
+                        .having(criteriaBuilder.equal(countCertificates, tags.size()))
+                        .groupBy(giftCertificateRoot);
+            } else {
+                giftCertificateCriteriaQuery.where(criteriaBuilder.and(predicates.toArray(new Predicate[0])));
+            }
+        } catch (DataAccessException e) {
+            throw new RepositoryException(FIND_ALL_CERTIFICATES_FAIL);
+        }
+        return session.createQuery(giftCertificateCriteriaQuery).getResultList();
     }
 }
 

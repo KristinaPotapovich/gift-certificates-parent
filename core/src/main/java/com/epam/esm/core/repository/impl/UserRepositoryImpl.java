@@ -18,7 +18,6 @@ public class UserRepositoryImpl implements UserRepository {
     private static final String FIND_ALL_USERS_FAIL = "user_find_all";
     private static final String FIND_USER_BY_ID = "user_find_by_id";
     private static final String FIND_USER_BY_LOGIN = "user_find_by_login";
-//    private static final String FIND_USER_BY_ROLE = "user_find_by_role";
 
     @PersistenceContext
     private Session session;
