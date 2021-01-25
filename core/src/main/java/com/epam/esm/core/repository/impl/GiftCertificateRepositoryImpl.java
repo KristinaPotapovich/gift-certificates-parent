@@ -32,6 +32,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     private static final String NAME = "name";
     private static final String DESCRIPTION = "description";
     private static final String ID_CERTIFICATE = "id";
+    private static final String TAGS = "tags";
 
 
     @Override
@@ -119,7 +120,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
             CriteriaQuery<GiftCertificate> criteriaQuery = criteriaBuilder.createQuery(GiftCertificate.class);
             Root<GiftCertificate> giftCertificateRoot = criteriaQuery.from(GiftCertificate.class);
             criteriaQuery.select(giftCertificateRoot)
-                    .where(criteriaBuilder.equal(giftCertificateRoot.join("tags").get("name"), tagName));
+                    .where(criteriaBuilder.equal(giftCertificateRoot.join(TAGS).get(NAME), tagName));
             return session.createQuery(criteriaQuery).getResultList();
         } catch (DataAccessException e) {
             throw new RepositoryException(FIND_CERTIFICATE_BY_PARAM_FAIL);
@@ -153,7 +154,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
             List<Predicate> predicates = new ArrayList<>();
             if (tags != null) {
                 Expression<Long> countCertificates = criteriaBuilder.count(giftCertificateRoot);
-                Predicate joinCertificateAndTag = giftCertificateRoot.join("tags").get("id").in(tags);
+                Predicate joinCertificateAndTag = giftCertificateRoot.join(TAGS).get(ID_CERTIFICATE).in(tags);
                 predicates.add(joinCertificateAndTag);
                 giftCertificateCriteriaQuery.where(criteriaBuilder.and(predicates.toArray(new Predicate[0])))
                         .having(criteriaBuilder.equal(countCertificates, tags.size()))
