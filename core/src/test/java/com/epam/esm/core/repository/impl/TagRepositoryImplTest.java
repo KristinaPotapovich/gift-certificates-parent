@@ -29,7 +29,7 @@ public class TagRepositoryImplTest {
         tag.setId(7);
         tag.setName("new tag");
         Tag expected = tagRepository.create(tag);
-        List<Tag>tags = tagRepository.findAll();
+        List<Tag>tags = tagRepository.findAll(5,6);
         Tag tagFromDB = tags.get(6);
         Assertions.assertEquals(expected, tagFromDB);
     }
@@ -38,9 +38,9 @@ public class TagRepositoryImplTest {
     public void delete() throws RepositoryException {
         Tag tag = new Tag();
         tag.setId(7);
-        int expectedSizeOfList = tagRepository.findAll().size() -1;
+        int expectedSizeOfList = tagRepository.findAll(5,6).size() -1;
         tagRepository.delete(tag);
-        int actualSizeOfList = tagRepository.findAll().size();
+        int actualSizeOfList = tagRepository.findAll(5,6).size();
         Assertions.assertEquals(expectedSizeOfList, actualSizeOfList);
     }
 
@@ -52,13 +52,7 @@ public class TagRepositoryImplTest {
 
     @Test
     public void findAll() throws RepositoryException {
-        List<Tag> tags = tagRepository.findAll();
+        List<Tag> tags = tagRepository.findAll(5,6);
         Assertions.assertEquals("tag one", tags.get(0).getName());
-    }
-
-    @Test
-    public void findAllTagsByCertificateId() throws RepositoryException {
-        List<Tag> tags = tagRepository.findAllTagsByCertificateId(2);
-        Assertions.assertFalse(tags.isEmpty());
     }
 }

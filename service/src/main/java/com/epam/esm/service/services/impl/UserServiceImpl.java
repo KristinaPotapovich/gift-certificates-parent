@@ -62,10 +62,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<List<UserDto>> findAll() throws ServiceException {
+    public Optional<List<UserDto>> findAll(int page,int size) throws ServiceException {
         List<User> users;
         try {
-            users = userRepository.findAll();
+            users = userRepository.findAll(page, size);
         } catch (RepositoryException e) {
             throw new ServiceException(e.getMessage());
         }

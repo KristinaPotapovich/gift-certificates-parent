@@ -80,27 +80,33 @@ public class TagRepositoryImpl implements TagRepository {
         }
     }
 
-    public List<Tag> findAll() throws RepositoryException {
+    public List<Tag> findAll(int page,int size) throws RepositoryException {
         try {
             CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
             CriteriaQuery<Tag> tagCriteriaQuery =
                     criteriaBuilder.createQuery(Tag.class);
             Root<Tag> tagRootRoot = tagCriteriaQuery.from(Tag.class);
             tagCriteriaQuery.select(tagRootRoot);
-            return session.createQuery(tagCriteriaQuery).getResultList();
+            return session.createQuery(tagCriteriaQuery)
+                    .setFirstResult((page - 1) * size)
+                    .setMaxResults(size)
+                    .getResultList();
         } catch (DataAccessException e) {
             throw new RepositoryException(FIND_ALL_TAG_FAIL);
         }
     }
 
-    public List<Tag> findAllTagsByCertificateId(long idCertificate) throws RepositoryException {
+    public List<Tag> findAllTagsByCertificateId(long idCertificate,int page,int size) throws RepositoryException {
         try {
             CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
             CriteriaQuery<Tag> criteriaQuery = criteriaBuilder.createQuery(Tag.class);
             Root<Tag> tagRoot = criteriaQuery.from(Tag.class);
             criteriaQuery.select(tagRoot)
                     .where(criteriaBuilder.equal(tagRoot.join("certificates").get("id"), idCertificate));
-            return session.createQuery(criteriaQuery).getResultList();
+            return session.createQuery(criteriaQuery)
+                    .setFirstResult((page - 1) * size)
+                    .setMaxResults(size)
+                    .getResultList();
         } catch (DataAccessException e) {
             throw new RepositoryException(FIND_ALL_TAG_FAIL);
         }
@@ -110,7 +116,6 @@ public class TagRepositoryImpl implements TagRepository {
     public Tag findPopularTag() {
         Query result = session.createNativeQuery(QUERY_FOR_POPULAR_TAG, Tag.class);
         return (Tag) result.getSingleResult();
-
     }
 }
 

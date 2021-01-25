@@ -67,21 +67,24 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     }
 
     @Override
-    public List<GiftCertificate> findAll() throws RepositoryException {
+    public List<GiftCertificate> findAll(int page,int size) throws RepositoryException {
         try {
             CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
             CriteriaQuery<GiftCertificate> giftCertificateCriteriaQuery =
                     criteriaBuilder.createQuery(GiftCertificate.class);
             Root<GiftCertificate> giftCertificateRoot = giftCertificateCriteriaQuery.from(GiftCertificate.class);
             giftCertificateCriteriaQuery.select(giftCertificateRoot);
-            return session.createQuery(giftCertificateCriteriaQuery).getResultList();
+            return session.createQuery(giftCertificateCriteriaQuery)
+                    .setFirstResult((page - 1) * size)
+                    .setMaxResults(size)
+                    .getResultList();
         } catch (DataAccessException e) {
             throw new RepositoryException(FIND_ALL_CERTIFICATES_FAIL);
         }
     }
 
     @Override
-    public List<GiftCertificate> findCertificateByParam(String param) throws RepositoryException {
+    public List<GiftCertificate> findCertificateByParam(String param,int page,int size) throws RepositoryException {
         List<GiftCertificate> giftCertificates;
         try {
             CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
@@ -91,10 +94,13 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
             Predicate predicateForDescription = criteriaBuilder
                     .like(giftCertificateRoot.get(DESCRIPTION), "%" + param + "%");
             Predicate finalPredicate
-                    = criteriaBuilder.and(predicateForName, predicateForDescription);
+                    = criteriaBuilder.or(predicateForName, predicateForDescription);
             criteriaQuery.select(giftCertificateRoot).distinct(true)
                     .where(finalPredicate);
-            giftCertificates = session.createQuery(criteriaQuery).getResultList();
+            giftCertificates = session.createQuery(criteriaQuery)
+                    .setFirstResult((page - 1) * size)
+                    .setMaxResults(size)
+                    .getResultList();
         } catch (DataAccessException e) {
             throw new RepositoryException(FIND_CERTIFICATE_BY_PARAM_FAIL);
         }
@@ -114,20 +120,24 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         }
     }
 
-    public List<GiftCertificate> searchAllCertificatesByTagName(String tagName) throws RepositoryException {
+    public List<GiftCertificate> searchAllCertificatesByTagName(String tagName,int page,int size) throws RepositoryException {
         try {
             CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
             CriteriaQuery<GiftCertificate> criteriaQuery = criteriaBuilder.createQuery(GiftCertificate.class);
             Root<GiftCertificate> giftCertificateRoot = criteriaQuery.from(GiftCertificate.class);
             criteriaQuery.select(giftCertificateRoot)
                     .where(criteriaBuilder.equal(giftCertificateRoot.join(TAGS).get(NAME), tagName));
-            return session.createQuery(criteriaQuery).getResultList();
+            return session.createQuery(criteriaQuery)
+                    .setFirstResult((page - 1) * size)
+                    .setMaxResults(size)
+                    .getResultList();
         } catch (DataAccessException e) {
             throw new RepositoryException(FIND_CERTIFICATE_BY_PARAM_FAIL);
         }
     }
 
-    public List<GiftCertificate> sortByParam(OrderBySpecification<GiftCertificate> orderBySpecification) throws
+    public List<GiftCertificate> sortByParam(OrderBySpecification<GiftCertificate> orderBySpecification,
+                                             int page,int size) throws
             RepositoryException {
         try {
             CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
@@ -138,13 +148,17 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
             if (orderBySpecification != null) {
               orderBySpecification.buildQuery(giftCertificateCriteriaQuery, criteriaBuilder, giftCertificateRoot);
             }
-            return session.createQuery(giftCertificateCriteriaQuery).getResultList();
+            return session.createQuery(giftCertificateCriteriaQuery)
+                    .setFirstResult((page - 1) * size)
+                    .setMaxResults(size)
+                    .getResultList();
         } catch (DataAccessException e) {
             throw new RepositoryException(SORT_CERTIFICATE_FAIL);
         }
     }
     @Override
-    public List<GiftCertificate> findAllBySeveralTags(List<Long> tags) throws RepositoryException {
+    public List<GiftCertificate> findAllBySeveralTags(List<Long> tags,
+                                                      int page,int size) throws RepositoryException {
         CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
         CriteriaQuery<GiftCertificate> giftCertificateCriteriaQuery =
                 criteriaBuilder.createQuery(GiftCertificate.class);
@@ -165,7 +179,10 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         } catch (DataAccessException e) {
             throw new RepositoryException(FIND_ALL_CERTIFICATES_FAIL);
         }
-        return session.createQuery(giftCertificateCriteriaQuery).getResultList();
+        return session.createQuery(giftCertificateCriteriaQuery)
+                .setFirstResult((page - 1) * size)
+                .setMaxResults(size)
+                .getResultList();
     }
 }
 

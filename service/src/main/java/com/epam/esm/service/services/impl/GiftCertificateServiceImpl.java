@@ -77,10 +77,10 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public Optional<List<GiftCertificateDto>> findAll() throws ServiceException {
+    public Optional<List<GiftCertificateDto>> findAll(int page, int size) throws ServiceException {
         List<GiftCertificate> giftCertificates;
         try {
-            giftCertificates = giftCertificateRepositoryImpl.findAll();
+            giftCertificates = giftCertificateRepositoryImpl.findAll(page, size);
         } catch (RepositoryException e) {
             throw new ServiceException(e.getMessage());
         }
@@ -91,11 +91,12 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Transactional
     @Override
-    public Optional<List<GiftCertificateDto>> findCertificateByParam(String param) throws ServiceException {
+    public Optional<List<GiftCertificateDto>> findCertificateByParam(String param, int page,
+                                                                     int size) throws ServiceException {
         List<GiftCertificateDto> giftCertificateDtos;
         try {
             List<GiftCertificate> giftCertificates = giftCertificateRepositoryImpl
-                    .findCertificateByParam(param);
+                    .findCertificateByParam(param, page, size);
             giftCertificateDtos = giftCertificates.stream()
                     .map(GiftCertificateConverter::mapToGiftCertificateDto)
                     .collect(Collectors.toList());
@@ -119,9 +120,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Transactional
     @Override
-    public Optional<List<GiftCertificateDto>> searchAllCertificatesByTagName(String tagName) {
+    public Optional<List<GiftCertificateDto>> searchAllCertificatesByTagName(String tagName, int page, int size) {
         List<GiftCertificateDto> giftCertificateDtos;
-        List<GiftCertificate> giftCertificates = processExceptionSearchCertificate(tagName);
+        List<GiftCertificate> giftCertificates = processExceptionSearchCertificate(tagName, page, size);
         giftCertificateDtos = giftCertificates.stream()
                 .map(GiftCertificateConverter::mapToGiftCertificateDto)
                 .collect(Collectors.toList());
@@ -129,16 +130,16 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     }
 
-    private List<GiftCertificate> processExceptionSearchCertificate(String tagName) {
+    private List<GiftCertificate> processExceptionSearchCertificate(String tagName, int page, int size) {
         try {
             return giftCertificateRepositoryImpl
-                    .searchAllCertificatesByTagName(tagName);
+                    .searchAllCertificatesByTagName(tagName, page, size);
         } catch (RepositoryException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public Optional<List<GiftCertificateDto>> sortByParam(String paramForSorting, String order)
+    public Optional<List<GiftCertificateDto>> sortByParam(String paramForSorting, String order, int page, int size)
             throws ServiceException {
         List<GiftCertificateDto> giftCertificateDtos;
         OrderBySpecification<GiftCertificate> orderBySpecification = null;
@@ -154,7 +155,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             } else {
                 throw new ServiceException();
             }
-            giftCertificates = giftCertificateRepositoryImpl.sortByParam(orderBySpecification);
+            giftCertificates = giftCertificateRepositoryImpl.sortByParam(orderBySpecification, page, size);
             giftCertificateDtos = giftCertificates.stream()
                     .map(GiftCertificateConverter::mapToGiftCertificateDto)
                     .collect(Collectors.toList());
@@ -193,15 +194,17 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             throw new ServiceException(e.getMessage());
         }
     }
-   public Optional<List<GiftCertificateDto>> findAllBySeveralTags(List<Long> tags) throws ServiceException {
-       List<GiftCertificate> giftCertificates;
-       try {
-           giftCertificates = giftCertificateRepositoryImpl.findAllBySeveralTags(tags);
-       } catch (RepositoryException e) {
-           throw new ServiceException(e.getMessage());
-       }
-       return Optional.of(giftCertificates.stream()
-               .map(GiftCertificateConverter::mapToGiftCertificateDto)
-               .collect(Collectors.toList()));
-   }
+
+    public Optional<List<GiftCertificateDto>> findAllBySeveralTags(List<Long> tags, int page, int size)
+            throws ServiceException {
+        List<GiftCertificate> giftCertificates;
+        try {
+            giftCertificates = giftCertificateRepositoryImpl.findAllBySeveralTags(tags, page, size);
+        } catch (RepositoryException e) {
+            throw new ServiceException(e.getMessage());
+        }
+        return Optional.of(giftCertificates.stream()
+                .map(GiftCertificateConverter::mapToGiftCertificateDto)
+                .collect(Collectors.toList()));
+    }
 }

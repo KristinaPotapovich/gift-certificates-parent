@@ -91,17 +91,9 @@ class TagServiceImplTest {
 
     @Test
     void findAll() throws RepositoryException, ServiceException {
-        when(tagRepository.findAll()).thenReturn(tags);
-        Optional<List<TagDto>>actual = tagService.findAll();
-        verify(tagRepository).findAll();
-        assertTrue(actual.isPresent());
-    }
-
-    @Test
-    void findAllTagsByCertificateId() throws RepositoryException, ServiceException {
-        when(tagRepository.findAllTagsByCertificateId(anyLong())).thenReturn(tags);
-        Optional<List<TagDto>>actual = tagService.findAllTagsByCertificateId(anyLong());
-        verify(tagRepository).findAllTagsByCertificateId(anyLong());
+        when(tagRepository.findAll(5,6)).thenReturn(tags);
+        Optional<List<TagDto>>actual = tagService.findAll(5,6);
+        verify(tagRepository).findAll(5,6);
         assertTrue(actual.isPresent());
     }
 }

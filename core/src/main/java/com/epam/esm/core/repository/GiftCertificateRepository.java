@@ -27,7 +27,7 @@ public interface GiftCertificateRepository extends BaseRepository<GiftCertificat
      * @return the list
      * @throws RepositoryException the repository exception
      */
-    List<GiftCertificate> findCertificateByParam(String param) throws RepositoryException;
+    List<GiftCertificate> findCertificateByParam(String param,int page,int size) throws RepositoryException;
 
     /**
      * Search all certificates by tag name list.
@@ -36,10 +36,11 @@ public interface GiftCertificateRepository extends BaseRepository<GiftCertificat
      * @return the list
      * @throws RepositoryException the repository exception
      */
-    List<GiftCertificate> searchAllCertificatesByTagName(String tagName) throws RepositoryException;
+    List<GiftCertificate> searchAllCertificatesByTagName(String tagName,int page,int size) throws RepositoryException;
 
-    List<GiftCertificate> sortByParam(OrderBySpecification<GiftCertificate> orderBySpecification)
+    List<GiftCertificate> sortByParam(OrderBySpecification<GiftCertificate> orderBySpecification,
+                                      int page,int size)
             throws RepositoryException;
 
-    List<GiftCertificate> findAllBySeveralTags(List<Long> tags) throws RepositoryException;
+    List<GiftCertificate> findAllBySeveralTags(List<Long> tags,int page,int size) throws RepositoryException;
 }

@@ -44,5 +44,5 @@ public interface BaseService<T> {
      * @return the optional
      * @throws ServiceException the service exception
      */
-    Optional<List<T>> findAll() throws ServiceException;
+    Optional<List<T>> findAll(int page,int size) throws ServiceException;
 }

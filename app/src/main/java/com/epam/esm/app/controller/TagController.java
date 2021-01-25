@@ -64,10 +64,17 @@ public class TagController {
      */
     @GetMapping
     public @ResponseBody
-    ResponseEntity<List<TagDto>> findAllTags() throws ControllerException {
+    ResponseEntity<List<TagDto>> findAllTags(
+            @Valid @RequestParam(value = "page", required = false, defaultValue = "1")
+                    //TODO @Min(value = 1,message =  "page must not be negative")
+                    int page,
+            @Valid @RequestParam(value = "size", required = false, defaultValue = "25")
+                    //TODO @Min(value = 1,message =  "size must not be negative")
+                    int size)
+            throws ControllerException {
         try {
             return tagServiceImpl
-                    .findAll()
+                    .findAll(page, size)
                     .map(tagDto -> new ResponseEntity<>(tagDto, HttpStatus.OK))
                     .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
         } catch (ServiceException e) {
@@ -130,8 +137,9 @@ public class TagController {
             throw new ControllerException(e.getMessage());
         }
     }
+
     @GetMapping(value = "/queryPopularTag")
-    public ResponseEntity<TagDto> findPopularTag(){
+    public ResponseEntity<TagDto> findPopularTag() {
         return tagServiceImpl
                 .findPopularTag()
                 .map(tagDto -> new ResponseEntity<>(tagDto, HttpStatus.OK))

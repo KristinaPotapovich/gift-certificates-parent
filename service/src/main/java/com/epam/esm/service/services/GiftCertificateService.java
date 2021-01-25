@@ -26,7 +26,8 @@ public interface GiftCertificateService extends BaseService<GiftCertificateDto> 
      * @return the optional
      * @throws ServiceException the service exception
      */
-    Optional<List<GiftCertificateDto>> findCertificateByParam(String param) throws ServiceException;
+    Optional<List<GiftCertificateDto>> findCertificateByParam(String param, int page,
+                                                              int size) throws ServiceException;
 
     /**
      * Search all certificates by tag name optional.
@@ -34,7 +35,7 @@ public interface GiftCertificateService extends BaseService<GiftCertificateDto> 
      * @param tagName the tag name
      * @return the optional
      */
-    Optional<List<GiftCertificateDto>> searchAllCertificatesByTagName(String tagName);
+    Optional<List<GiftCertificateDto>> searchAllCertificatesByTagName(String tagName,int page,int size);
 
     /**
      * Sort by param optional.
@@ -44,9 +45,9 @@ public interface GiftCertificateService extends BaseService<GiftCertificateDto> 
      * @return the optional
      * @throws ServiceException the service exception
      */
-    Optional<List<GiftCertificateDto>> sortByParam(String paramForSorting, String order) throws ServiceException;
+    Optional<List<GiftCertificateDto>> sortByParam(String paramForSorting, String order,int page,int size) throws ServiceException;
 
     void patch(GiftCertificateDto giftCertificateDto) throws ServiceException;
 
-    Optional<List<GiftCertificateDto>> findAllBySeveralTags(List<Long> tags) throws ServiceException;
+    Optional<List<GiftCertificateDto>> findAllBySeveralTags(List<Long> tags,int page,int size) throws ServiceException;
 }

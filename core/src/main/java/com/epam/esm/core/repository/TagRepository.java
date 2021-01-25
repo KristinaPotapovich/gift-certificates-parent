@@ -27,7 +27,7 @@ public interface TagRepository extends BaseRepository<Tag> {
      * @return the list
      * @throws RepositoryException the repository exception
      */
-    List<Tag> findAllTagsByCertificateId(long idCertificate) throws RepositoryException;
+    List<Tag> findAllTagsByCertificateId(long idCertificate,int page,int size) throws RepositoryException;
 
     Tag findPopularTag();
 }

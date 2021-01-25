@@ -11,6 +11,6 @@ public interface BaseRepository<T> {
 
     void delete(T t) throws RepositoryException;
 
-    List<T> findAll() throws RepositoryException;
+    List<T> findAll(int page,int size) throws RepositoryException;
 
 }

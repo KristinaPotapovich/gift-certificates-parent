@@ -41,10 +41,17 @@ public class UserController {
 
     @GetMapping
     public @ResponseBody
-    ResponseEntity<List<UserDto>> findAllUsers() throws ControllerException {
+    ResponseEntity<List<UserDto>> findAllUsers(
+            @Valid @RequestParam(value = "page", required = false, defaultValue = "1")
+                    //TODO @Min(value = 1,message =  "page must not be negative")
+                    int page,
+            @Valid @RequestParam(value = "size", required = false, defaultValue = "25")
+                    //TODO @Min(value = 1,message =  "size must not be negative")
+                    int size)
+            throws ControllerException {
         try {
             return userService
-                    .findAll()
+                    .findAll(page, size)
                     .map(userDto -> new ResponseEntity<>(userDto, HttpStatus.OK))
                     .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
         } catch (ServiceException e) {

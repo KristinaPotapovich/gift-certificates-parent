@@ -2,9 +2,7 @@ package com.epam.esm.app.controller;
 
 
 import com.epam.esm.app.exception.ControllerException;
-import com.epam.esm.core.entity.Tag;
 import com.epam.esm.service.dto.GiftCertificateDto;
-import com.epam.esm.service.dto.TagDto;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.services.GiftCertificateService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +11,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import javax.ws.rs.QueryParam;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -48,12 +46,18 @@ public class GiftCertificateController {
      * @return the response entity
      * @throws ControllerException the controller exception
      */
-    @GetMapping(value = "/setParam")
+    @GetMapping(value = "/query")
     public ResponseEntity<List<GiftCertificateDto>> findGiftCertificateByParam
-    (@Valid @QueryParam("param") String param) throws ControllerException {
+    (@Valid @QueryParam("param") String param,
+     @Valid @RequestParam(value = "page", required = false, defaultValue = "1")
+             //TODO @Min(value = 1,message =  "page must not be negative")
+             int page,
+     @Valid @RequestParam(value = "size", required = false, defaultValue = "25")
+             //TODO @Min(value = 1,message =  "size must not be negative")
+             int size) throws ControllerException {
         try {
             return giftCertificateServiceImpl
-                    .findCertificateByParam(param)
+                    .findCertificateByParam(param, page, size)
                     .map(giftCertificateDto -> new ResponseEntity<>(giftCertificateDto, HttpStatus.OK))
                     .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
         } catch (ServiceException e) {
@@ -88,10 +92,16 @@ public class GiftCertificateController {
      * @throws ControllerException the controller exception
      */
     @GetMapping
-    public ResponseEntity<List<GiftCertificateDto>> findAllGiftCertificates() throws ControllerException {
+    public ResponseEntity<List<GiftCertificateDto>> findAllGiftCertificates(
+            @Valid @RequestParam(value = "page", required = false, defaultValue = "1")
+                    //TODO @Min(value = 1,message =  "page must not be negative")
+                    int page,
+            @Valid @RequestParam(value = "size", required = false, defaultValue = "25")
+                    //TODO @Min(value = 1,message =  "size must not be negative")
+                    int size) throws ControllerException {
         try {
             return giftCertificateServiceImpl
-                    .findAll()
+                    .findAll(page, size)
                     .map(tagDto -> new ResponseEntity<>(tagDto, HttpStatus.OK))
                     .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
         } catch (ServiceException e) {
@@ -107,9 +117,15 @@ public class GiftCertificateController {
      */
     @GetMapping(value = "/tagParam")
     public ResponseEntity<List<GiftCertificateDto>> findGiftCertificateByTagName
-    (@Valid @QueryParam("name") String name) {
+    (@Valid @QueryParam("name") String name,
+     @Valid @RequestParam(value = "page", required = false, defaultValue = "1")
+             //TODO @Min(value = 1,message =  "page must not be negative")
+             int page,
+     @Valid @RequestParam(value = "size", required = false, defaultValue = "25")
+             //TODO @Min(value = 1,message =  "size must not be negative")
+             int size) {
         return giftCertificateServiceImpl
-                .searchAllCertificatesByTagName(name)
+                .searchAllCertificatesByTagName(name, page, size)
                 .map(giftCertificateDto -> new ResponseEntity<>(giftCertificateDto, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
@@ -125,9 +141,15 @@ public class GiftCertificateController {
     @GetMapping(value = "/sortBy")
     public ResponseEntity<List<GiftCertificateDto>> sortCertificateByParam
     (@Valid @QueryParam("paramForSorting") String paramForSorting,
-     @Valid @QueryParam("order") String order) throws ControllerException {
+     @Valid @QueryParam("order") String order,
+     @Valid @RequestParam(value = "page", required = false, defaultValue = "1")
+             //TODO @Min(value = 1,message =  "page must not be negative")
+             int page,
+     @Valid @RequestParam(value = "size", required = false, defaultValue = "25")
+             //TODO @Min(value = 1,message =  "size must not be negative")
+             int size) throws ControllerException {
         try {
-            return giftCertificateServiceImpl.sortByParam(paramForSorting, order)
+            return giftCertificateServiceImpl.sortByParam(paramForSorting, order, page, size)
                     .map(giftCertificateDto -> new ResponseEntity<>(giftCertificateDto, HttpStatus.OK))
                     .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
         } catch (ServiceException e) {
@@ -206,10 +228,17 @@ public class GiftCertificateController {
     }
 
     @GetMapping(value = "/findAllBySeveralTags")
-    public ResponseEntity<List<GiftCertificateDto>> findAllBySeveralTags(@Valid @RequestParam (value = "tags",required = false) List<Long>tags) throws ControllerException {
+    public ResponseEntity<List<GiftCertificateDto>> findAllBySeveralTags(
+            @Valid @RequestParam(value = "tags", required = false) List<Long> tags,
+            @Valid @RequestParam(value = "page", required = false, defaultValue = "1")
+                    //TODO @Min(value = 1,message =  "page must not be negative")
+                    int page,
+            @Valid @RequestParam(value = "size", required = false, defaultValue = "25")
+                    //TODO @Min(value = 1,message =  "size must not be negative")
+                    int size) throws ControllerException {
         try {
             return giftCertificateServiceImpl
-                    .findAllBySeveralTags(tags)
+                    .findAllBySeveralTags(tags, page, size)
                     .map(tagDto -> new ResponseEntity<>(tagDto, HttpStatus.OK))
                     .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
         } catch (ServiceException e) {

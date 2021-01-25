@@ -34,7 +34,7 @@ public class GiftCertificateRepositoryImplTest {
         giftCertificate.setPrice(BigDecimal.valueOf(12.5));
         giftCertificate.setDurationInDays(6);
         GiftCertificate expected = giftCertificateRepository.create(giftCertificate);
-        List<GiftCertificate> certificates = giftCertificateRepository.findAll();
+        List<GiftCertificate> certificates = giftCertificateRepository.findAll(5,6);
         GiftCertificate giftCertificateFromDB = certificates.get(4);
         Assertions.assertEquals(expected, giftCertificateFromDB);
     }
@@ -48,7 +48,7 @@ public class GiftCertificateRepositoryImplTest {
         giftCertificate.setPrice(BigDecimal.valueOf(14.5));
         giftCertificate.setDurationInDays(6);
         giftCertificateRepository.update(giftCertificate);
-        List<GiftCertificate> certificates = giftCertificateRepository.findAll();
+        List<GiftCertificate> certificates = giftCertificateRepository.findAll(5,6);
         GiftCertificate updated = certificates.get(2);
         Assertions.assertEquals(updated.getName(), "new name");
         Assertions.assertEquals(updated.getPrice(), 14.5);
@@ -59,27 +59,28 @@ public class GiftCertificateRepositoryImplTest {
     public void delete() throws RepositoryException {
         GiftCertificate giftCertificate = new GiftCertificate();
         giftCertificate.setId(3);
-        int expectedSizeOfList = giftCertificateRepository.findAll().size() - 1;
+        int expectedSizeOfList = giftCertificateRepository.findAll(5,6).size() - 1;
         giftCertificateRepository.delete(giftCertificate);
-        int actualSizeOfList = giftCertificateRepository.findAll().size();
+        int actualSizeOfList = giftCertificateRepository.findAll(5,6).size();
         Assertions.assertEquals(expectedSizeOfList, actualSizeOfList);
     }
 
     @Test
     public void findAll() throws RepositoryException {
-        List<GiftCertificate> certificates = giftCertificateRepository.findAll();
+        List<GiftCertificate> certificates = giftCertificateRepository.findAll(5,6);
         Assertions.assertEquals("certificate one", certificates.get(0).getName());
     }
 
     @Test
     public void findCertificateByParam() throws RepositoryException {
-        List<GiftCertificate> certificates = giftCertificateRepository.findCertificateByParam("%tw%");
+        List<GiftCertificate> certificates = giftCertificateRepository.findCertificateByParam("%tw%",5,6);
         Assertions.assertFalse(certificates.isEmpty());
     }
 
     @Test
     public void searchAllCertificatesByTagName() throws RepositoryException {
-        List<GiftCertificate> certificates = giftCertificateRepository.searchAllCertificatesByTagName("tag one");
+        List<GiftCertificate> certificates = giftCertificateRepository
+                .searchAllCertificatesByTagName("tag one",5,6);
         Assertions.assertFalse(certificates.isEmpty());
     }
 }

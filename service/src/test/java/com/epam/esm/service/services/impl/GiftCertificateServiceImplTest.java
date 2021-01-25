@@ -118,9 +118,9 @@ class GiftCertificateServiceImplTest {
     void findAll() throws RepositoryException, ServiceException {
         giftCertificates.add(giftCertificate);
         giftCertificates.add(giftCertificate3);
-        when(giftCertificateRepository.findAll()).thenReturn(giftCertificates);
-        Optional<List<GiftCertificateDto>> actual = giftCertificateService.findAll();
-        verify(giftCertificateRepository).findAll();
+        when(giftCertificateRepository.findAll(5,6)).thenReturn(giftCertificates);
+        Optional<List<GiftCertificateDto>> actual = giftCertificateService.findAll(5,6);
+        verify(giftCertificateRepository).findAll(5,6);
         Assertions.assertTrue(actual.isPresent());
     }
 
@@ -131,9 +131,9 @@ class GiftCertificateServiceImplTest {
         List<GiftCertificate> giftCertificates = new ArrayList<>();
         giftCertificates.add(giftCertificate);
         giftCertificates.add(giftCertificate3);
-        when(giftCertificateRepository.findCertificateByParam(anyString())).thenReturn(giftCertificates);
-        Optional<List<GiftCertificateDto>> actual = giftCertificateService.findCertificateByParam(anyString());
-        verify(giftCertificateRepository).findCertificateByParam(anyString());
+        when(giftCertificateRepository.findCertificateByParam(anyString(),anyInt(),anyInt())).thenReturn(giftCertificates);
+        Optional<List<GiftCertificateDto>> actual = giftCertificateService.findCertificateByParam(anyString(),anyInt(),anyInt());
+        verify(giftCertificateRepository).findCertificateByParam(anyString(),anyInt(),anyInt());
         Assertions.assertTrue(actual.isPresent());
     }
 
@@ -152,13 +152,13 @@ class GiftCertificateServiceImplTest {
 
     @Test
     void searchAllCertificatesByTagName() throws RepositoryException {
-        when(giftCertificateRepository.searchAllCertificatesByTagName(tag.getName())).thenReturn(giftCertificates);
+        when(giftCertificateRepository.searchAllCertificatesByTagName(tag.getName(),5,6)).thenReturn(giftCertificates);
         when(tagRepository.findTagByName(giftCertificate.getName()))
                 .thenReturn(Optional.of(TagConverter.mapToTag(tagDto)));
         when(tagRepository.create(TagConverter.mapToTag(tagDto))).thenReturn(tag);
         Optional<List<GiftCertificateDto>> actual = giftCertificateService
-                .searchAllCertificatesByTagName(tag.getName());
-        verify(giftCertificateRepository).searchAllCertificatesByTagName(tag.getName());
+                .searchAllCertificatesByTagName(tag.getName(),5,6);
+        verify(giftCertificateRepository).searchAllCertificatesByTagName(tag.getName(),5,6);
         Assertions.assertTrue(actual.isPresent());
     }
 

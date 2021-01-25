@@ -83,23 +83,10 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public Optional<List<TagDto>> findAll() throws ServiceException {
+    public Optional<List<TagDto>> findAll(int page,int size) throws ServiceException {
         List<Tag> tags;
         try {
-            tags = tagRepository.findAll();
-        } catch (RepositoryException e) {
-            throw new ServiceException(e.getMessage());
-        }
-        return Optional.of(tags.stream()
-                .map(TagConverter::mapToTagDto)
-                .collect(Collectors.toList()));
-    }
-
-    @Override
-    public Optional<List<TagDto>> findAllTagsByCertificateId(long idCertificate) throws ServiceException {
-        List<Tag> tags;
-        try {
-            tags = tagRepository.findAllTagsByCertificateId(idCertificate);
+            tags = tagRepository.findAll(page, size);
         } catch (RepositoryException e) {
             throw new ServiceException(e.getMessage());
         }

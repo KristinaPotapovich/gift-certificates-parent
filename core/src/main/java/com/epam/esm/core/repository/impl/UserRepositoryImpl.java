@@ -40,14 +40,17 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public List<User> findAll() throws RepositoryException {
+    public List<User> findAll(int page,int size) throws RepositoryException {
         try {
             CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
             CriteriaQuery<User> userCriteriaQuery =
                     criteriaBuilder.createQuery(User.class);
             Root<User> userRoot = userCriteriaQuery.from(User.class);
             userCriteriaQuery.select(userRoot);
-            return session.createQuery(userCriteriaQuery).getResultList();
+            return session.createQuery(userCriteriaQuery)
+                    .setFirstResult((page - 1) * size)
+                    .setMaxResults(size)
+                    .getResultList();
         } catch (DataAccessException e) {
             throw new RepositoryException(FIND_ALL_USERS_FAIL);
         }

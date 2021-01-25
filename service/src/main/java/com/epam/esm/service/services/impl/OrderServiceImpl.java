@@ -1,11 +1,13 @@
 package com.epam.esm.service.services.impl;
 
 import com.epam.esm.core.entity.Order;
+import com.epam.esm.core.entity.User;
 import com.epam.esm.core.exception.RepositoryException;
 import com.epam.esm.core.repository.OrderRepository;
 import com.epam.esm.service.dto.*;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.mapper.OrderConverter;
+import com.epam.esm.service.mapper.UserConverter;
 import com.epam.esm.service.services.GiftCertificateService;
 import com.epam.esm.service.services.OrderService;
 import com.epam.esm.service.services.UserService;
@@ -88,16 +90,24 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Optional<List<OrderDto>> findAll() throws ServiceException {
-        return Optional.empty();
+    public Optional<List<OrderDto>> findAll(int page, int size) throws ServiceException {
+        List<Order> orders;
+        try {
+            orders = orderRepository.findAll(page, size);
+        } catch (RepositoryException e) {
+            throw new ServiceException(e.getMessage());
+        }
+        return Optional.of(orders.stream()
+                .map(OrderConverter::mapToOrderDto)
+                .collect(Collectors.toList()));
     }
 
     @Override
-    public Optional<List<OrderDto>> findAllByUser(long id) throws ServiceException {
+    public Optional<List<OrderDto>> findAllByUser(long id,int page, int size) throws ServiceException {
         try {
             List<OrderDto> orderDtos;
             List<Order> orders;
-            orders = orderRepository.findAllOrdersByUser(id);
+            orders = orderRepository.findAllOrdersByUser(id,page,size);
             orderDtos = orders.stream()
                     .map(OrderConverter::mapToOrderDto)
                     .collect(Collectors.toList());
