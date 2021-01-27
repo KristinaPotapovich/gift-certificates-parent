@@ -14,11 +14,10 @@ public interface TagRepository extends BaseRepository<Tag> {
     /**
      * Find tag by name optional.
      *
-     * @param name the name
      * @return the optional
      * @throws RepositoryException the repository exception
      */
-    Optional<Tag> findTagByName(String name) throws RepositoryException;
+    Optional<Tag> findTagById(long id) throws RepositoryException;
 
     /**
      * Find all tags by certificate id list.

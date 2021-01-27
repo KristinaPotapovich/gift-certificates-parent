@@ -1,6 +1,7 @@
 package com.epam.esm.core.entity;
 
 import lombok.*;
+import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -11,6 +12,7 @@ import java.util.List;
 @Setter
 @EqualsAndHashCode
 @ToString
+@Audited
 @Entity
 @Table(name = "tag")
 public class Tag {

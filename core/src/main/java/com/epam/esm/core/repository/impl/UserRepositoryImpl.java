@@ -19,6 +19,7 @@ public class UserRepositoryImpl implements UserRepository {
     private static final String FIND_USER_BY_ID = "user_find_by_id";
     private static final String FIND_USER_BY_LOGIN = "user_find_by_login";
 
+
     @PersistenceContext
     private Session session;
 
@@ -26,12 +27,12 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public User create(User user) throws RepositoryException {
         session.persist(user);
-       return user;
+        return user;
     }
 
     @Override
-    public void update(User user) throws RepositoryException {
-
+    public User update(User user) throws RepositoryException {
+        return null;
     }
 
     @Override
@@ -40,7 +41,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public List<User> findAll(int page,int size) throws RepositoryException {
+    public List<User> findAll(int page, int size) throws RepositoryException {
         try {
             CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
             CriteriaQuery<User> userCriteriaQuery =
@@ -66,19 +67,6 @@ public class UserRepositoryImpl implements UserRepository {
             return session.createQuery(criteriaQuery).getSingleResult();
         } catch (DataAccessException e) {
             throw new RepositoryException(FIND_USER_BY_ID);
-        }
-    }
-
-    @Override
-    public User findUserByLogin(String login) throws RepositoryException {
-        try {
-            CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-            CriteriaQuery<User> userCriteriaQuery = criteriaBuilder.createQuery(User.class);
-            Root<User> userRoot = userCriteriaQuery.from(User.class);
-            userCriteriaQuery.where(criteriaBuilder.equal(userRoot.get("login"), login));
-            return session.createQuery(userCriteriaQuery).getSingleResult();
-        } catch (DataAccessException e) {
-            throw new RepositoryException(FIND_USER_BY_LOGIN);
         }
     }
 }

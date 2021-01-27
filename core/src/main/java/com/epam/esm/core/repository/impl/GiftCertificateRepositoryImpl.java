@@ -47,11 +47,11 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     }
 
     @Override
-    public void update(GiftCertificate giftCertificate) throws RepositoryException {
+    public GiftCertificate update(GiftCertificate giftCertificate) throws RepositoryException {
         try {
             LocalDateTime lastUpdateDate = LocalDateTime.now();
             giftCertificate.setLastUpdateDate(lastUpdateDate);
-            session.merge(giftCertificate);
+            return (GiftCertificate) session.merge(giftCertificate);
         } catch (DataAccessException e) {
             throw new RepositoryException(UPDATE_CERTIFICATE_FAIL);
         }

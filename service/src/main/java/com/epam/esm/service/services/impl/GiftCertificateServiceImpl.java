@@ -54,11 +54,12 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Transactional
     @Override
-    public void update(GiftCertificateDto giftCertificateDto) throws ServiceException {
+    public Optional<GiftCertificateDto> update(GiftCertificateDto giftCertificateDto) throws ServiceException {
         GiftCertificate giftCertificate;
         try {
             giftCertificate = GiftCertificateConverter.mapToGiftCertificate(giftCertificateDto);
-            giftCertificateRepositoryImpl.update(giftCertificate);
+            giftCertificate = giftCertificateRepositoryImpl.update(giftCertificate);
+            return Optional.ofNullable(GiftCertificateConverter.mapToGiftCertificateDto(giftCertificate));
         } catch (RepositoryException e) {
             throw new ServiceException(e.getMessage());
         }
@@ -77,16 +78,16 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public Optional<List<GiftCertificateDto>> findAll(int page, int size) throws ServiceException {
+    public List<GiftCertificateDto> findAll(int page, int size) throws ServiceException {
         List<GiftCertificate> giftCertificates;
         try {
             giftCertificates = giftCertificateRepositoryImpl.findAll(page, size);
         } catch (RepositoryException e) {
             throw new ServiceException(e.getMessage());
         }
-        return Optional.of(giftCertificates.stream()
+        return giftCertificates.stream()
                 .map(GiftCertificateConverter::mapToGiftCertificateDto)
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -167,7 +168,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Transactional
     @Override
-    public void patch(GiftCertificateDto giftCertificateDto) throws ServiceException {
+    public Optional<GiftCertificateDto> patch(GiftCertificateDto giftCertificateDto) throws ServiceException {
         try {
             long id = giftCertificateDto.getId();
             String nameUpdate = giftCertificateDto.getName();
@@ -188,7 +189,10 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             if (durationUpdate != 0) {
                 giftCertificate.setDurationInDays(durationUpdate);
             }
-            giftCertificateRepositoryImpl.update(giftCertificate);
+
+            return Optional
+                    .ofNullable(GiftCertificateConverter
+                            .mapToGiftCertificateDto(giftCertificateRepositoryImpl.update(giftCertificate)));
 
         } catch (RepositoryException e) {
             throw new ServiceException(e.getMessage());

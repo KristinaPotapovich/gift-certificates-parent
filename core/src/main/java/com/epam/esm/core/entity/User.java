@@ -1,6 +1,7 @@
 package com.epam.esm.core.entity;
 
 import lombok.*;
+import org.hibernate.envers.Audited;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
@@ -11,6 +12,7 @@ import java.util.List;
 @Setter
 @EqualsAndHashCode
 @ToString
+@Audited
 @Component
 @Table(name = "user")
 @Entity

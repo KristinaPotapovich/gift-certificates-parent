@@ -1,10 +1,13 @@
 package com.epam.esm.service.services.impl;
 
+import com.epam.esm.core.entity.Order;
 import com.epam.esm.core.entity.User;
 import com.epam.esm.core.exception.RepositoryException;
 import com.epam.esm.core.repository.UserRepository;
+import com.epam.esm.service.dto.OrderDto;
 import com.epam.esm.service.dto.UserDto;
 import com.epam.esm.service.exception.ServiceException;
+import com.epam.esm.service.mapper.OrderConverter;
 import com.epam.esm.service.mapper.UserConverter;
 import com.epam.esm.service.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,25 +38,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<UserDto> findUserByLogin(String login) throws ServiceException {
-        UserDto userDto = new UserDto();
-        try {
-            userDto.setLogin(login);
-            userDto = UserConverter.mapToUserDto(userRepository.findUserByLogin(login));
-            return Optional.ofNullable(userDto);
-        } catch (RepositoryException e) {
-            throw new ServiceException(e.getMessage());
-        }
-    }
-
-    @Override
     public Optional<UserDto> create(UserDto userDto) throws ServiceException {
         return Optional.empty();
     }
 
     @Override
-    public void update(UserDto userDto) throws ServiceException {
-
+    public Optional<UserDto> update(UserDto userDto) throws ServiceException {
+        return Optional.empty();
     }
 
     @Override
@@ -62,15 +53,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<List<UserDto>> findAll(int page,int size) throws ServiceException {
+    public List<UserDto> findAll(int page, int size) throws ServiceException {
         List<User> users;
         try {
             users = userRepository.findAll(page, size);
         } catch (RepositoryException e) {
             throw new ServiceException(e.getMessage());
         }
-        return Optional.of(users.stream()
+        return users.stream()
                 .map(UserConverter::mapToUserDto)
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList());
     }
 }

@@ -29,7 +29,7 @@ public class TagRepositoryImpl implements TagRepository {
     private static final String FIND_ALL_TAG_FAIL = "tag_find_all_fail";
     private static final String NAME = "name";
     private static final String QUERY_FOR_POPULAR_TAG =
-            "SELECT t.id_tag, t.name, SUM(ot.price) FROM tag t " +
+            "SELECT t.id_tag, t.name, SUM(ot.price)sum FROM tag t " +
                     "  JOIN certificates_tags ct ON ct.id_tag =t.id_tag " +
                     "  JOIN gift_certificate gc ON ct.id_certificate=gc.id_certificate " +
                     "  JOIN orders_certificates oc ON gc.id_certificate = oc.id_certificate " +
@@ -50,9 +50,9 @@ public class TagRepositoryImpl implements TagRepository {
     }
 
     @Override
-    public void update(Tag tag) throws RepositoryException {
+    public Tag update(Tag tag) throws RepositoryException {
         try {
-            session.merge(tag);
+            return (Tag) session.merge(tag);
         } catch (DataAccessException e) {
             throw new RepositoryException(UPDATE_TAG_FAIL);
         }
@@ -67,12 +67,12 @@ public class TagRepositoryImpl implements TagRepository {
         }
     }
 
-    public Optional<Tag> findTagByName(String name) throws RepositoryException {
+    public Optional<Tag> findTagById(long id) throws RepositoryException {
         try {
             CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
             CriteriaQuery<Tag> tagCriteriaQuery = criteriaBuilder.createQuery(Tag.class);
             Root<Tag> tagRoot = tagCriteriaQuery.from(Tag.class);
-            tagCriteriaQuery.where(criteriaBuilder.equal(tagRoot.get(NAME), name));
+            tagCriteriaQuery.where(criteriaBuilder.equal(tagRoot.get("id"), id));
             Tag tag = session.createQuery(tagCriteriaQuery).getSingleResult();
             return Optional.of(tag);
         } catch (DataAccessException e) {

@@ -7,15 +7,20 @@ import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.services.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.hateoas.EntityModel;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
 import javax.validation.Valid;
-import javax.ws.rs.QueryParam;
+import javax.validation.constraints.Min;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 /**
@@ -27,6 +32,16 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class TagController {
 
     private TagService tagServiceImpl;
+    private static final String CURRENT_TAG = "current tag";
+    private static final String DELETE_TAG = "delete tag";
+    private static final String UPDATE_TAG = "update tag";
+    private static final String CREATE_TAG = "create tag";
+    private static final String DEFAULT_PAGE = "1";
+    private static final String DEFAULT_SIZE = "25";
+    private static final String VALUE_PAGE = "page";
+    private static final String VALUE_SIZE = "size";
+    private static final String VALUE_ID = "id";
+    private static final String VALIDATION_FAIL = "validation_fail";
 
     /**
      * Instantiates a new Tag controller.
@@ -41,20 +56,30 @@ public class TagController {
     /**
      * Find tag by name response entity.
      *
-     * @param name the name
      * @return the response entity
      * @throws ControllerException the controller exception
      */
-    @GetMapping(value = "/query")
-    public ResponseEntity<TagDto> findTagByName(@Valid @QueryParam("name") String name) throws ControllerException {
+    @GetMapping(value = "/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public EntityModel<TagDto> findTagById(@Valid @PathVariable(VALUE_ID) long id) throws ControllerException {
         try {
-            return tagServiceImpl.findTagByName(name)
-                    .map(tagDtoResponse -> new ResponseEntity<>(tagDtoResponse, HttpStatus.OK))
-                    .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+            TagDto tagDto = tagServiceImpl.findTagById(id).get();
+            return EntityModel.of(tagDto, linkTo(methodOn(TagController.class)
+                            .findTagById(id)).withSelfRel(),
+                    linkTo(methodOn(TagController.class)
+                            .createTag(tagDto)).withRel(CREATE_TAG)
+                            .withType(HttpMethod.POST.name()),
+                    linkTo(methodOn(TagController.class)
+                            .deleteTag(tagDto.getId())).withRel(DELETE_TAG)
+                            .withType(HttpMethod.DELETE.name()),
+                    linkTo(methodOn(TagController.class)
+                            .updateTag(tagDto.getId(), tagDto)).withRel(UPDATE_TAG)
+                            .withType(HttpMethod.PUT.name()));
         } catch (ServiceException e) {
             throw new ControllerException(e.getMessage());
         }
     }
+
 
     /**
      * Find all tags response entity.
@@ -63,20 +88,56 @@ public class TagController {
      * @throws ControllerException the controller exception
      */
     @GetMapping
+    @ResponseStatus(HttpStatus.OK)
     public @ResponseBody
-    ResponseEntity<List<TagDto>> findAllTags(
-            @Valid @RequestParam(value = "page", required = false, defaultValue = "1")
-                    //TODO @Min(value = 1,message =  "page must not be negative")
+    List<TagDto> findAllTags(
+            @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)
+            @Min(value = 1, message = VALIDATION_FAIL)
                     int page,
-            @Valid @RequestParam(value = "size", required = false, defaultValue = "25")
-                    //TODO @Min(value = 1,message =  "size must not be negative")
+            @Valid @RequestParam(value = VALUE_SIZE, required = false, defaultValue = DEFAULT_SIZE)
+            @Min(value = 1, message = VALIDATION_FAIL)
                     int size)
             throws ControllerException {
         try {
-            return tagServiceImpl
-                    .findAll(page, size)
-                    .map(tagDto -> new ResponseEntity<>(tagDto, HttpStatus.OK))
-                    .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+            List<TagDto> tagDtos = tagServiceImpl.findAll(page, size);
+            processExceptionForFindTagByName(tagDtos);
+            return tagDtos;
+        } catch (ServiceException e) {
+            throw new ControllerException(e.getMessage());
+        }
+    }
+
+    private void processExceptionForFindTagByName(List<TagDto> tagDtos) {
+        tagDtos.forEach(tag ->
+        {
+            try {
+                tag.add(linkTo(methodOn(TagController.class).findTagById(tag.getId())).withSelfRel());
+            } catch (ControllerException e) {
+                throw new RuntimeException(e.getMessage());
+            }
+        });
+    }
+
+    @GetMapping(value = "/certificates/{id}/tags")
+    @ResponseStatus(HttpStatus.OK)
+    public @ResponseBody
+    List<TagDto> findAllTagsByCertificateId(
+            @Valid @PathVariable(VALUE_ID) long idCertificate,
+            @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)
+            @Min(value = 1, message = VALIDATION_FAIL)
+                    int page,
+            @Valid @RequestParam(value = VALUE_SIZE, required = false, defaultValue = DEFAULT_SIZE)
+            @Min(value = 1, message = VALIDATION_FAIL)
+                    int size)
+            throws ControllerException {
+        try {
+            Optional<List<TagDto>> tagDtosOptional = tagServiceImpl.findAllTagsByCertificateId(idCertificate, page, size);
+            List<TagDto> tagDtos = new ArrayList<>();
+            if (tagDtosOptional.isPresent()) {
+                tagDtos = tagDtosOptional.get();
+                processExceptionForFindTagByName(tagDtos);
+            }
+            return tagDtos;
         } catch (ServiceException e) {
             throw new ControllerException(e.getMessage());
         }
@@ -90,13 +151,22 @@ public class TagController {
      * @throws ControllerException the controller exception
      */
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public @ResponseBody
-    ResponseEntity<TagDto> createTag(@Valid @RequestBody TagDto tagDto) throws ControllerException {
+    EntityModel<TagDto> createTag(@Valid @RequestBody TagDto tagDto) throws ControllerException {
         try {
-            return tagServiceImpl
-                    .create(tagDto)
-                    .map(tagDtoResponse -> new ResponseEntity<>(tagDtoResponse, HttpStatus.CREATED))
-                    .orElse(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
+            tagDto = tagServiceImpl.create(tagDto).get();
+            return EntityModel.of(tagDto, linkTo(methodOn(TagController.class)
+                            .createTag(tagDto)).withSelfRel(),
+                    linkTo(methodOn(TagController.class)
+                            .findTagById(tagDto.getId())).withRel(CURRENT_TAG)
+                            .withType(HttpMethod.GET.name()),
+                    linkTo(methodOn(TagController.class)
+                            .deleteTag(tagDto.getId())).withRel(DELETE_TAG)
+                            .withType(HttpMethod.DELETE.name()),
+                    linkTo(methodOn(TagController.class)
+                            .updateTag(tagDto.getId(), tagDto)).withRel(UPDATE_TAG)
+                            .withType(HttpMethod.PUT.name()));
         } catch (ServiceException e) {
             throw new ControllerException(e.getMessage());
         }
@@ -110,12 +180,24 @@ public class TagController {
      * @throws ControllerException the controller exception
      */
     @PutMapping(value = "/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public void updateTag(@Valid @PathVariable("id") long id,
-                          @Valid @RequestBody TagDto tagDto) throws ControllerException {
+    @ResponseStatus(HttpStatus.CREATED)
+    public EntityModel<TagDto> updateTag(
+            @Valid @PathVariable(VALUE_ID) long id,
+            @Valid @RequestBody TagDto tagDto) throws ControllerException {
         try {
             tagDto.setId(id);
-            tagServiceImpl.update(tagDto);
+            tagDto = tagServiceImpl.update(tagDto).get();
+            return EntityModel.of(tagDto, linkTo(methodOn(TagController.class)
+                            .updateTag(id, tagDto)).withSelfRel(),
+                    linkTo(methodOn(TagController.class)
+                            .findTagById(tagDto.getId())).withRel(CURRENT_TAG)
+                            .withType(HttpMethod.GET.name()),
+                    linkTo(methodOn(TagController.class)
+                            .deleteTag(tagDto.getId())).withRel(DELETE_TAG)
+                            .withType(HttpMethod.DELETE.name()),
+                    linkTo(methodOn(TagController.class)
+                            .createTag(tagDto)).withRel(CREATE_TAG)
+                            .withType(HttpMethod.POST.name()));
         } catch (ServiceException e) {
             throw new ControllerException(e.getMessage());
         }
@@ -128,21 +210,36 @@ public class TagController {
      * @return the response entity
      * @throws ControllerException the controller exception
      */
+
     @DeleteMapping(value = "/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteTag(@Valid @PathVariable("id") long id) throws ControllerException {
+    public ResponseEntity<HttpStatus> deleteTag(
+            @Valid @PathVariable(VALUE_ID) long id) throws ControllerException {
         try {
             tagServiceImpl.delete(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (ServiceException e) {
             throw new ControllerException(e.getMessage());
         }
     }
 
     @GetMapping(value = "/queryPopularTag")
-    public ResponseEntity<TagDto> findPopularTag() {
-        return tagServiceImpl
-                .findPopularTag()
-                .map(tagDto -> new ResponseEntity<>(tagDto, HttpStatus.OK))
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    @ResponseStatus(HttpStatus.OK)
+    public EntityModel<TagDto> findPopularTag() throws ControllerException {
+
+        TagDto tagDto = tagServiceImpl.findPopularTag().get();
+        return EntityModel.of(tagDto, linkTo(methodOn(TagController.class)
+                        .findPopularTag()).withSelfRel(),
+                linkTo(methodOn(TagController.class)
+                        .findTagById(tagDto.getId())).withRel(CURRENT_TAG)
+                        .withType(HttpMethod.GET.name()),
+                linkTo(methodOn(TagController.class)
+                        .deleteTag(tagDto.getId())).withRel(DELETE_TAG)
+                        .withType(HttpMethod.DELETE.name()),
+                linkTo(methodOn(TagController.class)
+                        .createTag(tagDto)).withRel(CREATE_TAG)
+                        .withType(HttpMethod.POST.name()),
+                linkTo(methodOn(TagController.class)
+                        .updateTag(tagDto.getId(), tagDto)).withRel(UPDATE_TAG)
+                        .withType(HttpMethod.PUT.name()));
     }
 }

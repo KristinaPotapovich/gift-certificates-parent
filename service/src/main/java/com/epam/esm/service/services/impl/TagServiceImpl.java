@@ -45,11 +45,12 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public void update(TagDto tagDto) throws ServiceException {
+    public Optional<TagDto> update(TagDto tagDto) throws ServiceException {
         Tag tag;
         try {
             tag = TagConverter.mapToTag(tagDto);
-            tagRepository.update(tag);
+            tag = tagRepository.update(tag);
+            return Optional.ofNullable(TagConverter.mapToTagDto(tag));
         } catch (RepositoryException e) {
             throw new ServiceException(e.getMessage());
         }
@@ -67,12 +68,9 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    @Nullable
-    public Optional<TagDto> findTagByName(String name) throws ServiceException {
-        TagDto tagDto = new TagDto();
+    public Optional<TagDto> findTagById(long id) throws ServiceException {
         try {
-            tagDto.setName(name);
-            Optional<Tag> tagOptional = tagRepository.findTagByName(name);
+            Optional<Tag> tagOptional = tagRepository.findTagById(id);
             if (tagOptional.isPresent()) {
                 return tagOptional.map(TagConverter::mapToTagDto);
             }
@@ -83,10 +81,31 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public Optional<List<TagDto>> findAll(int page,int size) throws ServiceException {
+    public List<TagDto> findAll(int page, int size) throws ServiceException {
         List<Tag> tags;
         try {
             tags = tagRepository.findAll(page, size);
+        } catch (RepositoryException e) {
+            throw new ServiceException(e.getMessage());
+        }
+        return tags.stream()
+                .map(TagConverter::mapToTagDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Optional<TagDto> findPopularTag() {
+        Tag tag = tagRepository.findPopularTag();
+        TagDto tagDto = TagConverter.mapToTagDto(tag);
+        return Optional.ofNullable(tagDto);
+    }
+
+    @Override
+    public Optional<List<TagDto>> findAllTagsByCertificateId(long idCertificate,int page,int size)
+            throws ServiceException {
+        List<Tag> tags;
+        try {
+            tags = tagRepository.findAllTagsByCertificateId(idCertificate,page,size);
         } catch (RepositoryException e) {
             throw new ServiceException(e.getMessage());
         }
@@ -95,11 +114,5 @@ public class TagServiceImpl implements TagService {
                 .collect(Collectors.toList()));
     }
 
-    @Override
-    public Optional<TagDto> findPopularTag(){
-        Tag tag = tagRepository.findPopularTag();
-        TagDto tagDto = TagConverter.mapToTagDto(tag);
-        return Optional.ofNullable(tagDto);
-    }
 }
 

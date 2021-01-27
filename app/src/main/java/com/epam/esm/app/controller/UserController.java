@@ -5,68 +5,95 @@ import com.epam.esm.service.dto.UserDto;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.config.EnableHypermediaSupport;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import javax.ws.rs.QueryParam;
+import javax.validation.constraints.Min;
+
 
 import java.util.List;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
-@RequestMapping(path = "/users",
-        produces = APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/users")
+@EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.HAL_FORMS)
 public class UserController {
     private UserService userService;
+    private static final String CURRENT_USER = "current user";
+    private static final String ORDERS = "orders";
+    private static final String DEFAULT_PAGE = "1";
+    private static final String DEFAULT_SIZE = "25";
+    private static final String VALUE_PAGE = "page";
+    private static final String VALUE_SIZE = "size";
+    private static final String VALUE_ID = "id";
+    private static final String VALIDATION_FAIL = "validation_fail";
 
     @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
     }
 
-    @GetMapping(value = "/query")
-    public ResponseEntity<UserDto> findUserByLogin(@Valid @QueryParam("login") String login)
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public @ResponseBody
+    List<UserDto> findAllUsers(
+            @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)
+            @Min(value = 1, message = VALIDATION_FAIL)
+                    int page,
+            @Valid @RequestParam(value = VALUE_SIZE, required = false, defaultValue = DEFAULT_SIZE)
+            @Min(value = 1, message = VALIDATION_FAIL)
+                    int size)
             throws ControllerException {
         try {
-            return userService.findUserByLogin(login)
-                    .map(userDtoResponse -> new ResponseEntity<>(userDtoResponse, HttpStatus.OK))
-                    .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-        } catch (ServiceException e) {
+            List<UserDto> userDtos = userService.findAll(page, size);
+            userDtos.forEach(userDto -> processExceptionByFindUser(page, size, userDto));
+            return userDtos;
+        } catch (
+                ServiceException e) {
             throw new ControllerException(e.getMessage());
         }
     }
 
-    @GetMapping
-    public @ResponseBody
-    ResponseEntity<List<UserDto>> findAllUsers(
-            @Valid @RequestParam(value = "page", required = false, defaultValue = "1")
-                    //TODO @Min(value = 1,message =  "page must not be negative")
-                    int page,
-            @Valid @RequestParam(value = "size", required = false, defaultValue = "25")
-                    //TODO @Min(value = 1,message =  "size must not be negative")
-                    int size)
-            throws ControllerException {
+    private void processExceptionByFindUser(int page, int size, UserDto userDto) {
         try {
-            return userService
-                    .findAll(page, size)
-                    .map(userDto -> new ResponseEntity<>(userDto, HttpStatus.OK))
-                    .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-        } catch (ServiceException e) {
-            throw new ControllerException(e.getMessage());
+            userDto
+                    .add(linkTo(methodOn(UserController.class).findUserById(userDto.getId(), page, size))
+                            .withRel(CURRENT_USER)
+                            .withType(HttpMethod.GET.name()));
+            userDto.add(linkTo(methodOn(OrderController.class).findCertificateByUser(userDto.getId(), page, size))
+                    .withRel(ORDERS)
+                    .withType(HttpMethod.GET.name()));
+        } catch (ControllerException e) {
+            throw new RuntimeException(e.getMessage());
         }
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<UserDto> findUserById(@Valid @PathVariable("id") long id)
+    @ResponseStatus(HttpStatus.OK)
+    public EntityModel<UserDto> findUserById(
+            @Valid @PathVariable(VALUE_ID) long id,
+            @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)
+            @Min(value = 1, message = VALIDATION_FAIL)
+                    int page,
+            @Valid @RequestParam(value = VALUE_SIZE, required = false, defaultValue = DEFAULT_SIZE)
+            @Min(value = 1, message = VALIDATION_FAIL)
+                    int size)
             throws ControllerException {
         try {
-            return userService
-                    .findUserById(id)
-                    .map(userDto -> new ResponseEntity<>(userDto, HttpStatus.OK))
-                    .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+            UserDto userDto = userService.findUserById(id).get();
+            return EntityModel.of(userDto, linkTo(methodOn(UserController.class).findUserById(userDto.getId(), page, size))
+                            .withSelfRel(),
+                    linkTo(methodOn(OrderController.class).findCertificateByUser(userDto.getId(), page, size))
+                            .withRel(ORDERS)
+                            .withType(HttpMethod.GET.name()));
         } catch (ServiceException e) {
             throw new ControllerException(e.getMessage());
         }

@@ -1,9 +1,9 @@
 package com.epam.esm.service.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.Setter;
+import lombok.*;
+import org.springframework.hateoas.RepresentationModel;
+import org.springframework.hateoas.server.core.Relation;
 
 import javax.validation.constraints.*;
 import java.math.BigDecimal;
@@ -16,7 +16,12 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class GiftCertificateDto {
+@EqualsAndHashCode(callSuper = false)
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
+@Relation(collectionRelation = "certificates")
+public class GiftCertificateDto extends RepresentationModel<GiftCertificateDto> {
     private long id;
     @NonNull
     @NotBlank

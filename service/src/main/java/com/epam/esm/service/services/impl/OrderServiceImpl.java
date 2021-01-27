@@ -7,7 +7,6 @@ import com.epam.esm.core.repository.OrderRepository;
 import com.epam.esm.service.dto.*;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.mapper.OrderConverter;
-import com.epam.esm.service.mapper.UserConverter;
 import com.epam.esm.service.services.GiftCertificateService;
 import com.epam.esm.service.services.OrderService;
 import com.epam.esm.service.services.UserService;
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,8 +78,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void update(OrderDto orderDto) throws ServiceException {
-
+    public Optional<OrderDto> update(OrderDto orderDto) throws ServiceException {
+        return Optional.empty();
     }
 
     @Override
@@ -90,31 +88,16 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Optional<List<OrderDto>> findAll(int page, int size) throws ServiceException {
+    public List<OrderDto> findAll(int page, int size) throws ServiceException {
         List<Order> orders;
         try {
             orders = orderRepository.findAll(page, size);
         } catch (RepositoryException e) {
             throw new ServiceException(e.getMessage());
         }
-        return Optional.of(orders.stream()
+        return orders.stream()
                 .map(OrderConverter::mapToOrderDto)
-                .collect(Collectors.toList()));
-    }
-
-    @Override
-    public Optional<List<OrderDto>> findAllByUser(long id,int page, int size) throws ServiceException {
-        try {
-            List<OrderDto> orderDtos;
-            List<Order> orders;
-            orders = orderRepository.findAllOrdersByUser(id,page,size);
-            orderDtos = orders.stream()
-                    .map(OrderConverter::mapToOrderDto)
-                    .collect(Collectors.toList());
-            return Optional.of(orderDtos);
-        } catch (RepositoryException e) {
-            throw new ServiceException(e.getMessage());
-        }
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -126,6 +109,20 @@ public class OrderServiceImpl implements OrderService {
             dataOrder.put("time_of_purchase", orderDto.getTimeOfPurchase());
             dataOrder.put("price", orderDto.getPrice());
             return Optional.ofNullable(dataOrder);
+        } catch (RepositoryException e) {
+            throw new ServiceException(e.getMessage());
+        }
+    }
+    @Override
+    public Optional<List<OrderDto>> findAllOrdersByUser(long id, int page, int size) throws ServiceException {
+        try {
+            List<OrderDto> orderDtos;
+            List<Order> orders;
+            orders = orderRepository.findAllOrdersByUser(id, page, size);
+            orderDtos = orders.stream()
+                    .map(OrderConverter::mapToOrderDto)
+                    .collect(Collectors.toList());
+            return Optional.of(orderDtos);
         } catch (RepositoryException e) {
             throw new ServiceException(e.getMessage());
         }

@@ -1,6 +1,7 @@
 package com.epam.esm.core.entity;
 
 import lombok.*;
+import org.hibernate.envers.Audited;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
@@ -13,6 +14,7 @@ import java.util.List;
 @Setter
 @EqualsAndHashCode
 @ToString
+@Audited
 @Component
 @Table(name = "order_table")
 @Entity
@@ -27,7 +29,7 @@ public class Order {
     @NonNull
     @Column(name = "time_of_purchase")
     private LocalDateTime timeOfPurchase;
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST,CascadeType.MERGE} )
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST,CascadeType.MERGE} )
     @JoinTable(name = "orders_certificates",
             joinColumns = {@JoinColumn(name = "id_order")},
             inverseJoinColumns = {@JoinColumn(name = "id_certificate")})
