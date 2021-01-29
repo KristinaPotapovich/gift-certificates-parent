@@ -1,0 +1,7 @@
+DROP TABLE IF EXISTS user;
+DROP TABLE IF EXISTS orders_certificates;
+DROP TABLE IF EXISTS order_table;
+DROP TABLE IF EXISTS certificates_tags;
+DROP TABLE IF EXISTS tag;
+DROP TABLE IF EXISTS gift_certificate;
+DROP SCHEMA IF EXISTS test_db;

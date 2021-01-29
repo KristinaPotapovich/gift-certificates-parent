@@ -11,4 +11,6 @@ public interface OrderRepository extends BaseRepository<Order> {
     Order findOrderById(long id) throws RepositoryException;
 
     List<Order> findAllOrdersByUser(long id, int page, int size) throws RepositoryException;
+
+
 }

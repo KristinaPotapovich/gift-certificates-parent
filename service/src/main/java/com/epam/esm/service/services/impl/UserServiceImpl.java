@@ -1,13 +1,10 @@
 package com.epam.esm.service.services.impl;
 
-import com.epam.esm.core.entity.Order;
 import com.epam.esm.core.entity.User;
 import com.epam.esm.core.exception.RepositoryException;
 import com.epam.esm.core.repository.UserRepository;
-import com.epam.esm.service.dto.OrderDto;
 import com.epam.esm.service.dto.UserDto;
 import com.epam.esm.service.exception.ServiceException;
-import com.epam.esm.service.mapper.OrderConverter;
 import com.epam.esm.service.mapper.UserConverter;
 import com.epam.esm.service.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;

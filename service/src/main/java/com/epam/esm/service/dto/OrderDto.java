@@ -1,8 +1,6 @@
 package com.epam.esm.service.dto;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
 
@@ -14,6 +12,8 @@ import java.util.List;
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = false)
+@NoArgsConstructor
+@AllArgsConstructor
 @Relation(collectionRelation = "orders")
 public class OrderDto extends RepresentationModel<OrderDto> {
     private long id;

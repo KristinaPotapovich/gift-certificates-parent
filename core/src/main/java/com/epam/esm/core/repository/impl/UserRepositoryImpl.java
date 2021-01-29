@@ -3,6 +3,7 @@ package com.epam.esm.core.repository.impl;
 import com.epam.esm.core.entity.User;
 import com.epam.esm.core.exception.RepositoryException;
 import com.epam.esm.core.repository.UserRepository;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Repository;
@@ -17,7 +18,6 @@ import java.util.List;
 public class UserRepositoryImpl implements UserRepository {
     private static final String FIND_ALL_USERS_FAIL = "user_find_all";
     private static final String FIND_USER_BY_ID = "user_find_by_id";
-    private static final String FIND_USER_BY_LOGIN = "user_find_by_login";
 
 
     @PersistenceContext
@@ -52,7 +52,7 @@ public class UserRepositoryImpl implements UserRepository {
                     .setFirstResult((page - 1) * size)
                     .setMaxResults(size)
                     .getResultList();
-        } catch (DataAccessException e) {
+        } catch (HibernateException e) {
             throw new RepositoryException(FIND_ALL_USERS_FAIL);
         }
     }
@@ -65,7 +65,7 @@ public class UserRepositoryImpl implements UserRepository {
             Root<User> userRoot = criteriaQuery.from(User.class);
             criteriaQuery.where(criteriaBuilder.equal(userRoot.get("id"), id));
             return session.createQuery(criteriaQuery).getSingleResult();
-        } catch (DataAccessException e) {
+        } catch (HibernateException e) {
             throw new RepositoryException(FIND_USER_BY_ID);
         }
     }

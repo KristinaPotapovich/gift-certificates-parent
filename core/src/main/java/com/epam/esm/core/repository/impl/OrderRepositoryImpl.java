@@ -3,6 +3,7 @@ package com.epam.esm.core.repository.impl;
 import com.epam.esm.core.entity.Order;
 import com.epam.esm.core.exception.RepositoryException;
 import com.epam.esm.core.repository.OrderRepository;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Repository;
@@ -30,7 +31,7 @@ public class OrderRepositoryImpl implements OrderRepository {
             LocalDateTime createOrder = LocalDateTime.now();
             order.setTimeOfPurchase(createOrder);
             return (Order) session.merge(order);
-        } catch (DataAccessException e) {
+        } catch (HibernateException e) {
             throw new RepositoryException(CREATE_ORDER_FAIL);
         }
     }
@@ -46,7 +47,7 @@ public class OrderRepositoryImpl implements OrderRepository {
                     .setFirstResult((page - 1) * size)
                     .setMaxResults(size)
                     .getResultList();
-        } catch (DataAccessException e) {
+        } catch (HibernateException e) {
             throw new RepositoryException(FIND__ALL_ORDER_BY_USER_FAIL);
         }
     }
@@ -72,7 +73,7 @@ public class OrderRepositoryImpl implements OrderRepository {
                     .setFirstResult((page - 1) * size)
                     .setMaxResults(size)
                     .getResultList();
-        } catch (DataAccessException e) {
+        } catch (HibernateException e) {
             throw new RepositoryException(ORDERS_NOT_FOUND);
         }
     }
@@ -85,7 +86,7 @@ public class OrderRepositoryImpl implements OrderRepository {
             Root<Order> orderRoot = criteriaQuery.from(Order.class);
             criteriaQuery.where(criteriaBuilder.equal(orderRoot.get(ID_ORDER), id));
             return session.createQuery(criteriaQuery).getSingleResult();
-        } catch (DataAccessException e) {
+        } catch (HibernateException e) {
             throw new RepositoryException(FIND_ORDER_BY_ID_FAIL);
         }
     }

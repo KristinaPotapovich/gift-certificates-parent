@@ -8,6 +8,7 @@ import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 @EqualsAndHashCode

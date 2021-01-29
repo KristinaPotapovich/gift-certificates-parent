@@ -5,6 +5,7 @@ import com.epam.esm.core.entity.GiftCertificate;
 import com.epam.esm.core.exception.RepositoryException;
 import com.epam.esm.core.repository.GiftCertificateRepository;
 import com.epam.esm.core.repository.specification.OrderBySpecification;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Repository;
@@ -41,7 +42,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
             LocalDateTime createDate = LocalDateTime.now();
             giftCertificate.setCreateDate(createDate);
             return (GiftCertificate) session.merge(giftCertificate);
-        } catch (DataAccessException e) {
+        } catch (HibernateException e) {
             throw new RepositoryException(CREATE_CERTIFICATE_FAIL);
         }
     }
@@ -52,7 +53,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
             LocalDateTime lastUpdateDate = LocalDateTime.now();
             giftCertificate.setLastUpdateDate(lastUpdateDate);
             return (GiftCertificate) session.merge(giftCertificate);
-        } catch (DataAccessException e) {
+        } catch (HibernateException e) {
             throw new RepositoryException(UPDATE_CERTIFICATE_FAIL);
         }
     }
@@ -60,8 +61,8 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     @Override
     public void delete(GiftCertificate giftCertificate) throws RepositoryException {
         try {
-            session.remove(giftCertificate);
-        } catch (DataAccessException e) {
+            session.remove(session.contains(giftCertificate) ? giftCertificate : session.merge(giftCertificate));
+        } catch (HibernateException e) {
             throw new RepositoryException(DELETE_CERTIFICATE_FAIL);
         }
     }
@@ -78,7 +79,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
                     .setFirstResult((page - 1) * size)
                     .setMaxResults(size)
                     .getResultList();
-        } catch (DataAccessException e) {
+        } catch (HibernateException e) {
             throw new RepositoryException(FIND_ALL_CERTIFICATES_FAIL);
         }
     }
@@ -101,7 +102,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
                     .setFirstResult((page - 1) * size)
                     .setMaxResults(size)
                     .getResultList();
-        } catch (DataAccessException e) {
+        } catch (HibernateException e) {
             throw new RepositoryException(FIND_CERTIFICATE_BY_PARAM_FAIL);
         }
         return giftCertificates;
@@ -115,7 +116,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
             Root<GiftCertificate> giftCertificateRoot = criteriaQuery.from(GiftCertificate.class);
             criteriaQuery.where(criteriaBuilder.equal(giftCertificateRoot.get(ID_CERTIFICATE), id));
             return session.createQuery(criteriaQuery).getSingleResult();
-        } catch (DataAccessException e) {
+        } catch (HibernateException e) {
             throw new RepositoryException(FIND_CERTIFICATE_BY_PARAM_FAIL);
         }
     }
@@ -131,7 +132,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
                     .setFirstResult((page - 1) * size)
                     .setMaxResults(size)
                     .getResultList();
-        } catch (DataAccessException e) {
+        } catch (HibernateException e) {
             throw new RepositoryException(FIND_CERTIFICATE_BY_PARAM_FAIL);
         }
     }
@@ -152,7 +153,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
                     .setFirstResult((page - 1) * size)
                     .setMaxResults(size)
                     .getResultList();
-        } catch (DataAccessException e) {
+        } catch (HibernateException e) {
             throw new RepositoryException(SORT_CERTIFICATE_FAIL);
         }
     }
@@ -176,7 +177,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
             } else {
                 giftCertificateCriteriaQuery.where(criteriaBuilder.and(predicates.toArray(new Predicate[0])));
             }
-        } catch (DataAccessException e) {
+        } catch (HibernateException e) {
             throw new RepositoryException(FIND_ALL_CERTIFICATES_FAIL);
         }
         return session.createQuery(giftCertificateCriteriaQuery)

@@ -1,13 +1,6 @@
 package com.epam.esm.core.repository.impl;
 
-import com.epam.esm.core.config.TestConfig;
-import com.epam.esm.core.entity.Tag;
-import com.epam.esm.core.exception.RepositoryException;
-import com.epam.esm.core.repository.TagRepository;
-import org.junit.Test;
-import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -17,7 +10,6 @@ import java.util.Optional;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @Component
-@ContextConfiguration(classes = TestConfig.class)
 public class TagRepositoryImplTest {
 
 //    @Autowired

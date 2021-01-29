@@ -1,7 +1,6 @@
 package com.epam.esm.service.services.impl;
 
 import com.epam.esm.core.entity.Order;
-import com.epam.esm.core.entity.User;
 import com.epam.esm.core.exception.RepositoryException;
 import com.epam.esm.core.repository.OrderRepository;
 import com.epam.esm.service.dto.*;
@@ -73,17 +72,17 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Optional<OrderDto> create(OrderDto orderDto) throws ServiceException {
+    public Optional<OrderDto> create(OrderDto orderDto) {
         return Optional.empty();
     }
 
     @Override
-    public Optional<OrderDto> update(OrderDto orderDto) throws ServiceException {
+    public Optional<OrderDto> update(OrderDto orderDto) {
         return Optional.empty();
     }
 
     @Override
-    public void delete(long id) throws ServiceException {
+    public void delete(long id) {
 
     }
 

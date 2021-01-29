@@ -1,10 +1,7 @@
 package com.epam.esm.service.dto;
 
 import com.epam.esm.core.entity.UserRole;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
 
@@ -14,6 +11,8 @@ import javax.validation.constraints.Size;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @Relation(collectionRelation = "users")
 public class UserDto extends RepresentationModel<UserDto> {

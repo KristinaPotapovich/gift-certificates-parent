@@ -23,12 +23,10 @@ import java.util.List;
 @Relation(collectionRelation = "certificates")
 public class GiftCertificateDto extends RepresentationModel<GiftCertificateDto> {
     private long id;
-    @NonNull
     @NotBlank
     @Size(min = 3,max = 50)
     @Pattern(regexp = "^[a-zA-Zа-яА-ЯёЁ0-9\\s?!,.:'\\-]+$")
     private String name;
-    @NonNull
     @NotBlank
     @Size(min = 3,max = 250)
     @Pattern(regexp = "^[a-zA-Zа-яА-ЯёЁ0-9\\s?!,.:'\\-]+$")

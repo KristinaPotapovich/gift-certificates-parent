@@ -3,8 +3,8 @@ package com.epam.esm.core.repository.impl;
 import com.epam.esm.core.entity.Tag;
 import com.epam.esm.core.exception.RepositoryException;
 import com.epam.esm.core.repository.TagRepository;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.PersistenceContext;
@@ -43,7 +43,7 @@ public class TagRepositoryImpl implements TagRepository {
     public Tag create(Tag tag) throws RepositoryException {
         try {
             session.persist(tag);
-        } catch (DataAccessException e) {
+        } catch (HibernateException e) {
             throw new RepositoryException(CREATE_TAG_FAIL);
         }
         return session.find(Tag.class,tag);
@@ -53,7 +53,7 @@ public class TagRepositoryImpl implements TagRepository {
     public Tag update(Tag tag) throws RepositoryException {
         try {
             return (Tag) session.merge(tag);
-        } catch (DataAccessException e) {
+        } catch (HibernateException e) {
             throw new RepositoryException(UPDATE_TAG_FAIL);
         }
     }
@@ -61,8 +61,8 @@ public class TagRepositoryImpl implements TagRepository {
     @Override
     public void delete(Tag tag) throws RepositoryException {
         try {
-            session.remove(tag);
-        } catch (DataAccessException e) {
+            session.remove(session.contains(tag) ? tag : session.merge(tag));
+        } catch (HibernateException e) {
             throw new RepositoryException(DELETE_TAG_FAIL);
         }
     }
@@ -75,7 +75,7 @@ public class TagRepositoryImpl implements TagRepository {
             tagCriteriaQuery.where(criteriaBuilder.equal(tagRoot.get("id"), id));
             Tag tag = session.createQuery(tagCriteriaQuery).getSingleResult();
             return Optional.of(tag);
-        } catch (DataAccessException e) {
+        } catch (HibernateException e) {
             throw new RepositoryException(FIND_BY_NAME_TAG_FAIL);
         }
     }
@@ -91,7 +91,7 @@ public class TagRepositoryImpl implements TagRepository {
                     .setFirstResult((page - 1) * size)
                     .setMaxResults(size)
                     .getResultList();
-        } catch (DataAccessException e) {
+        } catch (HibernateException e) {
             throw new RepositoryException(FIND_ALL_TAG_FAIL);
         }
     }
@@ -107,7 +107,7 @@ public class TagRepositoryImpl implements TagRepository {
                     .setFirstResult((page - 1) * size)
                     .setMaxResults(size)
                     .getResultList();
-        } catch (DataAccessException e) {
+        } catch (HibernateException e) {
             throw new RepositoryException(FIND_ALL_TAG_FAIL);
         }
     }
