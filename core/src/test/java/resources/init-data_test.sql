@@ -1,4 +1,4 @@
-USE `test_db` ;
+
 INSERT INTO gift_certificate (name, description, price, duration)
 VALUES ('certificate one', 'description', 12.5, 5),
        ('certificate two', 'some text', 8.5,9),
@@ -21,17 +21,17 @@ VALUES
        (2,3),
        (2,4);
 
-INSERT INTO order_table (id_order,price,time_of_puchase,id_user)
-VALUES
-(1,55,2021-01-25 08:19:58,1),
-(2,40,2021-01-25 08:19:58,2),
-(3,22,2021-01-25 08:19:58,3);
-
 INSERT INTO user (id_user,login,password,role)
 VALUES
-(1,'user1','passwword1',USER),
-(2,'user2','passwword2',USER),
-(3,'user3','passwword3',USER);
+(1,'user1','passwword1','USER'),
+(2,'user2','passwword2','USER'),
+(3,'user3','passwword3','USER');
+
+INSERT INTO order_table (id_order,price,time_of_purchase,id_user)
+VALUES
+(1,55,'2021-01-25 08:19:58',1),
+(2,40,'2021-01-25 08:19:58',2),
+(3,22,'2021-01-25 08:19:58',3);
 
 INSERT INTO orders_certificates (id_order,id_certificate)
 VALUES

@@ -9,6 +9,9 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+/**
+ * User dto.
+ */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -17,14 +20,13 @@ import javax.validation.constraints.Size;
 @Relation(collectionRelation = "users")
 public class UserDto extends RepresentationModel<UserDto> {
     private long id;
-    @NonNull
     @NotBlank
-    @Size(min = 3,max = 20)
+    @Size(min = 3, max = 20)
     @Pattern(regexp = "^[a-zA-Zа-яА-ЯёЁ0-9\\s?!,.:'\\-]+$")
     private String login;
     @NonNull
     @NotBlank
-    @Size(min = 3,max = 20)
+    @Size(min = 3, max = 20)
     private String password;
     private UserRole userRole;
 }

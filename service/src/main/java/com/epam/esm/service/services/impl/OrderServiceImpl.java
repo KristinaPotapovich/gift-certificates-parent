@@ -21,6 +21,9 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
+/**
+ * Order service.
+ */
 @Service
 public class OrderServiceImpl implements OrderService {
     private GiftCertificateService giftCertificateService;
@@ -28,6 +31,13 @@ public class OrderServiceImpl implements OrderService {
     private OrderRepository orderRepository;
     private static final String USER_NOT_FOUND = "user_find_by_id";
 
+    /**
+     * Instantiates a new Order service.
+     *
+     * @param giftCertificateService the gift certificate service
+     * @param userService            the user service
+     * @param orderRepository        the order repository
+     */
     @Autowired
     public OrderServiceImpl(GiftCertificateService giftCertificateService, UserService userService,
                             OrderRepository orderRepository) {
@@ -112,6 +122,7 @@ public class OrderServiceImpl implements OrderService {
             throw new ServiceException(e.getMessage());
         }
     }
+
     @Override
     public Optional<List<OrderDto>> findAllOrdersByUser(long id, int page, int size) throws ServiceException {
         try {

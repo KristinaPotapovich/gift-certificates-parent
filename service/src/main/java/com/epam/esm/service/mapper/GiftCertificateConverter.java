@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 
 /**
- * The type Gift certificate converter.
+ * Gift certificate converter.
  */
 public class GiftCertificateConverter {
     /**

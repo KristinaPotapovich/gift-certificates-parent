@@ -7,6 +7,9 @@ import org.springframework.stereotype.Component;
 import javax.persistence.*;
 import java.util.List;
 
+/**
+ * User Entity.
+ */
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -23,7 +26,7 @@ public class User {
     @Column(name = "id_user")
     private long id;
     @NonNull
-    @Column(name = "login",unique = true)
+    @Column(name = "login", unique = true)
     private String login;
     @NonNull
     @Column(name = "password")
@@ -32,6 +35,6 @@ public class User {
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
-    @OneToMany(cascade = {CascadeType.MERGE}, fetch = FetchType.LAZY,mappedBy = "user")
+    @OneToMany(cascade = {CascadeType.MERGE}, fetch = FetchType.LAZY, mappedBy = "user")
     private List<Order> orders;
 }

@@ -14,10 +14,18 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * User service.
+ */
 @Service
 public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
 
+    /**
+     * Instantiates a new User service.
+     *
+     * @param userRepository the user repository
+     */
     @Autowired
     public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -35,17 +43,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<UserDto> create(UserDto userDto) throws ServiceException {
+    public Optional<UserDto> create(UserDto userDto) {
         return Optional.empty();
     }
 
     @Override
-    public Optional<UserDto> update(UserDto userDto) throws ServiceException {
+    public Optional<UserDto> update(UserDto userDto) {
         return Optional.empty();
     }
 
     @Override
-    public void delete(long id) throws ServiceException {
+    public void delete(long id) {
 
     }
 

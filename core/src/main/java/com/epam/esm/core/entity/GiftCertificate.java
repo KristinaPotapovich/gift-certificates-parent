@@ -11,6 +11,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 
+/**
+ * Gift certificate Entity.
+ */
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -41,7 +44,7 @@ public class GiftCertificate {
     private LocalDateTime createDate;
     @Column(name = "last_update_date")
     private LocalDateTime lastUpdateDate;
-    @ManyToMany(cascade = {CascadeType.PERSIST,CascadeType.MERGE,CascadeType.REMOVE}, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.EAGER)
     @JoinTable(name = "certificates_tags",
             joinColumns = {@JoinColumn(name = "id_certificate", nullable = false)},
             inverseJoinColumns = {@JoinColumn(name = "id_tag", nullable = false)})

@@ -1,7 +1,6 @@
 package com.epam.esm.service.services.impl;
 
 import com.epam.esm.core.exception.RepositoryException;
-import com.epam.esm.core.repository.GiftCertificateRepository;
 import com.epam.esm.core.repository.TagRepository;
 import com.epam.esm.service.dto.TagDto;
 import com.epam.esm.core.entity.Tag;
@@ -16,18 +15,22 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * The type Tag service.
+ * Tag service.
  */
 @Service
 public class TagServiceImpl implements TagService {
 
     private TagRepository tagRepository;
-    private GiftCertificateRepository giftCertificateRepository;
 
+
+    /**
+     * Instantiates a new Tag service.
+     *
+     * @param tagRepository the tag repository
+     */
     @Autowired
-    public TagServiceImpl(TagRepository tagRepository, GiftCertificateRepository giftCertificateRepository) {
+    public TagServiceImpl(TagRepository tagRepository) {
         this.tagRepository = tagRepository;
-        this.giftCertificateRepository = giftCertificateRepository;
     }
 
 
@@ -100,11 +103,11 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public Optional<List<TagDto>> findAllTagsByCertificateId(long idCertificate,int page,int size)
+    public Optional<List<TagDto>> findAllTagsByCertificateId(long idCertificate, int page, int size)
             throws ServiceException {
         List<Tag> tags;
         try {
-            tags = tagRepository.findAllTagsByCertificateId(idCertificate,page,size);
+            tags = tagRepository.findAllTagsByCertificateId(idCertificate, page, size);
         } catch (RepositoryException e) {
             throw new ServiceException(e.getMessage());
         }

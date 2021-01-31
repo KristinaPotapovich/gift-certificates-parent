@@ -1,27 +1,20 @@
 package com.epam.esm.service.services.impl;
 
 import com.epam.esm.core.entity.GiftCertificate;
-import com.epam.esm.core.entity.Tag;
 import com.epam.esm.core.exception.RepositoryException;
 import com.epam.esm.core.repository.GiftCertificateRepository;
-import com.epam.esm.core.repository.TagRepository;
 import com.epam.esm.core.repository.impl.GiftCertificateRepositoryImpl;
-import com.epam.esm.core.repository.impl.TagRepositoryImpl;
 import com.epam.esm.service.dto.GiftCertificateDto;
 import com.epam.esm.service.dto.TagDto;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.mapper.GiftCertificateConverter;
-import com.epam.esm.service.mapper.TagConverter;
 import com.epam.esm.service.services.GiftCertificateService;
-import com.epam.esm.service.services.TagService;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import org.junit.jupiter.api.TestInstance;
 
-import javax.validation.Validation;
-import javax.validation.Validator;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -34,68 +27,44 @@ import static org.mockito.Mockito.*;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class GiftCertificateServiceImplTest {
 
-    GiftCertificateService giftCertificateService;
-    GiftCertificateRepository giftCertificateRepository;
-    TagService tagService;
-    TagRepository tagRepository;
-    TagDto tagDto;
-    GiftCertificateDto giftCertificateDto1;
-    GiftCertificateDto giftCertificateDto2;
-    List<GiftCertificateDto> giftCertificateDtos;
-    List<TagDto> tagDtos;
-    GiftCertificate giftCertificate;
-    GiftCertificate giftCertificate3;
-    List<GiftCertificate> giftCertificates;
-    Tag tag;
-    Validator validator;
+    private GiftCertificateService giftCertificateService;
+    private GiftCertificateRepository giftCertificateRepository;
+    private TagDto tagDto;
+    private GiftCertificateDto giftCertificateDto1;
+    private List<GiftCertificateDto> giftCertificateDtos;
+    private List<TagDto> tagDtos;
+    private GiftCertificate giftCertificate;
+    private List<GiftCertificate> giftCertificates;
 
     @BeforeAll
-    void setUp() {
+    public void setUp() {
         giftCertificateRepository = mock(GiftCertificateRepositoryImpl.class);
-        tagRepository = mock(TagRepositoryImpl.class);
-        tagService = new TagServiceImpl(tagRepository, giftCertificateRepository);
-        giftCertificateService = new GiftCertificateServiceImpl(giftCertificateRepository,
-                tagService);
-        giftCertificateDto1 = new GiftCertificateDto(1L,"testCertificate1","testDescription1",
+        giftCertificateService = new GiftCertificateServiceImpl(giftCertificateRepository);
+        giftCertificateDto1 = new GiftCertificateDto(1L, "testCertificate1", "testDescription1",
                 BigDecimal.valueOf(15.22), 5,
                 LocalDateTime.of(2021, 1, 16, 19, 10),
-                LocalDateTime.of(2021, 1, 16, 19, 10),tagDtos);
-        giftCertificateDto2 = new GiftCertificateDto(2L,"testCertificate1","testDescription2",
-                BigDecimal.valueOf(22), 2,
-                LocalDateTime.of(2021, 1, 16, 19, 8),
-                LocalDateTime.of(2021, 1, 16, 19, 15),tagDtos);
-        tagDto = new TagDto(1L,"testTag");
+                LocalDateTime.of(2021, 1, 16, 19, 10), tagDtos);
+        tagDto = new TagDto(1L, "testTag");
         giftCertificateDtos = new ArrayList<>();
         giftCertificateDtos.add(giftCertificateDto1);
-        giftCertificateDtos.add(giftCertificateDto2);
         tagDtos = new ArrayList<>();
         tagDtos.add(tagDto);
         giftCertificateDto1.setTags(tagDtos);
-        giftCertificateDto2.setTags(tagDtos);
         giftCertificate = GiftCertificateConverter.mapToGiftCertificate(giftCertificateDto1);
-        giftCertificate3 = GiftCertificateConverter.mapToGiftCertificate(giftCertificateDto2);
         giftCertificates = new ArrayList<>();
         giftCertificates.add(giftCertificate);
-        giftCertificates.add(giftCertificate3);
-        tag = TagConverter.mapToTag(tagDto);
-        validator = Validation.buildDefaultValidatorFactory().getValidator();
     }
 
     @AfterAll
-    void tearDown() {
+    public void tearDown() {
         giftCertificateService = null;
         giftCertificateDto1 = null;
-        giftCertificateDto2 = null;
         giftCertificateRepository = null;
         giftCertificateDtos = null;
         tagDto = null;
-        tagService = null;
-        tagRepository = null;
         tagDtos = null;
         giftCertificate = null;
-        giftCertificate3 = null;
         giftCertificates = null;
-        tag = null;
     }
 
     @Test
@@ -173,7 +142,7 @@ class GiftCertificateServiceImplTest {
         Optional<GiftCertificateDto> actual = giftCertificateService
                 .patch(GiftCertificateConverter.mapToGiftCertificateDto(giftCertificate));
         verify(giftCertificateRepository).update(giftCertificate);
-        assertEquals(actual,expected);
+        assertEquals(actual, expected);
     }
 
     @Test

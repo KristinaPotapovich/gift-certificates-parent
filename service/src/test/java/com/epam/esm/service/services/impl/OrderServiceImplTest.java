@@ -7,11 +7,9 @@ import com.epam.esm.core.entity.UserRole;
 import com.epam.esm.core.exception.RepositoryException;
 import com.epam.esm.core.repository.GiftCertificateRepository;
 import com.epam.esm.core.repository.OrderRepository;
-import com.epam.esm.core.repository.TagRepository;
 import com.epam.esm.core.repository.UserRepository;
 import com.epam.esm.core.repository.impl.GiftCertificateRepositoryImpl;
 import com.epam.esm.core.repository.impl.OrderRepositoryImpl;
-import com.epam.esm.core.repository.impl.TagRepositoryImpl;
 import com.epam.esm.core.repository.impl.UserRepositoryImpl;
 import com.epam.esm.service.dto.*;
 import com.epam.esm.service.exception.ServiceException;
@@ -20,7 +18,6 @@ import com.epam.esm.service.mapper.OrderConverter;
 import com.epam.esm.service.mapper.UserConverter;
 import com.epam.esm.service.services.GiftCertificateService;
 import com.epam.esm.service.services.OrderService;
-import com.epam.esm.service.services.TagService;
 import com.epam.esm.service.services.UserService;
 import org.junit.jupiter.api.*;
 
@@ -36,46 +33,36 @@ import static org.mockito.Mockito.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class OrderServiceImplTest {
-    OrderService orderService;
-    OrderRepository orderRepository;
-    UserRepository userRepository;
-    GiftCertificateRepository giftCertificateRepository;
-    TagRepository tagRepository;
-    OrderDto orderDto;
-    Order order;
-    UserService userService;
-    TagService tagService;
-    GiftCertificateService giftCertificateService;
-    List<Order> orders;
-    List<OrderDto> orderDtos;
-    GiftCertificateDto giftCertificateDto1;
-    GiftCertificateDto giftCertificateDto2;
-    List<GiftCertificateDto> giftCertificateDtos;
-    List<TagDto> tagDtos;
-    UserDto user;
-    TagDto tagDto;
-    GiftCertificate giftCertificate;
-    List<GiftCertificate>giftCertificates;
+    private OrderService orderService;
+    private OrderRepository orderRepository;
+    private UserRepository userRepository;
+    private GiftCertificateRepository giftCertificateRepository;
+    private OrderDto orderDto;
+    private Order order;
+    private UserService userService;
+    private GiftCertificateService giftCertificateService;
+    private List<Order> orders;
+    private GiftCertificateDto giftCertificateDto1;
+    private UserDto user;
+    private List<GiftCertificate> giftCertificates;
 
 
     @BeforeAll
-    void setUp() {
+    public void setUp() {
         orderRepository = mock(OrderRepositoryImpl.class);
         userRepository = mock(UserRepositoryImpl.class);
         giftCertificateRepository = mock(GiftCertificateRepositoryImpl.class);
-        tagRepository = mock(TagRepositoryImpl.class);
-        tagService = new TagServiceImpl(tagRepository, giftCertificateRepository);
-        giftCertificateService = new GiftCertificateServiceImpl(giftCertificateRepository, tagService);
+        giftCertificateService = new GiftCertificateServiceImpl(giftCertificateRepository);
         userService = new UserServiceImpl(userRepository);
         orderService = new OrderServiceImpl(giftCertificateService, userService, orderRepository);
-        tagDto = new TagDto(1L, "tag");
-        tagDtos = new ArrayList<>();
+        TagDto tagDto = new TagDto(1L, "tag");
+        List<TagDto> tagDtos = new ArrayList<>();
         tagDtos.add(tagDto);
         giftCertificateDto1 = new GiftCertificateDto(1L, "testCertificate2", "testDescription1",
                 BigDecimal.valueOf(15.22), 5,
                 LocalDateTime.of(2021, 1, 16, 19, 10),
                 LocalDateTime.of(2021, 1, 16, 19, 10), tagDtos);
-        giftCertificateDtos = new ArrayList<>();
+        List<GiftCertificateDto> giftCertificateDtos = new ArrayList<>();
         giftCertificateDtos.add(giftCertificateDto1);
         user = new UserDto(1L, "kristina", "123fghj", UserRole.USER);
         orderDto = new OrderDto(1L, BigDecimal.valueOf(15.22),
@@ -83,33 +70,27 @@ class OrderServiceImplTest {
         order = OrderConverter.mapToOrder(orderDto);
         orders = new ArrayList<>();
         orders.add(order);
-        orderDtos = new ArrayList<>();
+        List<OrderDto> orderDtos = new ArrayList<>();
         orderDtos.add(orderDto);
-        giftCertificate = GiftCertificateConverter.mapToGiftCertificate(giftCertificateDto1);
+        GiftCertificate giftCertificate = GiftCertificateConverter.mapToGiftCertificate(giftCertificateDto1);
         giftCertificates = new ArrayList<>();
         giftCertificates.add(giftCertificate);
     }
 
     @AfterAll
-    void tearDown() {
+    public void tearDown() {
         orderRepository = null;
         userRepository = null;
         giftCertificateRepository = null;
-        tagRepository = null;
-        tagService = null;
         giftCertificateService = null;
         userService = null;
         orderService = null;
-        tagDto = null;
-        tagDtos = null;
         giftCertificateDto1 = null;
-        giftCertificateDto2 = null;
-        giftCertificateDtos = null;
         user = null;
         orderDto = null;
         order = null;
         orders = null;
-        orderDtos = null;
+        giftCertificates = null;
     }
 
     @Test
@@ -137,21 +118,21 @@ class OrderServiceImplTest {
 
     @Test
     void findOrderById() throws RepositoryException, ServiceException {
-        User user1 = new User(1L, "testLogin", "testPassword", UserRole.USER,orders);
+        User user1 = new User(1L, "testLogin", "testPassword", UserRole.USER, orders);
         Order orderForCreate = new Order(1L, BigDecimal.valueOf(15.22),
                 LocalDateTime.of(2021, 1, 16, 19, 15), giftCertificates,
                 user1);
         when(orderRepository.findOrderById(orderForCreate.getId())).thenReturn(orderForCreate);
-        Optional<Map<String,Object>> actual = orderService.findOrderById(orderForCreate.getId());
+        Optional<Map<String, Object>> actual = orderService.findOrderById(orderForCreate.getId());
         verify(orderRepository).findOrderById(orderForCreate.getId());
         assertNotNull(actual);
     }
 
     @Test
     void findAllOrdersByUser() throws RepositoryException, ServiceException {
-        when(orderRepository.findAllOrdersByUser(1L,1,3)).thenReturn(orders);
-        Optional<List<OrderDto>> actual = orderService.findAllOrdersByUser(1L,1,3);
-        verify(orderRepository).findAllOrdersByUser(1L,1,3);
+        when(orderRepository.findAllOrdersByUser(1L, 1, 3)).thenReturn(orders);
+        Optional<List<OrderDto>> actual = orderService.findAllOrdersByUser(1L, 1, 3);
+        verify(orderRepository).findAllOrdersByUser(1L, 1, 3);
         assertTrue(actual.isPresent());
     }
 }

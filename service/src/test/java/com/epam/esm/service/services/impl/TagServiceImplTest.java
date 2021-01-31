@@ -2,9 +2,7 @@ package com.epam.esm.service.services.impl;
 
 import com.epam.esm.core.entity.Tag;
 import com.epam.esm.core.exception.RepositoryException;
-import com.epam.esm.core.repository.GiftCertificateRepository;
 import com.epam.esm.core.repository.TagRepository;
-import com.epam.esm.core.repository.impl.GiftCertificateRepositoryImpl;
 import com.epam.esm.core.repository.impl.TagRepositoryImpl;
 import com.epam.esm.service.dto.TagDto;
 import com.epam.esm.service.exception.ServiceException;
@@ -21,42 +19,31 @@ import static org.mockito.Mockito.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TagServiceImplTest {
-    TagService tagService;
-    TagRepository tagRepository;
-    TagDto tagDto;
-    TagDto tagDto2;
-    List<TagDto> tagDtos;
-    GiftCertificateRepository giftCertificateRepository;
-    Tag tag;
-    Tag tag1;
-    List<Tag> tags;
+    private TagService tagService;
+    private TagRepository tagRepository;
+    private TagDto tagDto;
+    private Tag tag;
+    private List<Tag> tags;
 
     @BeforeAll
-    void setUp() {
-        giftCertificateRepository = mock(GiftCertificateRepositoryImpl.class);
+    public void setUp() {
         tagRepository = mock(TagRepositoryImpl.class);
-        tagService = new TagServiceImpl(tagRepository, giftCertificateRepository);
+        tagService = new TagServiceImpl(tagRepository);
         tagDto = new TagDto();
         tagDto.setId(1);
         tagDto.setName("testTag");
-        tagDto2 = new TagDto();
-        tagDto2.setId(2);
-        tagDto2.setName("testTag2");
         tag = TagConverter.mapToTag(tagDto);
-        tag1 = TagConverter.mapToTag(tagDto2);
-        tagDtos = new ArrayList<>();
-        tagDtos.add(tagDto);
-        tagDtos.add(tagDto2);
         tags = new ArrayList<>();
         tags.add(tag);
-        tags.add(tag1);
     }
 
     @AfterAll
-    void tearDown() {
-        giftCertificateRepository = null;
+    public void tearDown() {
         tagRepository = null;
         tagService = null;
+        tagDto = null;
+        tag = null;
+        tags = null;
     }
 
     @Test
@@ -107,12 +94,13 @@ class TagServiceImplTest {
         verify(tagRepository).findPopularTag();
         assertNotNull(actual);
     }
+
     @Test
     void findAllTagsByCertificateId() throws RepositoryException, ServiceException {
-        when(tagRepository.findAllTagsByCertificateId(1,1,3))
+        when(tagRepository.findAllTagsByCertificateId(1, 1, 3))
                 .thenReturn(tags);
-        Optional<List<TagDto>> actual = tagService.findAllTagsByCertificateId(1,1,3);
-        verify(tagRepository).findAllTagsByCertificateId(1,1,3);
+        Optional<List<TagDto>> actual = tagService.findAllTagsByCertificateId(1, 1, 3);
+        verify(tagRepository).findAllTagsByCertificateId(1, 1, 3);
         assertTrue(actual.isPresent());
     }
 }

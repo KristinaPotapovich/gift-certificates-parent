@@ -9,6 +9,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Order dto.
+ */
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = false)

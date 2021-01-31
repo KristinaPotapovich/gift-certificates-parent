@@ -11,15 +11,30 @@ import java.util.Optional;
  */
 public interface TagService extends BaseService<TagDto> {
     /**
-     * Find tag by name optional.
+     * Find tag by id optional.
      *
+     * @param id the id
      * @return the optional
      * @throws ServiceException the service exception
      */
     Optional<TagDto> findTagById(long id) throws ServiceException;
 
+    /**
+     * Find popular tag optional.
+     *
+     * @return the optional
+     */
     Optional<TagDto> findPopularTag();
 
+    /**
+     * Find all tags by certificate id optional.
+     *
+     * @param idCertificate the id certificate
+     * @param page          the page
+     * @param size          the size
+     * @return the optional
+     * @throws ServiceException the service exception
+     */
     Optional<List<TagDto>> findAllTagsByCertificateId(long idCertificate, int page, int size)
             throws ServiceException;
 }

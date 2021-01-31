@@ -12,17 +12,32 @@ import java.time.LocalDateTime;
 import java.util.Locale;
 
 
+/**
+ * Controller exception handler.
+ */
 @RestControllerAdvice
 public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
     private static final String MESSAGE = ".message";
     private static final String CODE = ".code";
     private MessageSource messageSource;
 
+    /**
+     * Instantiates a new Controller exception handler.
+     *
+     * @param messageSource the message source
+     */
     @Autowired
     public ControllerExceptionHandler(MessageSource messageSource) {
         this.messageSource = messageSource;
     }
 
+    /**
+     * Error by Controller Exception.
+     *
+     * @param e      e from exception
+     * @param locale locale
+     * @return error response message
+     */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = ControllerException.class)
     public ErrorResponseMessage controllerError(ControllerException e, Locale locale) {
@@ -36,7 +51,14 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
         return errorResponseMessage;
     }
 
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    /**
+     * Handle illegal argument exception error response message.
+     *
+     * @param e      e from RuntimeException
+     * @param locale locale
+     * @return error response message
+     */
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({RuntimeException.class})
     public ErrorResponseMessage handleIllegalArgumentException(RuntimeException e, Locale locale) {
         ErrorResponseMessage errorResponseMessage = new ErrorResponseMessage();

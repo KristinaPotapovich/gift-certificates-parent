@@ -3,14 +3,13 @@ package com.epam.esm.service.services.impl;
 import com.epam.esm.core.entity.GiftCertificate;
 import com.epam.esm.core.exception.RepositoryException;
 import com.epam.esm.core.repository.GiftCertificateRepository;
-import com.epam.esm.core.repository.specification.OrderBySpecification;
-import com.epam.esm.core.repository.specification.impl.OrderByDateSpecification;
-import com.epam.esm.core.repository.specification.impl.OrderByNameSpecification;
+import com.epam.esm.core.repository.specification.SortingSpecification;
+import com.epam.esm.core.repository.specification.impl.SortingDateSpecification;
+import com.epam.esm.core.repository.specification.impl.SortingNameSpecification;
 import com.epam.esm.service.dto.GiftCertificateDto;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.mapper.GiftCertificateConverter;
 import com.epam.esm.service.services.GiftCertificateService;
-import com.epam.esm.service.services.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,21 +19,22 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * The type Gift certificate service.
+ * Gift certificate service.
  */
 @Service
 public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     private GiftCertificateRepository giftCertificateRepositoryImpl;
-    private TagService tagService;
-    private static final String CREATE_CERTIFICATE_FAIL = "giftCertificate_create_fail";
-    private static final String CERTIFICATE_IS_EXISTS = "certificate_is_exist";
 
+
+    /**
+     * Instantiates a new Gift certificate service.
+     *
+     * @param giftCertificateRepositoryImpl the gift certificate repository
+     */
     @Autowired
-    public GiftCertificateServiceImpl(GiftCertificateRepository giftCertificateRepositoryImpl,
-                                      TagService tagService) {
+    public GiftCertificateServiceImpl(GiftCertificateRepository giftCertificateRepositoryImpl) {
         this.giftCertificateRepositoryImpl = giftCertificateRepositoryImpl;
-        this.tagService = tagService;
     }
 
     @Transactional
@@ -143,15 +143,15 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     public Optional<List<GiftCertificateDto>> sortByParam(String paramForSorting, String order, int page, int size)
             throws ServiceException {
         List<GiftCertificateDto> giftCertificateDtos;
-        OrderBySpecification<GiftCertificate> orderBySpecification = null;
+        SortingSpecification<GiftCertificate> orderBySpecification = null;
         List<GiftCertificate> giftCertificates;
         try {
             if (paramForSorting != null && !paramForSorting.isEmpty() && order != null && !order.isEmpty()) {
                 if (paramForSorting.equals("name")) {
-                    orderBySpecification = new OrderByNameSpecification(order);
+                    orderBySpecification = new SortingNameSpecification(order);
                 }
                 if (paramForSorting.equals("date")) {
-                    orderBySpecification = new OrderByDateSpecification(order);
+                    orderBySpecification = new SortingDateSpecification(order);
                 }
             } else {
                 throw new ServiceException();

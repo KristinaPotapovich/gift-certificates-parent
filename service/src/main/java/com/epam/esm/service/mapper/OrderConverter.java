@@ -11,7 +11,16 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+/**
+ * Order converter.
+ */
 public class OrderConverter {
+    /**
+     * Map to order dto order dto.
+     *
+     * @param order the order
+     * @return the order dto
+     */
     public static OrderDto mapToOrderDto(Order order) {
         OrderDto orderDto = new OrderDto();
         orderDto.setId(order.getId());
@@ -33,6 +42,12 @@ public class OrderConverter {
         return orderDto;
     }
 
+    /**
+     * Map to order order.
+     *
+     * @param orderDto the order dto
+     * @return the order
+     */
     public static Order mapToOrder(OrderDto orderDto) {
         Order order = new Order();
         order.setId(orderDto.getId());

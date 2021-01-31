@@ -9,6 +9,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Order Entity.
+ */
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -30,7 +33,7 @@ public class Order {
     @NonNull
     @Column(name = "time_of_purchase")
     private LocalDateTime timeOfPurchase;
-    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST,CascadeType.MERGE} )
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "orders_certificates",
             joinColumns = {@JoinColumn(name = "id_order")},
             inverseJoinColumns = {@JoinColumn(name = "id_certificate")})

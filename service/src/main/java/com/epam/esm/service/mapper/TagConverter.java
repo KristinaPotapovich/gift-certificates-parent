@@ -4,7 +4,7 @@ import com.epam.esm.service.dto.TagDto;
 import com.epam.esm.core.entity.Tag;
 
 /**
- * The type Tag converter.
+ * Tag converter.
  */
 public class TagConverter {
     /**

@@ -13,6 +13,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -20,8 +21,12 @@ import javax.validation.constraints.Min;
 
 
 import java.util.List;
+import java.util.Optional;
 
 
+/**
+ * User rest controller.
+ */
 @RestController
 @RequestMapping(path = "/users")
 @EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.HAL_FORMS)
@@ -36,15 +41,27 @@ public class UserController {
     private static final String VALUE_ID = "id";
     private static final String VALIDATION_FAIL = "validation_fail";
 
+    /**
+     * Instantiates a new User controller.
+     *
+     * @param userService the user service
+     */
     @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
     }
 
+    /**
+     * Find all users.
+     *
+     * @param page page
+     * @param size size
+     * @return response entity
+     * @throws ControllerException controller exception
+     */
     @GetMapping
-    @ResponseStatus(HttpStatus.OK)
     public @ResponseBody
-    List<UserDto> findAllUsers(
+    ResponseEntity<List<UserDto>> findAllUsers(
             @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)
             @Min(value = 1, message = VALIDATION_FAIL)
                     int page,
@@ -54,8 +71,13 @@ public class UserController {
             throws ControllerException {
         try {
             List<UserDto> userDtos = userService.findAll(page, size);
-            userDtos.forEach(userDto -> processExceptionByFindUser(page, size, userDto));
-            return userDtos;
+            if (!userDtos.isEmpty()) {
+                userDtos.forEach(userDto -> processExceptionByFindUser(page, size, userDto));
+                return new ResponseEntity<>(userDtos, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+
         } catch (
                 ServiceException e) {
             throw new ControllerException(e.getMessage());
@@ -76,9 +98,17 @@ public class UserController {
         }
     }
 
+    /**
+     * Find user by id.
+     *
+     * @param id   id
+     * @param page page
+     * @param size size
+     * @return response entity
+     * @throws ControllerException controller exception
+     */
     @GetMapping(value = "/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public EntityModel<UserDto> findUserById(
+    public ResponseEntity<EntityModel<UserDto>> findUserById(
             @Valid @PathVariable(VALUE_ID) long id,
             @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)
             @Min(value = 1, message = VALIDATION_FAIL)
@@ -88,12 +118,18 @@ public class UserController {
                     int size)
             throws ControllerException {
         try {
-            UserDto userDto = userService.findUserById(id).get();
-            return EntityModel.of(userDto, linkTo(methodOn(UserController.class).findUserById(userDto.getId(), page, size))
-                            .withSelfRel(),
-                    linkTo(methodOn(OrderController.class).findCertificateByUser(userDto.getId(), page, size))
-                            .withRel(ORDERS)
-                            .withType(HttpMethod.GET.name()));
+            Optional<UserDto> userDtoOpt = userService.findUserById(id);
+            if (userDtoOpt.isPresent()) {
+                return new ResponseEntity<>(EntityModel.of(userDtoOpt.get(), linkTo(methodOn(UserController.class)
+                                .findUserById(userDtoOpt.get().getId(), page, size))
+                                .withSelfRel(),
+                        linkTo(methodOn(OrderController.class).findCertificateByUser(userDtoOpt.get().getId(),
+                                page, size))
+                                .withRel(ORDERS)
+                                .withType(HttpMethod.GET.name())), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
         } catch (ServiceException e) {
             throw new ControllerException(e.getMessage());
         }

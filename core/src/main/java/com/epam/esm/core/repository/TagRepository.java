@@ -14,6 +14,7 @@ public interface TagRepository extends BaseRepository<Tag> {
     /**
      * Find tag by name optional.
      *
+     * @param id the id
      * @return the optional
      * @throws RepositoryException the repository exception
      */
@@ -23,10 +24,17 @@ public interface TagRepository extends BaseRepository<Tag> {
      * Find all tags by certificate id list.
      *
      * @param idCertificate the id certificate
+     * @param page          the page
+     * @param size          the size
      * @return the list
      * @throws RepositoryException the repository exception
      */
-    List<Tag> findAllTagsByCertificateId(long idCertificate,int page,int size) throws RepositoryException;
+    List<Tag> findAllTagsByCertificateId(long idCertificate, int page, int size) throws RepositoryException;
 
+    /**
+     * Find popular tag tag.
+     *
+     * @return the tag
+     */
     Tag findPopularTag();
 }

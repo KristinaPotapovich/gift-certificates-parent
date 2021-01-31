@@ -1,19 +1,27 @@
 package com.epam.esm.core.repository.specification.impl;
 
 import com.epam.esm.core.entity.GiftCertificate;
-import com.epam.esm.core.repository.specification.OrderBySpecification;
+import com.epam.esm.core.repository.specification.SortingSpecification;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-import static com.epam.esm.core.repository.specification.OrderByParam.ASC;
-import static com.epam.esm.core.repository.specification.OrderByParam.DESC;
+import static com.epam.esm.core.repository.specification.SortingParameters.ASC;
+import static com.epam.esm.core.repository.specification.SortingParameters.DESC;
 
-public class OrderByNameSpecification implements OrderBySpecification<GiftCertificate> {
+/**
+ * Sorting name specification.
+ */
+public class SortingNameSpecification implements SortingSpecification<GiftCertificate> {
     private String order;
 
-    public OrderByNameSpecification(String order) {
+    /**
+     * Instantiates a new Sorting name specification.
+     *
+     * @param order the order
+     */
+    public SortingNameSpecification(String order) {
         this.order = order;
     }
 

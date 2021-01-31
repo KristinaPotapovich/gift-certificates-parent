@@ -20,9 +20,8 @@ import javax.validation.constraints.Size;
 @Relation(collectionRelation = "tags")
 public class TagDto extends RepresentationModel<TagDto> {
     private long id;
-    @NonNull
     @NotBlank
-    @Size(min = 3,max = 50)
+    @Size(min = 3, max = 50)
     @Pattern(regexp = "^[a-zA-Zа-яА-ЯёЁ0-9\\s?!,.:'\\-]+$")
     private String name;
 }

@@ -1,7 +1,6 @@
 package com.epam.esm.service.services;
 
 
-import com.epam.esm.service.dto.TagDto;
 import com.epam.esm.service.exception.ServiceException;
 
 import java.util.List;
@@ -23,27 +22,29 @@ public interface BaseService<T> {
     Optional<T> create(T t) throws ServiceException;
 
     /**
-     * Update.
+     * Update optional.
      *
      * @param t the t
+     * @return the optional
      * @throws ServiceException the service exception
      */
     Optional<T> update(T t) throws ServiceException;
 
     /**
-     * Delete boolean.
+     * Delete.
      *
      * @param id the id
-     * @return the boolean
      * @throws ServiceException the service exception
      */
     void delete(long id) throws ServiceException;
 
     /**
-     * Find all optional.
+     * Find all list.
      *
-     * @return the optional
+     * @param page the page
+     * @param size the size
+     * @return the list
      * @throws ServiceException the service exception
      */
-    List<T> findAll(int page,int size) throws ServiceException;
+    List<T> findAll(int page, int size) throws ServiceException;
 }

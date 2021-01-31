@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -23,6 +22,9 @@ import java.util.Optional;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 
+/**
+ * Order rest controller.
+ */
 @RestController
 @RequestMapping(path = "/orders")
 @EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.HAL_FORMS)
@@ -40,31 +42,55 @@ public class OrderController {
     private static final String CURRENT_TAG = "current tag";
     private static final String CURRENT_USER = "current user";
 
+    /**
+     * Instantiates a new Order controller.
+     *
+     * @param orderService the order service
+     */
     @Autowired
     public OrderController(OrderService orderService) {
         this.orderService = orderService;
     }
 
+    /**
+     * Purchase certificate.
+     *
+     * @param purchaseParam purchase param
+     * @return response entity
+     * @throws ControllerException controller exception
+     */
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
     public @ResponseBody
-    EntityModel<OrderDto> purchaseCertificate(@Valid @RequestBody PurchaseParam purchaseParam) throws ControllerException {
+    ResponseEntity<EntityModel<OrderDto>> purchaseCertificate(@Valid @RequestBody PurchaseParam purchaseParam)
+            throws ControllerException {
         try {
-            OrderDto orderDto = orderService.purchaseCertificate(purchaseParam).get();
-            return EntityModel.of(orderDto, linkTo(methodOn(OrderController.class)
-                            .purchaseCertificate(purchaseParam)).withSelfRel(),
-                    linkTo(methodOn(OrderController.class).findOrderById(orderDto.getId()))
-                            .withRel(CURRENT_ORDER)
-                            .withType(HttpMethod.GET.name()));
+            Optional<OrderDto> orderDto = orderService.purchaseCertificate(purchaseParam);
+            if (orderDto.isPresent()) {
+                return new ResponseEntity<>(EntityModel.of(orderDto.get(), linkTo(methodOn(OrderController.class)
+                                .purchaseCertificate(purchaseParam)).withSelfRel(),
+                        linkTo(methodOn(OrderController.class).findOrderById(orderDto.get().getId()))
+                                .withRel(CURRENT_ORDER)
+                                .withType(HttpMethod.GET.name())), HttpStatus.CREATED);
+            } else {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
         } catch (ServiceException e) {
             throw new ControllerException(e.getMessage());
         }
     }
 
+    /**
+     * Find certificate by user.
+     *
+     * @param id   id
+     * @param page page
+     * @param size size
+     * @return response entity
+     * @throws ControllerException controller exception
+     */
     @GetMapping(value = "/users/{id}/orders")
-    @ResponseStatus(HttpStatus.OK)
     public @ResponseBody
-    List<OrderDto> findCertificateByUser(
+    ResponseEntity<List<OrderDto>> findCertificateByUser(
             @Valid @PathVariable(VALUE_ID) Long id,
             @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)
             @Min(value = 1, message = VALIDATION_FAIL)
@@ -74,19 +100,25 @@ public class OrderController {
                     int size) throws ControllerException {
         try {
             Optional<List<OrderDto>> optionalUserDto = orderService.findAllOrdersByUser(id, page, size);
-            List<OrderDto> orderDtos = new ArrayList<>();
             if (optionalUserDto.isPresent()) {
-                orderDtos = optionalUserDto.get();
-                orderDtos.forEach(orderDto -> buildLinkForOrder(orderDto,page,size));
+                optionalUserDto.get().forEach(orderDto -> buildLinkForOrder(orderDto, page, size));
+                return new ResponseEntity<>(optionalUserDto.get(), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
-            return orderDtos;
         } catch (ServiceException e) {
             throw new ControllerException(e.getMessage());
         }
     }
 
+    /**
+     * Find order by id .
+     *
+     * @param id id
+     * @return response entity
+     * @throws ControllerException the controller exception
+     */
     @GetMapping(value = "/{id}")
-    @ResponseStatus(HttpStatus.OK)
     public @ResponseBody
     ResponseEntity<Map<String, Object>> findOrderById(@Valid @PathVariable(VALUE_ID) long id)
             throws ControllerException {
@@ -99,9 +131,16 @@ public class OrderController {
         }
     }
 
+    /**
+     * Find all orders.
+     *
+     * @param page page
+     * @param size size
+     * @return response entity
+     * @throws ControllerException controller exception
+     */
     @GetMapping
-    @ResponseStatus(HttpStatus.OK)
-    public List<OrderDto> findAllOrders(
+    public ResponseEntity<List<OrderDto>> findAllOrders(
             @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)
             @Min(value = 1, message = VALIDATION_FAIL)
                     int page,
@@ -110,8 +149,12 @@ public class OrderController {
                     int size) throws ControllerException {
         try {
             List<OrderDto> orderDtos = orderService.findAll(page, size);
-            orderDtos.forEach(orderDto -> buildLinkForOrder(orderDto,page,size));
-            return orderDtos;
+            if (!orderDtos.isEmpty()) {
+                orderDtos.forEach(orderDto -> buildLinkForOrder(orderDto, page, size));
+                return new ResponseEntity<>(orderDtos, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
         } catch (ServiceException e) {
             throw new ControllerException(e.getMessage());
         }

@@ -1,5 +1,3 @@
-create schema if not exists `test_db`;
-USE `test_db` ;
 
 create table gift_certificate
 (
@@ -37,6 +35,18 @@ create index id_certificate
 create index id_tag
     on certificates_tags (id_tag);
 
+
+create table user
+(
+    id_user  bigint auto_increment
+        primary key,
+    login    varchar(20)                     not null,
+    password varchar(20)                     not null,
+    role     enum ('USER', 'ADMIN', 'GUEST') not null,
+    constraint login
+        unique (login)
+);
+
     create table order_table
 (
     id_order         bigint auto_increment
@@ -58,13 +68,89 @@ create table orders_certificates
         foreign key (id_order) references order_table (id_order)
             on update cascade on delete cascade
 );
-create table user
+
+    create table gift_certificate_audit_log
 (
-    id_user  bigint auto_increment
-        primary key,
-    login    varchar(20)                     not null,
-    password varchar(20)                     not null,
-    role     enum ('USER', 'ADMIN', 'GUEST') not null,
-    constraint login
-        unique (login)
-);
+    id_certificate   bigint         not null,
+    REV              int            not null,
+    REVTYPE          tinyint        null,
+    create_date      datetime       null,
+    description      varchar(255)   null,
+    duration         int            null,
+    last_update_date datetime       null,
+    name             varchar(255)   null,
+    price            decimal(19, 2) null,
+    primary key (id_certificate, REV)
+)
+    engine = MyISAM;
+
+create index FKhf7uuci7j7of1xcb7lxgehor4
+    on gift_certificate_audit_log (REV);
+
+    create table tag_audit_log
+(
+    id_tag  bigint       not null,
+    REV     int          not null,
+    REVTYPE tinyint      null,
+    name    varchar(255) null,
+    primary key (id_tag, REV)
+)
+    engine = MyISAM;
+
+
+create table certificates_tags_audit_log
+(
+    REV            int     not null,
+    id_certificate bigint  not null,
+    id_tag         bigint  not null,
+    REVTYPE        tinyint null,
+    primary key (REV, id_certificate, id_tag)
+)
+    engine = MyISAM;
+
+
+    create table user_audit_log
+(
+    id_user  bigint       not null,
+    REV      int          not null,
+    REVTYPE  tinyint      null,
+    login    varchar(255) null,
+    password varchar(255) null,
+    role     varchar(255) null,
+    primary key (id_user, REV)
+)
+    engine = MyISAM;
+
+
+create index FKi5b5ivrfvc0pgts5ngcs0g5i3
+    on user_audit_log (REV);
+
+    create table order_table_audit_log
+(
+    id_order         bigint         not null,
+    REV              int            not null,
+    REVTYPE          tinyint        null,
+    price            decimal(19, 2) null,
+    time_of_purchase datetime       null,
+    id_user          bigint         null,
+    primary key (id_order, REV)
+)
+    engine = MyISAM;
+
+create index FKgnavn8y59n6a1a2hltdvu0qt5
+    on order_table_audit_log (REV);
+
+    create table orders_certificates_audit_log
+(
+    REV            int     not null,
+    id_order       bigint  not null,
+    id_certificate bigint  not null,
+    REVTYPE        tinyint null,
+    primary key (REV, id_order, id_certificate)
+)
+    engine = MyISAM;
+
+
+create index FK89024hk7yjnfm6monvx71tboj
+    on tag_audit_log (REV);
+

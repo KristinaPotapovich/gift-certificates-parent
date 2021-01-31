@@ -27,7 +27,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 
 /**
- * The type Gift certificate controller.
+ * Gift certificate rest controller.
  */
 @RestController
 @RequestMapping(path = "/certificates")
@@ -46,12 +46,12 @@ public class GiftCertificateController {
     private static final String VALUE_PAGE = "page";
     private static final String VALUE_SIZE = "size";
     private static final String VALUE_ID = "id";
-    private static final String VALIDATION_FAIL = "validation_fail";
+    private static final String VALIDATION_FAIL_MESSAGE = "validation_fail";
 
     /**
      * Instantiates a new Gift certificate controller.
      *
-     * @param giftCertificateService the gift certificate service
+     * @param giftCertificateService gift certificate service
      */
     @Autowired
     public GiftCertificateController(GiftCertificateService giftCertificateService) {
@@ -59,22 +59,25 @@ public class GiftCertificateController {
     }
 
     /**
-     * Find gift certificate by param response entity.
+     * Find gift certificates by part name or description param.
      *
-     * @param param the param
-     * @return the response entity
-     * @throws ControllerException the controller exception
+     * @param param part name or description
+     * @param page  number of page
+     * @param size  count certificates on page
+     * @return List<GiftCertificates> certificates
+     * @throws ControllerException
      */
-    @GetMapping(value = "/query")
+    @GetMapping(value = "/byParam")
     @ResponseStatus(HttpStatus.OK)
-    public List<GiftCertificateDto> findGiftCertificateByParam
+    public ResponseEntity<List<GiftCertificateDto>> findGiftCertificateByParam
     (@Valid @QueryParam("param") String param,
      @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)
-     @Min(value = 1, message = VALIDATION_FAIL)
+     @Min(value = 1, message = VALIDATION_FAIL_MESSAGE)
              int page,
      @Valid @RequestParam(value = VALUE_SIZE, required = false, defaultValue = DEFAULT_SIZE)
-     @Min(value = 1, message = VALIDATION_FAIL)
+     @Min(value = 1, message = VALIDATION_FAIL_MESSAGE)
              int size) throws ControllerException {
+        ResponseEntity<List<GiftCertificateDto>> responseEntity;
         try {
             Optional<List<GiftCertificateDto>> certificateDtosOptional =
                     giftCertificateServiceImpl.findCertificateByParam(param, page, size);
@@ -82,8 +85,11 @@ public class GiftCertificateController {
             if (certificateDtosOptional.isPresent()) {
                 giftCertificateDtos = certificateDtosOptional.get();
                 processExceptionForBuildCertificatesLink(page, size, giftCertificateDtos);
+                responseEntity = new ResponseEntity<>(giftCertificateDtos, HttpStatus.OK);
+            } else {
+                responseEntity = new ResponseEntity<>(giftCertificateDtos, HttpStatus.BAD_REQUEST);
             }
-            return giftCertificateDtos;
+            return responseEntity;
         } catch (ServiceException e) {
             throw new ControllerException(e.getMessage());
         }
@@ -98,7 +104,7 @@ public class GiftCertificateController {
                         .findGiftCertificateById(giftCertificateDto.getId(), page, size))
                         .withRel(CURRENT_CERTIFICATE));
                 giftCertificateDto.getTags()
-                        .forEach(tagDto -> buildTagsLinks(tagDto));
+                        .forEach(this::buildTagsLinks);
             } catch (ControllerException e) {
                 throw new RuntimeException(e.getMessage());
             }
@@ -116,160 +122,198 @@ public class GiftCertificateController {
     }
 
     /**
-     * Find gift certificate by id response entity.
+     * Find gift certificate by id.
      *
-     * @param id the id
-     * @return the response entity
+     * @param id   id gift certificate
+     * @param page number of page
+     * @param size count certificate on page
+     * @return response entity
      * @throws ControllerException the controller exception
      */
     @GetMapping(value = "/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public EntityModel<GiftCertificateDto> findGiftCertificateById(
+    public ResponseEntity<EntityModel<GiftCertificateDto>> findGiftCertificateById(
             @Valid @PathVariable(VALUE_ID) long id,
             @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)
-            @Min(value = 1, message = VALIDATION_FAIL)
+            @Min(value = 1, message = VALIDATION_FAIL_MESSAGE)
                     int page,
             @Valid @RequestParam(value = VALUE_SIZE, required = false, defaultValue = DEFAULT_SIZE)
-            @Min(value = 1, message = VALIDATION_FAIL)
+            @Min(value = 1, message = VALIDATION_FAIL_MESSAGE)
                     int size)
             throws ControllerException {
         try {
-            GiftCertificateDto giftCertificateDto = giftCertificateServiceImpl.findCertificateById(id).get();
-            return EntityModel.of(giftCertificateDto, linkTo(methodOn(GiftCertificateController.class)
-                            .findGiftCertificateById(id, page, size)).withSelfRel(),
-                    linkTo(methodOn(GiftCertificateController.class)
-                            .createGiftCertificate(giftCertificateDto, page, size)).withRel(CREATE_CERTIFICATE)
-                            .withType(HttpMethod.POST.name()),
-                    linkTo(methodOn(GiftCertificateController.class)
-                            .deleteGiftCertificate(giftCertificateDto.getId())).withRel(DELETE_CERTIFICATE)
-                            .withType(HttpMethod.DELETE.name()),
-                    linkTo(methodOn(GiftCertificateController.class)
-                            .updateGiftCertificate(giftCertificateDto.getId(), giftCertificateDto, page, size))
-                            .withRel(UPDATE_CERTIFICATE)
-                            .withType(HttpMethod.PUT.name()),
-                    linkTo(methodOn(GiftCertificateController.class)
-                            .updateOneFieldGiftCertificate(giftCertificateDto.getId(), giftCertificateDto, page, size))
-                            .withRel(UPDATE_ONE_FIELD_CERTIFICATE)
-                            .withType(HttpMethod.PATCH.name()));
+            Optional<GiftCertificateDto> certificateDtoOptional =
+                    giftCertificateServiceImpl.findCertificateById(id);
+            if (certificateDtoOptional.isPresent()) {
+                return new ResponseEntity<>(EntityModel.of(certificateDtoOptional.get(),
+                        linkTo(methodOn(GiftCertificateController.class)
+                                .findGiftCertificateById(id, page, size)).withSelfRel(),
+                        linkTo(methodOn(GiftCertificateController.class)
+                                .createGiftCertificate(certificateDtoOptional.get(), page, size))
+                                .withRel(CREATE_CERTIFICATE)
+                                .withType(HttpMethod.POST.name()),
+                        linkTo(methodOn(GiftCertificateController.class)
+                                .deleteGiftCertificate(certificateDtoOptional.get().getId()))
+                                .withRel(DELETE_CERTIFICATE)
+                                .withType(HttpMethod.DELETE.name()),
+                        linkTo(methodOn(GiftCertificateController.class)
+                                .updateGiftCertificate(certificateDtoOptional.get().getId(),
+                                        certificateDtoOptional.get(), page, size))
+                                .withRel(UPDATE_CERTIFICATE)
+                                .withType(HttpMethod.PUT.name()),
+                        linkTo(methodOn(GiftCertificateController.class)
+                                .updateOneFieldGiftCertificate(certificateDtoOptional.get().getId(),
+                                        certificateDtoOptional.get(), page, size))
+                                .withRel(UPDATE_ONE_FIELD_CERTIFICATE)
+                                .withType(HttpMethod.PATCH.name())), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
         } catch (ServiceException e) {
             throw new ControllerException(e.getMessage());
         }
     }
 
     /**
-     * Find all gift certificates response entity.
+     * Find all gift certificates.
      *
+     * @param page number of page
+     * @param size count certificate on page
      * @return the response entity
      * @throws ControllerException the controller exception
      */
     @GetMapping
-    @ResponseStatus(HttpStatus.OK)
-    public List<GiftCertificateDto> findAllGiftCertificates(
+    public ResponseEntity<List<GiftCertificateDto>> findAllGiftCertificates(
             @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)
-            @Min(value = 1, message = VALIDATION_FAIL)
+            @Min(value = 1, message = VALIDATION_FAIL_MESSAGE)
                     int page,
             @Valid @RequestParam(value = VALUE_SIZE, required = false, defaultValue = DEFAULT_SIZE)
-            @Min(value = 1, message = VALIDATION_FAIL)
+            @Min(value = 1, message = VALIDATION_FAIL_MESSAGE)
                     int size) throws ControllerException {
         try {
             List<GiftCertificateDto> giftCertificateDtos = giftCertificateServiceImpl
                     .findAll(page, size);
-            processExceptionForBuildCertificatesLink(page, size, giftCertificateDtos);
-            return giftCertificateDtos;
+            if (!giftCertificateDtos.isEmpty()) {
+                processExceptionForBuildCertificatesLink(page, size, giftCertificateDtos);
+                return new ResponseEntity<>(giftCertificateDtos, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
         } catch (ServiceException e) {
             throw new ControllerException(e.getMessage());
         }
     }
 
     /**
-     * Find gift certificate by tag name response entity.
+     * Find gift certificate by tag name.
      *
-     * @param name the name
+     * @param name name of gift certificate
+     * @param page number of page
+     * @param size count certificate on page
      * @return the response entity
      */
-    @GetMapping(value = "/tagParam")
-    @ResponseStatus(HttpStatus.OK)
-    public List<GiftCertificateDto> findGiftCertificateByTagName
+    @GetMapping(value = "/byTag")
+    public ResponseEntity<List<GiftCertificateDto>> findGiftCertificateByTagName
     (@Valid @QueryParam("name") String name,
      @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)
-     @Min(value = 1, message = VALIDATION_FAIL)
+     @Min(value = 1, message = VALIDATION_FAIL_MESSAGE)
              int page,
      @Valid @RequestParam(value = VALUE_SIZE, required = false, defaultValue = DEFAULT_SIZE)
-     @Min(value = 1, message = VALIDATION_FAIL)
+     @Min(value = 1, message = VALIDATION_FAIL_MESSAGE)
              int size) {
-        List<GiftCertificateDto> giftCertificateDtos = giftCertificateServiceImpl
-                .searchAllCertificatesByTagName(name, page, size).get();
-        processExceptionForBuildCertificatesLink(page, size, giftCertificateDtos);
-        return giftCertificateDtos;
+        Optional<List<GiftCertificateDto>> giftCertificateDtosOpt = giftCertificateServiceImpl
+                .searchAllCertificatesByTagName(name, page, size);
+        if (giftCertificateDtosOpt.isPresent()) {
+            processExceptionForBuildCertificatesLink(page, size, giftCertificateDtosOpt.get());
+            return new ResponseEntity<>(giftCertificateDtosOpt.get(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
     /**
-     * Sort certificate by param response entity.
+     * Sort certificate by param name or date.
      *
-     * @param paramForSorting the param for sorting
-     * @param order           the order
+     * @param paramForSorting param for sorting
+     * @param order           order
+     * @param page            page
+     * @param size            size
      * @return the response entity
      * @throws ControllerException the controller exception
      */
     @GetMapping(value = "/sortBy")
-    @ResponseStatus(HttpStatus.OK)
-    public List<GiftCertificateDto> sortCertificateByParam
+    public ResponseEntity<List<GiftCertificateDto>> sortCertificateByParam
     (@Valid @QueryParam("paramForSorting") String paramForSorting,
      @Valid @QueryParam("order") String order,
      @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)
-     @Min(value = 1, message = VALIDATION_FAIL)
+     @Min(value = 1, message = VALIDATION_FAIL_MESSAGE)
              int page,
      @Valid @RequestParam(value = VALUE_SIZE, required = false, defaultValue = DEFAULT_SIZE)
-     @Min(value = 1, message = VALIDATION_FAIL)
+     @Min(value = 1, message = VALIDATION_FAIL_MESSAGE)
              int size) throws ControllerException {
         try {
-            List<GiftCertificateDto> certificateDtos =
-                    giftCertificateServiceImpl.sortByParam(paramForSorting, order, page, size).get();
-            processExceptionForBuildCertificatesLink(page, size, certificateDtos);
-            return certificateDtos;
+            Optional<List<GiftCertificateDto>> certificatesOpt =
+                    giftCertificateServiceImpl.sortByParam(paramForSorting, order, page, size);
+            if (certificatesOpt.isPresent()) {
+                processExceptionForBuildCertificatesLink(page, size, certificatesOpt.get());
+                return new ResponseEntity<>(certificatesOpt.get(), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+
         } catch (ServiceException e) {
             throw new ControllerException(e.getMessage());
         }
     }
 
     /**
-     * Create gift certificate response entity.
+     * Create gift certificate.
      *
-     * @param giftCertificateDto the gift certificate dto
+     * @param giftCertificateDto gift certificate dto
+     * @param page               page
+     * @param size               size
      * @return the response entity
      * @throws ControllerException the controller exception
      */
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
     public @ResponseBody
-    EntityModel<GiftCertificateDto> createGiftCertificate(
+    ResponseEntity<EntityModel<GiftCertificateDto>> createGiftCertificate(
             @Valid @RequestBody GiftCertificateDto giftCertificateDto,
             @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)
-            @Min(value = 1, message = VALIDATION_FAIL)
+            @Min(value = 1, message = VALIDATION_FAIL_MESSAGE)
                     int page,
             @Valid @RequestParam(value = VALUE_SIZE, required = false, defaultValue = DEFAULT_SIZE)
-            @Min(value = 1, message = VALIDATION_FAIL)
+            @Min(value = 1, message = VALIDATION_FAIL_MESSAGE)
                     int size
     )
             throws ControllerException {
         try {
-            giftCertificateDto = giftCertificateServiceImpl.create(giftCertificateDto).get();
-            return EntityModel.of(giftCertificateDto, linkTo(methodOn(GiftCertificateController.class)
-                            .createGiftCertificate(giftCertificateDto, page, size)).withSelfRel(),
-                    linkTo(methodOn(GiftCertificateController.class)
-                            .findGiftCertificateById(giftCertificateDto.getId(), page, size)).withRel(CURRENT_CERTIFICATE)
-                            .withType(HttpMethod.GET.name()),
-                    linkTo(methodOn(GiftCertificateController.class)
-                            .deleteGiftCertificate(giftCertificateDto.getId())).withRel(DELETE_CERTIFICATE)
-                            .withType(HttpMethod.DELETE.name()),
-                    linkTo(methodOn(GiftCertificateController.class)
-                            .updateGiftCertificate(giftCertificateDto.getId(), giftCertificateDto, page, size))
-                            .withRel(UPDATE_CERTIFICATE)
-                            .withType(HttpMethod.PUT.name()),
-                    linkTo(methodOn(GiftCertificateController.class)
-                            .updateOneFieldGiftCertificate(giftCertificateDto.getId(), giftCertificateDto, page, size))
-                            .withRel(UPDATE_ONE_FIELD_CERTIFICATE)
-                            .withType(HttpMethod.PATCH.name()));
+            Optional<GiftCertificateDto> giftCertificateDtoOpt = giftCertificateServiceImpl.create(giftCertificateDto);
+            if (giftCertificateDtoOpt.isPresent()) {
+                return new ResponseEntity<>(EntityModel.of(giftCertificateDtoOpt.get(),
+                        linkTo(methodOn(GiftCertificateController.class)
+                                .createGiftCertificate(giftCertificateDto, page, size)).withSelfRel(),
+                        linkTo(methodOn(GiftCertificateController.class)
+                                .findGiftCertificateById(giftCertificateDtoOpt.get().getId(), page, size))
+                                .withRel(CURRENT_CERTIFICATE)
+                                .withType(HttpMethod.GET.name()),
+                        linkTo(methodOn(GiftCertificateController.class)
+                                .deleteGiftCertificate(giftCertificateDtoOpt.get().getId()))
+                                .withRel(DELETE_CERTIFICATE)
+                                .withType(HttpMethod.DELETE.name()),
+                        linkTo(methodOn(GiftCertificateController.class)
+                                .updateGiftCertificate(giftCertificateDtoOpt.get().getId(),
+                                        giftCertificateDtoOpt.get(), page, size))
+                                .withRel(UPDATE_CERTIFICATE)
+                                .withType(HttpMethod.PUT.name()),
+                        linkTo(methodOn(GiftCertificateController.class)
+                                .updateOneFieldGiftCertificate(giftCertificateDtoOpt.get().getId(),
+                                        giftCertificateDtoOpt.get(), page, size))
+                                .withRel(UPDATE_ONE_FIELD_CERTIFICATE)
+                                .withType(HttpMethod.PATCH.name())), HttpStatus.CREATED);
+            } else {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+
         } catch (ServiceException e) {
             throw new ControllerException(e.getMessage());
         }
@@ -278,115 +322,160 @@ public class GiftCertificateController {
     /**
      * Update gift certificate.
      *
-     * @param id                 the id
-     * @param giftCertificateDto the gift certificate dto
+     * @param id                 id
+     * @param giftCertificateDto gift certificate dto
+     * @param page               page
+     * @param size               size
+     * @return response entity
      * @throws ControllerException the controller exception
      */
     @PutMapping(value = "/{id}")
-    @ResponseStatus(HttpStatus.CREATED)
-    public EntityModel<GiftCertificateDto> updateGiftCertificate(
+    public ResponseEntity<EntityModel<GiftCertificateDto>> updateGiftCertificate(
             @Valid @PathVariable(VALUE_ID) long id,
             @Valid @RequestBody GiftCertificateDto giftCertificateDto,
             @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)
-            @Min(value = 1, message = VALIDATION_FAIL)
+            @Min(value = 1, message = VALIDATION_FAIL_MESSAGE)
                     int page,
             @Valid @RequestParam(value = VALUE_SIZE, required = false, defaultValue = DEFAULT_SIZE)
-            @Min(value = 1, message = VALIDATION_FAIL)
+            @Min(value = 1, message = VALIDATION_FAIL_MESSAGE)
                     int size) throws ControllerException {
         giftCertificateDto.setId(id);
         try {
-            giftCertificateDto = giftCertificateServiceImpl.update(giftCertificateDto).get();
-            return EntityModel.of(giftCertificateDto, linkTo(methodOn(GiftCertificateController.class)
-                            .updateGiftCertificate(giftCertificateDto.getId(), giftCertificateDto, page, size)).withSelfRel(),
-                    linkTo(methodOn(GiftCertificateController.class)
-                            .findGiftCertificateById(giftCertificateDto.getId(), page, size))
-                            .withRel(CURRENT_CERTIFICATE)
-                            .withType(HttpMethod.GET.name()),
-                    linkTo(methodOn(GiftCertificateController.class)
-                            .deleteGiftCertificate(giftCertificateDto.getId())).withRel(DELETE_CERTIFICATE)
-                            .withType(HttpMethod.DELETE.name()),
-                    linkTo(methodOn(GiftCertificateController.class)
-                            .createGiftCertificate(giftCertificateDto, page, size))
-                            .withRel(CREATE_CERTIFICATE)
-                            .withType(HttpMethod.POST.name()),
-                    linkTo(methodOn(GiftCertificateController.class)
-                            .updateOneFieldGiftCertificate(giftCertificateDto.getId(), giftCertificateDto, page, size))
-                            .withRel(UPDATE_ONE_FIELD_CERTIFICATE)
-                            .withType(HttpMethod.PATCH.name()));
-        } catch (ServiceException e) {
-            throw new ControllerException(e.getMessage());
-        }
-    }
-
-    @PatchMapping(value = "/{id}")
-    @ResponseStatus(HttpStatus.CREATED)
-    public EntityModel<GiftCertificateDto> updateOneFieldGiftCertificate(
-            @Valid @PathVariable(VALUE_ID) long id,
-            @Valid @RequestBody GiftCertificateDto giftCertificateDto,
-            @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)
-            @Min(value = 1, message = VALIDATION_FAIL)
-                    int page,
-            @Valid @RequestParam(value = VALUE_SIZE, required = false, defaultValue = DEFAULT_SIZE)
-            @Min(value = 1, message = VALIDATION_FAIL)
-                    int size) throws ControllerException {
-        giftCertificateDto.setId(id);
-        try {
-            giftCertificateDto = giftCertificateServiceImpl.patch(giftCertificateDto).get();
-            return EntityModel.of(giftCertificateDto, linkTo(methodOn(GiftCertificateController.class)
-                            .updateOneFieldGiftCertificate(giftCertificateDto.getId(), giftCertificateDto, page, size)).withSelfRel(),
-                    linkTo(methodOn(GiftCertificateController.class)
-                            .findGiftCertificateById(giftCertificateDto.getId(), page, size))
-                            .withRel(CURRENT_CERTIFICATE)
-                            .withType(HttpMethod.GET.name()),
-                    linkTo(methodOn(GiftCertificateController.class)
-                            .deleteGiftCertificate(giftCertificateDto.getId())).withRel(DELETE_CERTIFICATE)
-                            .withType(HttpMethod.DELETE.name()),
-                    linkTo(methodOn(GiftCertificateController.class)
-                            .createGiftCertificate(giftCertificateDto, page, size))
-                            .withRel(CREATE_CERTIFICATE)
-                            .withType(HttpMethod.POST.name()),
-                    linkTo(methodOn(GiftCertificateController.class)
-                            .updateGiftCertificate(giftCertificateDto.getId(), giftCertificateDto, page, size))
-                            .withRel(UPDATE_CERTIFICATE)
-                            .withType(HttpMethod.PUT.name()));
+            Optional<GiftCertificateDto> certificateDtoOptional = giftCertificateServiceImpl
+                    .update(giftCertificateDto);
+            if (certificateDtoOptional.isPresent()) {
+                return new ResponseEntity<>(EntityModel.of(certificateDtoOptional.get(),
+                        linkTo(methodOn(GiftCertificateController.class)
+                                .updateGiftCertificate(giftCertificateDto.getId(),
+                                        certificateDtoOptional.get(), page, size)).withSelfRel(),
+                        linkTo(methodOn(GiftCertificateController.class)
+                                .findGiftCertificateById(certificateDtoOptional.get().getId(), page, size))
+                                .withRel(CURRENT_CERTIFICATE)
+                                .withType(HttpMethod.GET.name()),
+                        linkTo(methodOn(GiftCertificateController.class)
+                                .deleteGiftCertificate(certificateDtoOptional.get().getId()))
+                                .withRel(DELETE_CERTIFICATE)
+                                .withType(HttpMethod.DELETE.name()),
+                        linkTo(methodOn(GiftCertificateController.class)
+                                .createGiftCertificate(certificateDtoOptional.get(), page, size))
+                                .withRel(CREATE_CERTIFICATE)
+                                .withType(HttpMethod.POST.name()),
+                        linkTo(methodOn(GiftCertificateController.class)
+                                .updateOneFieldGiftCertificate(certificateDtoOptional.get().getId(),
+                                        certificateDtoOptional.get(), page, size))
+                                .withRel(UPDATE_ONE_FIELD_CERTIFICATE)
+                                .withType(HttpMethod.PATCH.name())), HttpStatus.CREATED);
+            } else {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
         } catch (ServiceException e) {
             throw new ControllerException(e.getMessage());
         }
     }
 
     /**
-     * Delete gift certificate response entity.
+     * Update one field gift certificate.
      *
-     * @param id the id
+     * @param id                 id
+     * @param giftCertificateDto gift certificate dto
+     * @param page               page
+     * @param size               size
+     * @return the entity model
      * @throws ControllerException the controller exception
      */
-    @DeleteMapping(value = "/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public ResponseEntity<HttpStatus> deleteGiftCertificate(@Valid @PathVariable(VALUE_ID) long id) throws ControllerException {
+    @PatchMapping(value = "/{id}")
+    public ResponseEntity<EntityModel<GiftCertificateDto>> updateOneFieldGiftCertificate(
+            @Valid @PathVariable(VALUE_ID) long id,
+            @RequestBody GiftCertificateDto giftCertificateDto,
+            @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)
+            @Min(value = 1, message = VALIDATION_FAIL_MESSAGE)
+                    int page,
+            @Valid @RequestParam(value = VALUE_SIZE, required = false, defaultValue = DEFAULT_SIZE)
+            @Min(value = 1, message = VALIDATION_FAIL_MESSAGE)
+                    int size) throws ControllerException {
+        giftCertificateDto.setId(id);
         try {
-            giftCertificateServiceImpl.delete(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            Optional<GiftCertificateDto> certificateDtoOptional =
+                    giftCertificateServiceImpl.patch(giftCertificateDto);
+            if (certificateDtoOptional.isPresent()) {
+                return new ResponseEntity<>(EntityModel.of(certificateDtoOptional.get(),
+                        linkTo(methodOn(GiftCertificateController.class)
+                                .updateOneFieldGiftCertificate(giftCertificateDto.getId(),
+                                        certificateDtoOptional.get(), page, size)).withSelfRel(),
+                        linkTo(methodOn(GiftCertificateController.class)
+                                .findGiftCertificateById(certificateDtoOptional.get().getId(), page, size))
+                                .withRel(CURRENT_CERTIFICATE)
+                                .withType(HttpMethod.GET.name()),
+                        linkTo(methodOn(GiftCertificateController.class)
+                                .deleteGiftCertificate(certificateDtoOptional.get().getId()))
+                                .withRel(DELETE_CERTIFICATE)
+                                .withType(HttpMethod.DELETE.name()),
+                        linkTo(methodOn(GiftCertificateController.class)
+                                .createGiftCertificate(certificateDtoOptional.get(), page, size))
+                                .withRel(CREATE_CERTIFICATE)
+                                .withType(HttpMethod.POST.name()),
+                        linkTo(methodOn(GiftCertificateController.class)
+                                .updateGiftCertificate(certificateDtoOptional.get().getId(),
+                                        certificateDtoOptional.get(), page, size))
+                                .withRel(UPDATE_CERTIFICATE)
+                                .withType(HttpMethod.PUT.name())), HttpStatus.CREATED);
+            } else {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
         } catch (ServiceException e) {
             throw new ControllerException(e.getMessage());
         }
     }
 
-    @GetMapping(value = "/findAllBySeveralTags")
-    @ResponseStatus(HttpStatus.OK)
-    public List<GiftCertificateDto> findAllBySeveralTags(
+    /**
+     * Delete gift certificate.
+     *
+     * @param id id
+     * @return response entity
+     * @throws ControllerException controller exception
+     */
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<HttpStatus> deleteGiftCertificate(@Valid @PathVariable(VALUE_ID) long id) throws ControllerException {
+        try {
+            if (giftCertificateServiceImpl.findCertificateById(id).isPresent()) {
+                giftCertificateServiceImpl.delete(id);
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            } else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } catch (ServiceException e) {
+            throw new ControllerException(e.getMessage());
+        }
+    }
+
+    /**
+     * Find all by several tags list.
+     *
+     * @param tags tags
+     * @param page page
+     * @param size size
+     * @return list
+     * @throws ControllerException the controller exception
+     */
+    @GetMapping(value = "/byTags")
+    public ResponseEntity<List<GiftCertificateDto>> findAllBySeveralTags(
             @Valid @RequestParam(value = "tags", required = false) List<Long> tags,
             @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)
-            @Min(value = 1, message = VALIDATION_FAIL)
+            @Min(value = 1, message = VALIDATION_FAIL_MESSAGE)
                     int page,
             @Valid @RequestParam(value = VALUE_SIZE, required = false, defaultValue = DEFAULT_SIZE)
-            @Min(value = 1, message = VALIDATION_FAIL)
+            @Min(value = 1, message = VALIDATION_FAIL_MESSAGE)
                     int size) throws ControllerException {
         try {
-            List<GiftCertificateDto> certificateDtos =
+            Optional<List<GiftCertificateDto>> certificateDtos =
                     giftCertificateServiceImpl
-                            .findAllBySeveralTags(tags, page, size).get();
-            processExceptionForBuildCertificatesLink(page, size, certificateDtos);
-            return certificateDtos;
+                            .findAllBySeveralTags(tags, page, size);
+            if (certificateDtos.isPresent()) {
+                processExceptionForBuildCertificatesLink(page, size, certificateDtos.get());
+                return new ResponseEntity<>(certificateDtos.get(), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
         } catch (ServiceException e) {
             throw new ControllerException(e.getMessage());
         }

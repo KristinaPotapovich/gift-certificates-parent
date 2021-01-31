@@ -3,7 +3,16 @@ package com.epam.esm.service.mapper;
 import com.epam.esm.core.entity.User;
 import com.epam.esm.service.dto.UserDto;
 
+/**
+ * User converter.
+ */
 public class UserConverter {
+    /**
+     * Map to user dto user dto.
+     *
+     * @param user the user
+     * @return the user dto
+     */
     public static UserDto mapToUserDto(User user) {
         UserDto userDto = new UserDto();
         userDto.setId(user.getId());
@@ -13,6 +22,12 @@ public class UserConverter {
         return userDto;
     }
 
+    /**
+     * Map to user user.
+     *
+     * @param userDto the user dto
+     * @return the user
+     */
     public static User mapToUser(UserDto userDto) {
         User user = new User();
         user.setId(userDto.getId());

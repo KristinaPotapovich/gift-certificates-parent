@@ -3,10 +3,11 @@ package com.epam.esm.core.repository.impl;
 import com.epam.esm.core.entity.Tag;
 import com.epam.esm.core.exception.RepositoryException;
 import com.epam.esm.core.repository.TagRepository;
-import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -16,18 +17,17 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * The type Tag repository.
+ * Tag repository.
  */
 @Repository
 public class TagRepositoryImpl implements TagRepository {
     @PersistenceContext
     private Session session;
-    private static final String CREATE_TAG_FAIL = "tag_create_fail";
-    private static final String UPDATE_TAG_FAIL = "tag_update_fail";
-    private static final String DELETE_TAG_FAIL = "tag_delete_fail";
-    private static final String FIND_BY_NAME_TAG_FAIL = "tag_find_by_name_fail";
-    private static final String FIND_ALL_TAG_FAIL = "tag_find_all_fail";
-    private static final String NAME = "name";
+    private static final String CREATE_TAG_FAIL_MESSAGE = "tag_create_fail";
+    private static final String UPDATE_TAG_FAIL_MESSAGE = "tag_update_fail";
+    private static final String DELETE_TAG_FAIL_MESSAGE = "tag_delete_fail";
+    private static final String FIND_BY_NAME_TAG_FAIL_MESSAGE = "tag_find_by_name_fail";
+    private static final String FIND_ALL_TAG_FAIL_MESSAGE = "tag_find_all_fail";
     private static final String QUERY_FOR_POPULAR_TAG =
             "SELECT t.id_tag, t.name, SUM(ot.price)sum FROM tag t " +
                     "  JOIN certificates_tags ct ON ct.id_tag =t.id_tag " +
@@ -42,19 +42,18 @@ public class TagRepositoryImpl implements TagRepository {
     @Override
     public Tag create(Tag tag) throws RepositoryException {
         try {
-            session.persist(tag);
-        } catch (HibernateException e) {
-            throw new RepositoryException(CREATE_TAG_FAIL);
+            return (Tag) session.merge(tag);
+        } catch (DataIntegrityViolationException e) {
+            throw new RepositoryException(CREATE_TAG_FAIL_MESSAGE);
         }
-        return session.find(Tag.class,tag);
     }
 
     @Override
     public Tag update(Tag tag) throws RepositoryException {
         try {
             return (Tag) session.merge(tag);
-        } catch (HibernateException e) {
-            throw new RepositoryException(UPDATE_TAG_FAIL);
+        } catch (DataIntegrityViolationException e) {
+            throw new RepositoryException(UPDATE_TAG_FAIL_MESSAGE);
         }
     }
 
@@ -62,8 +61,8 @@ public class TagRepositoryImpl implements TagRepository {
     public void delete(Tag tag) throws RepositoryException {
         try {
             session.remove(session.contains(tag) ? tag : session.merge(tag));
-        } catch (HibernateException e) {
-            throw new RepositoryException(DELETE_TAG_FAIL);
+        } catch (DataIntegrityViolationException e) {
+            throw new RepositoryException(DELETE_TAG_FAIL_MESSAGE);
         }
     }
 
@@ -75,12 +74,12 @@ public class TagRepositoryImpl implements TagRepository {
             tagCriteriaQuery.where(criteriaBuilder.equal(tagRoot.get("id"), id));
             Tag tag = session.createQuery(tagCriteriaQuery).getSingleResult();
             return Optional.of(tag);
-        } catch (HibernateException e) {
-            throw new RepositoryException(FIND_BY_NAME_TAG_FAIL);
+        } catch (NoResultException e) {
+            throw new RepositoryException(FIND_BY_NAME_TAG_FAIL_MESSAGE);
         }
     }
 
-    public List<Tag> findAll(int page,int size) throws RepositoryException {
+    public List<Tag> findAll(int page, int size) throws RepositoryException {
         try {
             CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
             CriteriaQuery<Tag> tagCriteriaQuery =
@@ -91,12 +90,12 @@ public class TagRepositoryImpl implements TagRepository {
                     .setFirstResult((page - 1) * size)
                     .setMaxResults(size)
                     .getResultList();
-        } catch (HibernateException e) {
-            throw new RepositoryException(FIND_ALL_TAG_FAIL);
+        } catch (NoResultException e) {
+            throw new RepositoryException(FIND_ALL_TAG_FAIL_MESSAGE);
         }
     }
 
-    public List<Tag> findAllTagsByCertificateId(long idCertificate,int page,int size) throws RepositoryException {
+    public List<Tag> findAllTagsByCertificateId(long idCertificate, int page, int size) throws RepositoryException {
         try {
             CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
             CriteriaQuery<Tag> criteriaQuery = criteriaBuilder.createQuery(Tag.class);
@@ -107,8 +106,8 @@ public class TagRepositoryImpl implements TagRepository {
                     .setFirstResult((page - 1) * size)
                     .setMaxResults(size)
                     .getResultList();
-        } catch (HibernateException e) {
-            throw new RepositoryException(FIND_ALL_TAG_FAIL);
+        } catch (NoResultException e) {
+            throw new RepositoryException(FIND_ALL_TAG_FAIL_MESSAGE);
         }
     }
 
