@@ -60,7 +60,7 @@ public class OrderController {
      * @throws ControllerException controller exception
      */
     @PostMapping
-    public @ResponseBody
+    public
     ResponseEntity<EntityModel<OrderDto>> purchaseCertificate(@Valid @RequestBody PurchaseParam purchaseParam)
             throws ControllerException {
         try {
@@ -89,8 +89,7 @@ public class OrderController {
      * @throws ControllerException controller exception
      */
     @GetMapping(value = "/users/{id}/orders")
-    public @ResponseBody
-    ResponseEntity<List<OrderDto>> findCertificateByUser(
+    public ResponseEntity<List<OrderDto>> findCertificateByUser(
             @Valid @PathVariable(VALUE_ID) Long id,
             @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)
             @Min(value = 1, message = VALIDATION_FAIL)
@@ -119,7 +118,7 @@ public class OrderController {
      * @throws ControllerException the controller exception
      */
     @GetMapping(value = "/{id}")
-    public @ResponseBody
+    public 
     ResponseEntity<Map<String, Object>> findOrderById(@Valid @PathVariable(VALUE_ID) long id)
             throws ControllerException {
         try {

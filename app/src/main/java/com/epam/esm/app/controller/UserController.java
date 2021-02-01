@@ -60,7 +60,7 @@ public class UserController {
      * @throws ControllerException controller exception
      */
     @GetMapping
-    public @ResponseBody
+    public
     ResponseEntity<List<UserDto>> findAllUsers(
             @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)
             @Min(value = 1, message = VALIDATION_FAIL)

@@ -93,7 +93,7 @@ public class TagController {
      * @throws ControllerException the controller exception
      */
     @GetMapping
-    public @ResponseBody
+    public
     ResponseEntity<List<TagDto>> findAllTags(
             @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)
             @Min(value = 1, message = VALIDATION_FAIL)
@@ -136,7 +136,7 @@ public class TagController {
      * @throws ControllerException controller exception
      */
     @GetMapping(value = "/certificates/{id}/tags")
-    public @ResponseBody
+    public
     ResponseEntity<List<TagDto>> findAllTagsByCertificateId(
             @Valid @PathVariable(VALUE_ID) long idCertificate,
             @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)
@@ -167,7 +167,7 @@ public class TagController {
      * @throws ControllerException controller exception
      */
     @PostMapping
-    public @ResponseBody
+    public
     ResponseEntity<EntityModel<TagDto>> createTag(@Valid @RequestBody TagDto tagDto)
             throws ControllerException {
         try {

@@ -68,7 +68,6 @@ public class GiftCertificateController {
      * @throws ControllerException
      */
     @GetMapping(value = "/byParam")
-    @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<List<GiftCertificateDto>> findGiftCertificateByParam
     (@Valid @QueryParam("param") String param,
      @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)
@@ -275,8 +274,7 @@ public class GiftCertificateController {
      * @throws ControllerException the controller exception
      */
     @PostMapping
-    public @ResponseBody
-    ResponseEntity<EntityModel<GiftCertificateDto>> createGiftCertificate(
+    public ResponseEntity<EntityModel<GiftCertificateDto>> createGiftCertificate(
             @Valid @RequestBody GiftCertificateDto giftCertificateDto,
             @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)
             @Min(value = 1, message = VALIDATION_FAIL_MESSAGE)
