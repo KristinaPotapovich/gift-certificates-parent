@@ -163,22 +163,22 @@ public class GiftCertificateController {
     }
 
     /**
-     * Find gift certificate by tag name.
+     * Find gift certificate by tag tagName.
      *
-     * @param name name of gift certificate
+     * @param tagName tagName of gift certificate
      * @param page number of page
      * @param size count certificate on page
      * @return the response entity
      */
-    @GetMapping(value = "/tag")
+    @GetMapping(params = "tagName")
     public ResponseEntity<List<GiftCertificateDto>> findGiftCertificateByTagName
-    (@Valid @QueryParam("name") String name,
+    (@Valid @RequestParam("tagName") String tagName,
      @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)
      @Min(value = 1, message = VALIDATION_FAIL_MESSAGE) int page,
      @Valid @RequestParam(value = VALUE_SIZE, required = false, defaultValue = DEFAULT_SIZE)
      @Min(value = 1, message = VALIDATION_FAIL_MESSAGE) int size) {
         Optional<List<GiftCertificateDto>> giftCertificateDtosOpt = giftCertificateServiceImpl
-                .searchAllCertificatesByTagName(name, page, size);
+                .searchAllCertificatesByTagName(tagName, page, size);
         if (giftCertificateDtosOpt.isPresent()) {
             processExceptionForBuildCertificatesLink(page, size, giftCertificateDtosOpt.get());
             return new ResponseEntity<>(giftCertificateDtosOpt.get(), HttpStatus.OK);
@@ -363,7 +363,7 @@ public class GiftCertificateController {
          * @param size size
          * @return list
          */
-        @GetMapping(value = "/tags")
+        @GetMapping(params = "tags")
         public ResponseEntity<List<GiftCertificateDto>> findAllBySeveralTags (
                 @Valid @RequestParam(value = "tags", required = false) List < Long > tags,
         @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)
