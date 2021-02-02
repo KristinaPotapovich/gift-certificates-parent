@@ -1,10 +1,8 @@
 package com.epam.esm.service.services.impl;
 
 import com.epam.esm.core.entity.User;
-import com.epam.esm.core.exception.RepositoryException;
 import com.epam.esm.core.repository.UserRepository;
 import com.epam.esm.service.dto.UserDto;
-import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.mapper.UserConverter;
 import com.epam.esm.service.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,13 +30,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<UserDto> findUserById(long id) throws ServiceException {
-        UserDto userDto;
-        try {
-            userDto = UserConverter.mapToUserDto(userRepository.findUserById(id));
-        } catch (RepositoryException e) {
-            throw new ServiceException(e.getMessage());
-        }
+    public Optional<UserDto> findUserById(long id) {
+        UserDto userDto = UserConverter.mapToUserDto(userRepository.findUserById(id));
         return Optional.of(userDto);
     }
 
@@ -58,13 +51,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDto> findAll(int page, int size) throws ServiceException {
-        List<User> users;
-        try {
-            users = userRepository.findAll(page, size);
-        } catch (RepositoryException e) {
-            throw new ServiceException(e.getMessage());
-        }
+    public List<UserDto> findAll(int page, int size) {
+        List<User> users = userRepository.findAll(page, size);
         return users.stream()
                 .map(UserConverter::mapToUserDto)
                 .collect(Collectors.toList());

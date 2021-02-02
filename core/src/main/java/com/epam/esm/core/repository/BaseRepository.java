@@ -1,6 +1,5 @@
 package com.epam.esm.core.repository;
 
-import com.epam.esm.core.exception.RepositoryException;
 
 import java.util.List;
 
@@ -15,26 +14,23 @@ public interface BaseRepository<T> {
      *
      * @param t the t
      * @return the t
-     * @throws RepositoryException the repository exception
      */
-    T create(T t) throws RepositoryException;
+    T create(T t);
 
     /**
      * Update t.
      *
      * @param t the t
      * @return the t
-     * @throws RepositoryException the repository exception
      */
-    T update(T t) throws RepositoryException;
+    T update(T t);
 
     /**
      * Delete.
      *
      * @param t the t
-     * @throws RepositoryException the repository exception
      */
-    void delete(T t) throws RepositoryException;
+    void delete(T t);
 
     /**
      * Find all list.
@@ -42,8 +38,7 @@ public interface BaseRepository<T> {
      * @param page the page
      * @param size the size
      * @return the list
-     * @throws RepositoryException the repository exception
      */
-    List<T> findAll(int page, int size) throws RepositoryException;
+    List<T> findAll(int page, int size);
 
 }

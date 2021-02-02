@@ -1,8 +1,6 @@
 package com.epam.esm.service.services;
 
 
-import com.epam.esm.service.exception.ServiceException;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -17,26 +15,23 @@ public interface BaseService<T> {
      *
      * @param t the t
      * @return the optional
-     * @throws ServiceException the service exception
      */
-    Optional<T> create(T t) throws ServiceException;
+    Optional<T> create(T t);
 
     /**
      * Update optional.
      *
      * @param t the t
      * @return the optional
-     * @throws ServiceException the service exception
      */
-    Optional<T> update(T t) throws ServiceException;
+    Optional<T> update(T t);
 
     /**
      * Delete.
      *
      * @param id the id
-     * @throws ServiceException the service exception
      */
-    void delete(long id) throws ServiceException;
+    void delete(long id);
 
     /**
      * Find all list.
@@ -44,7 +39,6 @@ public interface BaseService<T> {
      * @param page the page
      * @param size the size
      * @return the list
-     * @throws ServiceException the service exception
      */
-    List<T> findAll(int page, int size) throws ServiceException;
+    List<T> findAll(int page, int size);
 }

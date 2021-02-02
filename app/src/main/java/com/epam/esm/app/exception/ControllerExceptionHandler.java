@@ -1,5 +1,6 @@
 package com.epam.esm.app.exception;
 
+import com.epam.esm.core.exception.UnsupportedParametersForSorting;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
@@ -39,8 +40,8 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
      * @return error response message
      */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(value = ControllerException.class)
-    public ErrorResponseMessage controllerError(ControllerException e, Locale locale) {
+    @ExceptionHandler(value = UnsupportedParametersForSorting.class)
+    public ErrorResponseMessage controllerError(UnsupportedParametersForSorting e, Locale locale) {
         ErrorResponseMessage errorResponseMessage = new ErrorResponseMessage();
         errorResponseMessage.setTimestamp(LocalDateTime.now());
         errorResponseMessage.setCode(messageSource.getMessage(e.getMessage() + CODE,
@@ -50,6 +51,7 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
                 new Object[]{}, locale));
         return errorResponseMessage;
     }
+
 
     /**
      * Handle illegal argument exception error response message.

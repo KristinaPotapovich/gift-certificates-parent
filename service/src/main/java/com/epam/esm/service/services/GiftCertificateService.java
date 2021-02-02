@@ -1,7 +1,6 @@
 package com.epam.esm.service.services;
 
 import com.epam.esm.service.dto.GiftCertificateDto;
-import com.epam.esm.service.exception.ServiceException;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,9 +14,8 @@ public interface GiftCertificateService extends BaseService<GiftCertificateDto> 
      *
      * @param id the id
      * @return the optional
-     * @throws ServiceException the service exception
      */
-    Optional<GiftCertificateDto> findCertificateById(long id) throws ServiceException;
+    Optional<GiftCertificateDto> findCertificateById(long id);
 
     /**
      * Find certificate by param optional.
@@ -26,10 +24,8 @@ public interface GiftCertificateService extends BaseService<GiftCertificateDto> 
      * @param page  the page
      * @param size  the size
      * @return the optional
-     * @throws ServiceException the service exception
      */
-    Optional<List<GiftCertificateDto>> findCertificateByParam(String param, int page,
-                                                              int size) throws ServiceException;
+    Optional<List<GiftCertificateDto>> findCertificateByParam(String param, int page, int size);
 
     /**
      * Search all certificates by tag name optional.
@@ -49,18 +45,16 @@ public interface GiftCertificateService extends BaseService<GiftCertificateDto> 
      * @param page            the page
      * @param size            the size
      * @return the optional
-     * @throws ServiceException the service exception
      */
-    Optional<List<GiftCertificateDto>> sortByParam(String paramForSorting, String order, int page, int size) throws ServiceException;
+    Optional<List<GiftCertificateDto>> sortByParam(String paramForSorting, String order, int page, int size);
 
     /**
      * Patch optional.
      *
      * @param giftCertificateDto the gift certificate dto
      * @return the optional
-     * @throws ServiceException the service exception
      */
-    Optional<GiftCertificateDto> patch(GiftCertificateDto giftCertificateDto) throws ServiceException;
+    Optional<GiftCertificateDto> patch(GiftCertificateDto giftCertificateDto);
 
     /**
      * Find all by several tags optional.
@@ -69,7 +63,6 @@ public interface GiftCertificateService extends BaseService<GiftCertificateDto> 
      * @param page the page
      * @param size the size
      * @return the optional
-     * @throws ServiceException the service exception
      */
-    Optional<List<GiftCertificateDto>> findAllBySeveralTags(List<Long> tags, int page, int size) throws ServiceException;
+    Optional<List<GiftCertificateDto>> findAllBySeveralTags(List<Long> tags, int page, int size);
 }

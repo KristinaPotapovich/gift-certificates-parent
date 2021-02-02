@@ -23,11 +23,6 @@ import java.util.Optional;
 public class TagRepositoryImpl implements TagRepository {
     @PersistenceContext
     private Session session;
-    private static final String CREATE_TAG_FAIL_MESSAGE = "tag_create_fail";
-    private static final String UPDATE_TAG_FAIL_MESSAGE = "tag_update_fail";
-    private static final String DELETE_TAG_FAIL_MESSAGE = "tag_delete_fail";
-    private static final String FIND_BY_NAME_TAG_FAIL_MESSAGE = "tag_find_by_name_fail";
-    private static final String FIND_ALL_TAG_FAIL_MESSAGE = "tag_find_all_fail";
     private static final String QUERY_FOR_POPULAR_TAG =
             "SELECT t.id_tag, t.name, SUM(ot.price)sum FROM tag t " +
                     "  JOIN certificates_tags ct ON ct.id_tag =t.id_tag " +
@@ -40,75 +35,51 @@ public class TagRepositoryImpl implements TagRepository {
 
 
     @Override
-    public Tag create(Tag tag) throws RepositoryException {
-        try {
-            return (Tag) session.merge(tag);
-        } catch (DataIntegrityViolationException e) {
-            throw new RepositoryException(CREATE_TAG_FAIL_MESSAGE);
-        }
+    public Tag create(Tag tag) {
+        return (Tag) session.merge(tag);
     }
 
     @Override
-    public Tag update(Tag tag) throws RepositoryException {
-        try {
-            return (Tag) session.merge(tag);
-        } catch (DataIntegrityViolationException e) {
-            throw new RepositoryException(UPDATE_TAG_FAIL_MESSAGE);
-        }
+    public Tag update(Tag tag) {
+        return (Tag) session.merge(tag);
     }
 
     @Override
-    public void delete(Tag tag) throws RepositoryException {
-        try {
-            session.remove(session.contains(tag) ? tag : session.merge(tag));
-        } catch (DataIntegrityViolationException e) {
-            throw new RepositoryException(DELETE_TAG_FAIL_MESSAGE);
-        }
+    public void delete(Tag tag) {
+        session.remove(session.contains(tag) ? tag : session.merge(tag));
     }
 
-    public Optional<Tag> findTagById(long id) throws RepositoryException {
-        try {
-            CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-            CriteriaQuery<Tag> tagCriteriaQuery = criteriaBuilder.createQuery(Tag.class);
-            Root<Tag> tagRoot = tagCriteriaQuery.from(Tag.class);
-            tagCriteriaQuery.where(criteriaBuilder.equal(tagRoot.get("id"), id));
-            Tag tag = session.createQuery(tagCriteriaQuery).getSingleResult();
-            return Optional.of(tag);
-        } catch (NoResultException e) {
-            throw new RepositoryException(FIND_BY_NAME_TAG_FAIL_MESSAGE);
-        }
+    public Optional<Tag> findTagById(long id) {
+        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaQuery<Tag> tagCriteriaQuery = criteriaBuilder.createQuery(Tag.class);
+        Root<Tag> tagRoot = tagCriteriaQuery.from(Tag.class);
+        tagCriteriaQuery.where(criteriaBuilder.equal(tagRoot.get("id"), id));
+        Tag tag = session.createQuery(tagCriteriaQuery).getSingleResult();
+        return Optional.of(tag);
     }
 
-    public List<Tag> findAll(int page, int size) throws RepositoryException {
-        try {
-            CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-            CriteriaQuery<Tag> tagCriteriaQuery =
-                    criteriaBuilder.createQuery(Tag.class);
-            Root<Tag> tagRootRoot = tagCriteriaQuery.from(Tag.class);
-            tagCriteriaQuery.select(tagRootRoot);
-            return session.createQuery(tagCriteriaQuery)
-                    .setFirstResult((page - 1) * size)
-                    .setMaxResults(size)
-                    .getResultList();
-        } catch (NoResultException e) {
-            throw new RepositoryException(FIND_ALL_TAG_FAIL_MESSAGE);
-        }
+    public List<Tag> findAll(int page, int size) {
+        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaQuery<Tag> tagCriteriaQuery =
+                criteriaBuilder.createQuery(Tag.class);
+        Root<Tag> tagRootRoot = tagCriteriaQuery.from(Tag.class);
+        tagCriteriaQuery.select(tagRootRoot);
+        return session.createQuery(tagCriteriaQuery)
+                .setFirstResult((page - 1) * size)
+                .setMaxResults(size)
+                .getResultList();
     }
 
-    public List<Tag> findAllTagsByCertificateId(long idCertificate, int page, int size) throws RepositoryException {
-        try {
-            CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-            CriteriaQuery<Tag> criteriaQuery = criteriaBuilder.createQuery(Tag.class);
-            Root<Tag> tagRoot = criteriaQuery.from(Tag.class);
-            criteriaQuery.select(tagRoot)
-                    .where(criteriaBuilder.equal(tagRoot.join("certificates").get("id"), idCertificate));
-            return session.createQuery(criteriaQuery)
-                    .setFirstResult((page - 1) * size)
-                    .setMaxResults(size)
-                    .getResultList();
-        } catch (NoResultException e) {
-            throw new RepositoryException(FIND_ALL_TAG_FAIL_MESSAGE);
-        }
+    public List<Tag> findAllTagsByCertificateId(long idCertificate, int page, int size) {
+        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaQuery<Tag> criteriaQuery = criteriaBuilder.createQuery(Tag.class);
+        Root<Tag> tagRoot = criteriaQuery.from(Tag.class);
+        criteriaQuery.select(tagRoot)
+                .where(criteriaBuilder.equal(tagRoot.join("certificates").get("id"), idCertificate));
+        return session.createQuery(criteriaQuery)
+                .setFirstResult((page - 1) * size)
+                .setMaxResults(size)
+                .getResultList();
     }
 
     @Override

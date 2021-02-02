@@ -1,6 +1,7 @@
 package com.epam.esm.core.repository.specification.impl;
 
 import com.epam.esm.core.entity.GiftCertificate;
+import com.epam.esm.core.exception.UnsupportedParametersForSorting;
 import com.epam.esm.core.repository.specification.SortingSpecification;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -15,6 +16,7 @@ import static com.epam.esm.core.repository.specification.SortingParameters.DESC;
  */
 public class SortingDateSpecification implements SortingSpecification<GiftCertificate> {
     private String order;
+    private static final String SORTING_FAIL_MASSAGE = "sorting_param_fail";
 
     /**
      * Instantiates a new Sorting date specification.
@@ -25,6 +27,7 @@ public class SortingDateSpecification implements SortingSpecification<GiftCertif
         this.order = order;
     }
 
+
     @Override
     public void buildQuery(CriteriaQuery<GiftCertificate> criteriaQuery,
                            CriteriaBuilder criteriaBuilder,
@@ -33,6 +36,8 @@ public class SortingDateSpecification implements SortingSpecification<GiftCertif
             criteriaQuery.orderBy(criteriaBuilder.asc(giftCertificateRoot.get("createDate")));
         } else if (DESC.name().equalsIgnoreCase(order)) {
             criteriaQuery.orderBy(criteriaBuilder.desc(giftCertificateRoot.get("createDate")));
+        } else {
+            throw new UnsupportedParametersForSorting(SORTING_FAIL_MASSAGE);
         }
     }
 }

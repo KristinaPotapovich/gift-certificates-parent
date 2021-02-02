@@ -1,7 +1,6 @@
 package com.epam.esm.core.repository;
 
 import com.epam.esm.core.entity.Order;
-import com.epam.esm.core.exception.RepositoryException;
 
 import java.util.List;
 
@@ -16,9 +15,8 @@ public interface OrderRepository extends BaseRepository<Order> {
      *
      * @param id the id
      * @return the order
-     * @throws RepositoryException the repository exception
      */
-    Order findOrderById(long id) throws RepositoryException;
+    Order findOrderById(long id);
 
     /**
      * Find all orders by user list.
@@ -27,9 +25,8 @@ public interface OrderRepository extends BaseRepository<Order> {
      * @param page the page
      * @param size the size
      * @return the list
-     * @throws RepositoryException the repository exception
      */
-    List<Order> findAllOrdersByUser(long id, int page, int size) throws RepositoryException;
+    List<Order> findAllOrdersByUser(long id, int page, int size);
 
 
 }

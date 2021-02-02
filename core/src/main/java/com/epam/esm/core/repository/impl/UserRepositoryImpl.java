@@ -18,57 +18,45 @@ import java.util.List;
  */
 @Repository
 public class UserRepositoryImpl implements UserRepository {
-    private static final String FIND_ALL_USERS_FAIL_MESSAGE = "user_find_all";
-    private static final String FIND_USER_BY_ID_FAIL_MESSAGE = "user_find_by_id";
-
 
     @PersistenceContext
     private Session session;
 
 
     @Override
-    public User create(User user) throws RepositoryException {
+    public User create(User user) {
         session.persist(user);
         return user;
     }
 
     @Override
-    public User update(User user) throws RepositoryException {
+    public User update(User user) {
         return null;
     }
 
     @Override
-    public void delete(User user) throws RepositoryException {
-
+    public void delete(User user) {
     }
 
     @Override
-    public List<User> findAll(int page, int size) throws RepositoryException {
-        try {
-            CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-            CriteriaQuery<User> userCriteriaQuery =
-                    criteriaBuilder.createQuery(User.class);
-            Root<User> userRoot = userCriteriaQuery.from(User.class);
-            userCriteriaQuery.select(userRoot);
-            return session.createQuery(userCriteriaQuery)
-                    .setFirstResult((page - 1) * size)
-                    .setMaxResults(size)
-                    .getResultList();
-        } catch (NoResultException e) {
-            throw new RepositoryException(FIND_ALL_USERS_FAIL_MESSAGE);
-        }
+    public List<User> findAll(int page, int size) {
+        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaQuery<User> userCriteriaQuery =
+                criteriaBuilder.createQuery(User.class);
+        Root<User> userRoot = userCriteriaQuery.from(User.class);
+        userCriteriaQuery.select(userRoot);
+        return session.createQuery(userCriteriaQuery)
+                .setFirstResult((page - 1) * size)
+                .setMaxResults(size)
+                .getResultList();
     }
 
     @Override
-    public User findUserById(long id) throws RepositoryException {
-        try {
-            CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-            CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
-            Root<User> userRoot = criteriaQuery.from(User.class);
-            criteriaQuery.where(criteriaBuilder.equal(userRoot.get("id"), id));
-            return session.createQuery(criteriaQuery).getSingleResult();
-        } catch (NoResultException e) {
-            throw new RepositoryException(FIND_USER_BY_ID_FAIL_MESSAGE);
-        }
+    public User findUserById(long id) {
+        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
+        Root<User> userRoot = criteriaQuery.from(User.class);
+        criteriaQuery.where(criteriaBuilder.equal(userRoot.get("id"), id));
+        return session.createQuery(criteriaQuery).getSingleResult();
     }
 }

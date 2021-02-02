@@ -2,7 +2,6 @@ package com.epam.esm.service.services;
 
 
 import com.epam.esm.service.dto.UserDto;
-import com.epam.esm.service.exception.ServiceException;
 
 import java.util.Optional;
 
@@ -15,7 +14,6 @@ public interface UserService extends BaseService<UserDto> {
      *
      * @param id the id
      * @return the optional
-     * @throws ServiceException the service exception
      */
-    Optional<UserDto> findUserById(long id) throws ServiceException;
+    Optional<UserDto> findUserById(long id);
 }

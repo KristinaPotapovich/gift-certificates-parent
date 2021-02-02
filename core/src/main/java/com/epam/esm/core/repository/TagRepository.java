@@ -1,7 +1,6 @@
 package com.epam.esm.core.repository;
 
 import com.epam.esm.core.entity.Tag;
-import com.epam.esm.core.exception.RepositoryException;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,9 +15,8 @@ public interface TagRepository extends BaseRepository<Tag> {
      *
      * @param id the id
      * @return the optional
-     * @throws RepositoryException the repository exception
      */
-    Optional<Tag> findTagById(long id) throws RepositoryException;
+    Optional<Tag> findTagById(long id);
 
     /**
      * Find all tags by certificate id list.
@@ -27,9 +25,8 @@ public interface TagRepository extends BaseRepository<Tag> {
      * @param page          the page
      * @param size          the size
      * @return the list
-     * @throws RepositoryException the repository exception
      */
-    List<Tag> findAllTagsByCertificateId(long idCertificate, int page, int size) throws RepositoryException;
+    List<Tag> findAllTagsByCertificateId(long idCertificate, int page, int size);
 
     /**
      * Find popular tag tag.

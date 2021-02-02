@@ -35,61 +35,39 @@ public class TagServiceImpl implements TagService {
 
 
     @Override
-    public Optional<TagDto> create(TagDto tagDto) throws ServiceException {
-        Tag tag;
-        try {
-            tag = TagConverter.mapToTag(tagDto);
-            tagDto = TagConverter.mapToTagDto(tagRepository.create(tag));
-            return Optional.ofNullable(tagDto);
-        } catch (RepositoryException e) {
-            throw new ServiceException(e.getMessage());
-        }
+    public Optional<TagDto> create(TagDto tagDto) {
+        Tag tag = TagConverter.mapToTag(tagDto);
+        tagDto = TagConverter.mapToTagDto(tagRepository.create(tag));
+        return Optional.ofNullable(tagDto);
     }
 
     @Override
-    public Optional<TagDto> update(TagDto tagDto) throws ServiceException {
-        Tag tag;
-        try {
-            tag = TagConverter.mapToTag(tagDto);
-            tag = tagRepository.update(tag);
-            return Optional.ofNullable(TagConverter.mapToTagDto(tag));
-        } catch (RepositoryException e) {
-            throw new ServiceException(e.getMessage());
-        }
+    public Optional<TagDto> update(TagDto tagDto) {
+        Tag tag = TagConverter.mapToTag(tagDto);
+        tag = tagRepository.update(tag);
+        return Optional.ofNullable(TagConverter.mapToTagDto(tag));
     }
 
     @Override
-    public void delete(long id) throws ServiceException {
-        try {
-            Tag tag = new Tag();
-            tag.setId(id);
-            tagRepository.delete(tag);
-        } catch (RepositoryException e) {
-            throw new ServiceException(e.getMessage());
-        }
+    public void delete(long id) {
+        Tag tag = new Tag();
+        tag.setId(id);
+        tagRepository.delete(tag);
     }
 
     @Override
-    public Optional<TagDto> findTagById(long id) throws ServiceException {
-        try {
-            Optional<Tag> tagOptional = tagRepository.findTagById(id);
-            if (tagOptional.isPresent()) {
-                return tagOptional.map(TagConverter::mapToTagDto);
-            }
-        } catch (RepositoryException e) {
-            throw new ServiceException(e.getMessage());
+    public Optional<TagDto> findTagById(long id) {
+        Optional<Tag> tagOptional = tagRepository.findTagById(id);
+        if (tagOptional.isPresent()) {
+            return tagOptional.map(TagConverter::mapToTagDto);
         }
         return Optional.empty();
     }
 
     @Override
-    public List<TagDto> findAll(int page, int size) throws ServiceException {
+    public List<TagDto> findAll(int page, int size) {
         List<Tag> tags;
-        try {
-            tags = tagRepository.findAll(page, size);
-        } catch (RepositoryException e) {
-            throw new ServiceException(e.getMessage());
-        }
+        tags = tagRepository.findAll(page, size);
         return tags.stream()
                 .map(TagConverter::mapToTagDto)
                 .collect(Collectors.toList());
@@ -103,18 +81,12 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public Optional<List<TagDto>> findAllTagsByCertificateId(long idCertificate, int page, int size)
-            throws ServiceException {
+    public Optional<List<TagDto>> findAllTagsByCertificateId(long idCertificate, int page, int size) {
         List<Tag> tags;
-        try {
-            tags = tagRepository.findAllTagsByCertificateId(idCertificate, page, size);
-        } catch (RepositoryException e) {
-            throw new ServiceException(e.getMessage());
-        }
+        tags = tagRepository.findAllTagsByCertificateId(idCertificate, page, size);
         return Optional.of(tags.stream()
                 .map(TagConverter::mapToTagDto)
                 .collect(Collectors.toList()));
     }
-
 }
 

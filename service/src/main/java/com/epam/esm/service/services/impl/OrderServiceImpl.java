@@ -1,7 +1,6 @@
 package com.epam.esm.service.services.impl;
 
 import com.epam.esm.core.entity.Order;
-import com.epam.esm.core.exception.RepositoryException;
 import com.epam.esm.core.repository.OrderRepository;
 import com.epam.esm.service.dto.*;
 import com.epam.esm.service.exception.ServiceException;
@@ -47,38 +46,29 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Transactional
-    public Optional<OrderDto> purchaseCertificate(PurchaseParam purchaseParam) throws ServiceException {
-        try {
-            OrderDto orderDto = new OrderDto();
-            AtomicReference<BigDecimal> fullPrice = new AtomicReference<>(new BigDecimal(0));
-            List<GiftCertificateDto> certificates = purchaseParam.getCertificatesIds()
-                    .stream()
-                    .map(this::processExceptionForFindByCertificateId)
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
-                    .collect(Collectors.toList());
-            UserDto user = userService.findUserById(purchaseParam.getUserId())
-                    .orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
-            orderDto.setUser(user);
-            orderDto.setCertificates(certificates);
-            certificates.stream()
-                    .map(GiftCertificateDto::getPrice)
-                    .map(bigDecimal1 -> fullPrice.get().add(bigDecimal1))
-                    .forEach(fullPrice::set);
-            orderDto.setPrice(fullPrice.get());
-            Order order = orderRepository.create(OrderConverter.mapToOrder(orderDto));
-            return Optional.ofNullable(OrderConverter.mapToOrderDto(order));
-        } catch (RepositoryException e) {
-            throw new ServiceException(e.getMessage());
-        }
+    public Optional<OrderDto> purchaseCertificate(PurchaseParam purchaseParam) {
+        OrderDto orderDto = new OrderDto();
+        AtomicReference<BigDecimal> fullPrice = new AtomicReference<>(new BigDecimal(0));
+        List<GiftCertificateDto> certificates = purchaseParam.getCertificatesIds()
+                .stream()
+                .map(this::processExceptionForFindByCertificateId)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
+        userService.findUserById(purchaseParam.getUserId())
+                .ifPresent(orderDto::setUser);
+        orderDto.setCertificates(certificates);
+        certificates.stream()
+                .map(GiftCertificateDto::getPrice)
+                .map(bigDecimal1 -> fullPrice.get().add(bigDecimal1))
+                .forEach(fullPrice::set);
+        orderDto.setPrice(fullPrice.get());
+        Order order = orderRepository.create(OrderConverter.mapToOrder(orderDto));
+        return Optional.ofNullable(OrderConverter.mapToOrderDto(order));
     }
 
     private Optional<GiftCertificateDto> processExceptionForFindByCertificateId(Long aLong) {
-        try {
-            return giftCertificateService.findCertificateById(aLong);
-        } catch (ServiceException e) {
-            throw new RuntimeException(e);
-        }
+        return giftCertificateService.findCertificateById(aLong);
     }
 
     @Override
@@ -97,44 +87,32 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderDto> findAll(int page, int size) throws ServiceException {
+    public List<OrderDto> findAll(int page, int size) {
         List<Order> orders;
-        try {
-            orders = orderRepository.findAll(page, size);
-        } catch (RepositoryException e) {
-            throw new ServiceException(e.getMessage());
-        }
+        orders = orderRepository.findAll(page, size);
         return orders.stream()
                 .map(OrderConverter::mapToOrderDto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public Optional<Map<String, Object>> findOrderById(long id) throws ServiceException {
-        try {
-            Order order = orderRepository.findOrderById(id);
-            OrderDto orderDto = OrderConverter.mapToOrderDto(order);
-            Map<String, Object> dataOrder = new HashMap<>();
-            dataOrder.put("time_of_purchase", orderDto.getTimeOfPurchase());
-            dataOrder.put("price", orderDto.getPrice());
-            return Optional.ofNullable(dataOrder);
-        } catch (RepositoryException e) {
-            throw new ServiceException(e.getMessage());
-        }
+    public Optional<Map<String, Object>> findOrderById(long id) {
+        Order order = orderRepository.findOrderById(id);
+        OrderDto orderDto = OrderConverter.mapToOrderDto(order);
+        Map<String, Object> dataOrder = new HashMap<>();
+        dataOrder.put("time_of_purchase", orderDto.getTimeOfPurchase());
+        dataOrder.put("price", orderDto.getPrice());
+        return Optional.ofNullable(dataOrder);
     }
 
     @Override
-    public Optional<List<OrderDto>> findAllOrdersByUser(long id, int page, int size) throws ServiceException {
-        try {
-            List<OrderDto> orderDtos;
-            List<Order> orders;
-            orders = orderRepository.findAllOrdersByUser(id, page, size);
-            orderDtos = orders.stream()
-                    .map(OrderConverter::mapToOrderDto)
-                    .collect(Collectors.toList());
-            return Optional.of(orderDtos);
-        } catch (RepositoryException e) {
-            throw new ServiceException(e.getMessage());
-        }
+    public Optional<List<OrderDto>> findAllOrdersByUser(long id, int page, int size) {
+        List<OrderDto> orderDtos;
+        List<Order> orders;
+        orders = orderRepository.findAllOrdersByUser(id, page, size);
+        orderDtos = orders.stream()
+                .map(OrderConverter::mapToOrderDto)
+                .collect(Collectors.toList());
+        return Optional.of(orderDtos);
     }
 }
