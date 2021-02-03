@@ -33,12 +33,4 @@ public interface BaseService<T> {
      */
     void delete(long id);
 
-    /**
-     * Find all list.
-     *
-     * @param page the page
-     * @param size the size
-     * @return the list
-     */
-    List<T> findAll(int page, int size);
 }

@@ -53,7 +53,7 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
-    public List<Order> findAll(int page, int size) {
+    public List<Order> findAllOrders(int page, int size) {
         CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
         CriteriaQuery<Order> orderCriteriaQuery =
                 criteriaBuilder.createQuery(Order.class);

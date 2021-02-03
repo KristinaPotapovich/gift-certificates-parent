@@ -62,7 +62,7 @@ public class UserController {
             @Min(value = 1, message = VALIDATION_FAIL) int page,
             @Valid @RequestParam(value = VALUE_SIZE, required = false, defaultValue = DEFAULT_SIZE)
             @Min(value = 1, message = VALIDATION_FAIL) int size) {
-        List<UserDto> userDtos = userService.findAll(page, size);
+        List<UserDto> userDtos = userService.findAllUsers(page, size);
         userDtos.forEach(userDto -> processExceptionByFindUser(page, size, userDto));
         return new ResponseEntity<>(userDtos, HttpStatus.OK);
     }

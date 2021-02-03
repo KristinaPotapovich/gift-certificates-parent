@@ -87,7 +87,7 @@ public class TagController {
             @Valid @RequestParam(value = VALUE_SIZE, required = false, defaultValue = DEFAULT_SIZE)
             @Min(value = 1, message = VALIDATION_FAIL)
                     int size) {
-        List<TagDto> tagDtos = tagServiceImpl.findAll(page, size);
+        List<TagDto> tagDtos = tagServiceImpl.findAllTags(page, size);
         processExceptionForFindTagByName(tagDtos);
         return new ResponseEntity<>(tagDtos, HttpStatus.OK);
     }

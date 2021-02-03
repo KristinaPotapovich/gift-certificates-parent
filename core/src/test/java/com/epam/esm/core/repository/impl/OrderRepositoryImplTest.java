@@ -34,7 +34,7 @@ public class OrderRepositoryImplTest {
 
     @Test
     public void findAll() throws RepositoryException {
-        List<Order> orders = orderRepository.findAll(1, 5);
+        List<Order> orders = orderRepository.findAllOrders(1, 5);
         assertFalse(orders.isEmpty());
     }
 

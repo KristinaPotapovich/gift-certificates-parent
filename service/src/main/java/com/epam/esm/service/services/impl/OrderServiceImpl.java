@@ -87,9 +87,9 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderDto> findAll(int page, int size) {
+    public List<OrderDto> findAllOrders(int page, int size) {
         List<Order> orders;
-        orders = orderRepository.findAll(page, size);
+        orders = orderRepository.findAllOrders(page, size);
         return orders.stream()
                 .map(OrderConverter::mapToOrderDto)
                 .collect(Collectors.toList());

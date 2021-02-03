@@ -110,9 +110,9 @@ class OrderServiceImplTest {
 
     @Test
     void findAll() throws RepositoryException, ServiceException {
-        when(orderRepository.findAll(1, 3)).thenReturn(orders);
-        List<OrderDto> actual = orderService.findAll(1, 3);
-        verify(orderRepository).findAll(1, 3);
+        when(orderRepository.findAllOrders(1, 3)).thenReturn(orders);
+        List<OrderDto> actual = orderService.findAllOrders(1, 3);
+        verify(orderRepository).findAllOrders(1, 3);
         assertFalse(actual.isEmpty());
     }
 

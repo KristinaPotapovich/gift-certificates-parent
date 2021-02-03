@@ -14,9 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
-import javax.ws.rs.QueryParam;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -54,35 +52,6 @@ public class GiftCertificateController {
     @Autowired
     public GiftCertificateController(GiftCertificateService giftCertificateService) {
         this.giftCertificateServiceImpl = giftCertificateService;
-    }
-
-    /**
-     * Find gift certificates by part name or description param.
-     *
-     * @param param part name or description
-     * @param page  number of page
-     * @param size  count certificates on page
-     * @return List<GiftCertificates> certificates
-     */
-    @GetMapping(params = {"parameter"})
-    public ResponseEntity<List<GiftCertificateDto>> findGiftCertificateByParam
-    (@Valid @RequestParam(value = "parameter") String param,
-     @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)
-     @Min(value = 1, message = VALIDATION_FAIL_MESSAGE) int page,
-     @Valid @RequestParam(value = VALUE_SIZE, required = false, defaultValue = DEFAULT_SIZE)
-     @Min(value = 1, message = VALIDATION_FAIL_MESSAGE) int size) {
-        ResponseEntity<List<GiftCertificateDto>> responseEntity;
-        Optional<List<GiftCertificateDto>> certificateDtosOptional =
-                giftCertificateServiceImpl.findCertificateByParam(param, page, size);
-        List<GiftCertificateDto> giftCertificateDtos = new ArrayList<>();
-        if (certificateDtosOptional.isPresent()) {
-            giftCertificateDtos = certificateDtosOptional.get();
-            processExceptionForBuildCertificatesLink(page, size, giftCertificateDtos);
-            responseEntity = new ResponseEntity<>(giftCertificateDtos, HttpStatus.OK);
-        } else {
-            responseEntity = new ResponseEntity<>(giftCertificateDtos, HttpStatus.BAD_REQUEST);
-        }
-        return responseEntity;
     }
 
     private void processExceptionForBuildCertificatesLink(int page, int size,
@@ -155,63 +124,15 @@ public class GiftCertificateController {
             @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)
             @Min(value = 1, message = VALIDATION_FAIL_MESSAGE) int page,
             @Valid @RequestParam(value = VALUE_SIZE, required = false, defaultValue = DEFAULT_SIZE)
-            @Min(value = 1, message = VALIDATION_FAIL_MESSAGE) int size) {
+            @Min(value = 1, message = VALIDATION_FAIL_MESSAGE) int size,
+            @Valid @RequestParam(value = "tagName",required = false) String tagName,
+            @Valid @RequestParam(value = "sort",required = false) String paramForSorting,
+            @Valid @RequestParam(value = "order",required = false) String order,
+            @Valid @RequestParam(value = "parameter",required = false) String param){
         List<GiftCertificateDto> giftCertificateDtos = giftCertificateServiceImpl
-                .findAll(page, size);
+                .findAllCertificates(param,tagName,paramForSorting,order,page, size);
         processExceptionForBuildCertificatesLink(page, size, giftCertificateDtos);
         return new ResponseEntity<>(giftCertificateDtos, HttpStatus.OK);
-    }
-
-    /**
-     * Find gift certificate by tag tagName.
-     *
-     * @param tagName tagName of gift certificate
-     * @param page number of page
-     * @param size count certificate on page
-     * @return the response entity
-     */
-    @GetMapping(params = "tagName")
-    public ResponseEntity<List<GiftCertificateDto>> findGiftCertificateByTagName
-    (@Valid @RequestParam("tagName") String tagName,
-     @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)
-     @Min(value = 1, message = VALIDATION_FAIL_MESSAGE) int page,
-     @Valid @RequestParam(value = VALUE_SIZE, required = false, defaultValue = DEFAULT_SIZE)
-     @Min(value = 1, message = VALIDATION_FAIL_MESSAGE) int size) {
-        Optional<List<GiftCertificateDto>> giftCertificateDtosOpt = giftCertificateServiceImpl
-                .searchAllCertificatesByTagName(tagName, page, size);
-        if (giftCertificateDtosOpt.isPresent()) {
-            processExceptionForBuildCertificatesLink(page, size, giftCertificateDtosOpt.get());
-            return new ResponseEntity<>(giftCertificateDtosOpt.get(), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    /**
-     * Sort certificate by param name or date.
-     *
-     * @param paramForSorting param for sorting
-     * @param order           order
-     * @param page            page
-     * @param size            size
-     * @return the response entity
-     */
-    @GetMapping(params = {"sort", "order"})
-    public ResponseEntity<List<GiftCertificateDto>> sortCertificateByParam
-    (@Valid @RequestParam(value = "sort",defaultValue = "name") String paramForSorting,
-     @Valid @RequestParam(value = "order",defaultValue = "asc") String order,
-     @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)
-     @Min(value = 1, message = VALIDATION_FAIL_MESSAGE) int page,
-     @Valid @RequestParam(value = VALUE_SIZE, required = false, defaultValue = DEFAULT_SIZE)
-     @Min(value = 1, message = VALIDATION_FAIL_MESSAGE) int size) {
-        Optional<List<GiftCertificateDto>> certificatesOpt =
-                giftCertificateServiceImpl.sortByParam(paramForSorting, order, page, size);
-        if (certificatesOpt.isPresent()) {
-            processExceptionForBuildCertificatesLink(page, size, certificatesOpt.get());
-            return new ResponseEntity<>(certificatesOpt.get(), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
     }
 
     /**

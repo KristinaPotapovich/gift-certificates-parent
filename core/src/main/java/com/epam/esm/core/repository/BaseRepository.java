@@ -39,6 +39,6 @@ public interface BaseRepository<T> {
      * @param size the size
      * @return the list
      */
-    List<T> findAll(int page, int size);
+
 
 }

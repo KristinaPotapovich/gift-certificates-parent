@@ -33,4 +33,6 @@ public interface TagService extends BaseService<TagDto> {
      * @return the optional
      */
     Optional<List<TagDto>> findAllTagsByCertificateId(long idCertificate, int page, int size);
+
+    List<TagDto> findAllTags(int page, int size);
 }

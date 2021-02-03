@@ -39,7 +39,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public List<User> findAll(int page, int size) {
+    public List<User> findAllUsers(int page, int size) {
         CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
         CriteriaQuery<User> userCriteriaQuery =
                 criteriaBuilder.createQuery(User.class);

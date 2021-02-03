@@ -116,7 +116,7 @@ public class OrderController {
             @Min(value = 1, message = VALIDATION_FAIL) int page,
             @Valid @RequestParam(value = VALUE_SIZE, required = false, defaultValue = DEFAULT_SIZE)
             @Min(value = 1, message = VALIDATION_FAIL) int size) {
-        List<OrderDto> orderDtos = orderService.findAll(page, size);
+        List<OrderDto> orderDtos = orderService.findAllOrders(page, size);
         if (!orderDtos.isEmpty()) {
             orderDtos.forEach(orderDto -> buildLinkForOrder(orderDto, page, size));
             return new ResponseEntity<>(orderDtos, HttpStatus.OK);

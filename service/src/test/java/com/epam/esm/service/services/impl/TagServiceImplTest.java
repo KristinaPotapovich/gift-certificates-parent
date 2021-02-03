@@ -73,9 +73,9 @@ class TagServiceImplTest {
 
     @Test
     void findAll() throws RepositoryException, ServiceException {
-        when(tagRepository.findAll(5, 6)).thenReturn(tags);
-        List<TagDto> actual = tagService.findAll(5, 6);
-        verify(tagRepository).findAll(5, 6);
+        when(tagRepository.findAllTags(5, 6)).thenReturn(tags);
+        List<TagDto> actual = tagService.findAllTags(5, 6);
+        verify(tagRepository).findAllTags(5, 6);
         assertFalse(actual.isEmpty());
     }
 

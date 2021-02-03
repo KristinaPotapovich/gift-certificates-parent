@@ -29,7 +29,7 @@ public class UserRepositoryImplTest {
 
     @Test
     public void findAll() throws RepositoryException {
-        List<User> users = userRepository.findAll(1, 5);
+        List<User> users = userRepository.findAllUsers(1, 5);
         assertFalse(users.isEmpty());
     }
 

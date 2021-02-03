@@ -3,6 +3,7 @@ package com.epam.esm.service.services;
 
 import com.epam.esm.service.dto.UserDto;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -16,4 +17,5 @@ public interface UserService extends BaseService<UserDto> {
      * @return the optional
      */
     Optional<UserDto> findUserById(long id);
+    List<UserDto> findAllUsers(int page, int size);
 }

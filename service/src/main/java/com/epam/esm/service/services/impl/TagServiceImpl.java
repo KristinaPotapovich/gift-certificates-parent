@@ -65,9 +65,9 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public List<TagDto> findAll(int page, int size) {
+    public List<TagDto> findAllTags(int page, int size) {
         List<Tag> tags;
-        tags = tagRepository.findAll(page, size);
+        tags = tagRepository.findAllTags(page, size);
         return tags.stream()
                 .map(TagConverter::mapToTagDto)
                 .collect(Collectors.toList());

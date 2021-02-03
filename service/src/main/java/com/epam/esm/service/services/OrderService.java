@@ -36,5 +36,5 @@ public interface OrderService extends BaseService<OrderDto> {
      * @return the optional
      */
     Optional<List<OrderDto>> findAllOrdersByUser(long id, int page, int size);
-
+    List<OrderDto> findAllOrders(int page, int size);
 }

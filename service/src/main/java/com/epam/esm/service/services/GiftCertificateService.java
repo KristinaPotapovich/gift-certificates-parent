@@ -1,5 +1,6 @@
 package com.epam.esm.service.services;
 
+import com.epam.esm.core.entity.GiftCertificate;
 import com.epam.esm.service.dto.GiftCertificateDto;
 
 import java.util.List;
@@ -18,37 +19,6 @@ public interface GiftCertificateService extends BaseService<GiftCertificateDto> 
     Optional<GiftCertificateDto> findCertificateById(long id);
 
     /**
-     * Find certificate by param optional.
-     *
-     * @param param the param
-     * @param page  the page
-     * @param size  the size
-     * @return the optional
-     */
-    Optional<List<GiftCertificateDto>> findCertificateByParam(String param, int page, int size);
-
-    /**
-     * Search all certificates by tag name optional.
-     *
-     * @param tagName the tag name
-     * @param page    the page
-     * @param size    the size
-     * @return the optional
-     */
-    Optional<List<GiftCertificateDto>> searchAllCertificatesByTagName(String tagName, int page, int size);
-
-    /**
-     * Sort by param optional.
-     *
-     * @param paramForSorting the param for sorting
-     * @param order           the order
-     * @param page            the page
-     * @param size            the size
-     * @return the optional
-     */
-    Optional<List<GiftCertificateDto>> sortByParam(String paramForSorting, String order, int page, int size);
-
-    /**
      * Patch optional.
      *
      * @param giftCertificateDto the gift certificate dto
@@ -65,4 +35,7 @@ public interface GiftCertificateService extends BaseService<GiftCertificateDto> 
      * @return the optional
      */
     Optional<List<GiftCertificateDto>> findAllBySeveralTags(List<Long> tags, int page, int size);
+
+    List<GiftCertificateDto> findAllCertificates(String param, String tagName, String paramForSorting,
+                                     String order, int page, int size);
 }

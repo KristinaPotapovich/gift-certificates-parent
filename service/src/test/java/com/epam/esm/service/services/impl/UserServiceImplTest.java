@@ -56,9 +56,9 @@ class UserServiceImplTest {
 
     @Test
     void findAll() throws RepositoryException, ServiceException {
-        when(userRepository.findAll(1, 3)).thenReturn(users);
-        List<UserDto> actual = userService.findAll(1, 3);
-        verify(userRepository).findAll(1, 3);
+        when(userRepository.findAllUsers(1, 3)).thenReturn(users);
+        List<UserDto> actual = userService.findAllUsers(1, 3);
+        verify(userRepository).findAllUsers(1, 3);
         assertFalse(actual.isEmpty());
     }
 }

@@ -2,11 +2,11 @@ package com.epam.esm.service.services.impl;
 
 import com.epam.esm.core.entity.GiftCertificate;
 import com.epam.esm.core.repository.GiftCertificateRepository;
+import com.epam.esm.core.repository.specification.BaseSpecificationForSorting;
 import com.epam.esm.core.repository.specification.ParamForSorting;
-import com.epam.esm.core.repository.specification.SortingSpecification;
-import com.epam.esm.core.repository.specification.impl.SortingNameSpecification;
+import com.epam.esm.core.repository.specification.Resolver;
+import com.epam.esm.core.repository.specification.impl.*;
 import com.epam.esm.service.dto.GiftCertificateDto;
-import com.epam.esm.core.exception.UnsupportedParametersForSorting;
 import com.epam.esm.service.mapper.GiftCertificateConverter;
 import com.epam.esm.service.services.GiftCertificateService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,24 +66,26 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public List<GiftCertificateDto> findAll(int page, int size) {
+    public List<GiftCertificateDto> findAllCertificates(String param, String tagName, String paramForSorting,
+                                                        String order, int page, int size) {
         List<GiftCertificate> giftCertificates;
-        giftCertificates = giftCertificateRepositoryImpl.findAll(page, size);
-        return giftCertificates.stream()
-                .map(GiftCertificateConverter::mapToGiftCertificateDto)
+        BaseSpecificationForSorting<GiftCertificate> orderBySpecification = supportForSorting(paramForSorting, order);
+        giftCertificates = giftCertificateRepositoryImpl.findAllCertificates(new Resolver(tagName, param),
+                orderBySpecification, page, size);
+        return giftCertificates
+                .stream().map(GiftCertificateConverter::mapToGiftCertificateDto)
                 .collect(Collectors.toList());
     }
 
-    @Transactional
-    @Override
-    public Optional<List<GiftCertificateDto>> findCertificateByParam(String param, int page, int size) {
-        List<GiftCertificateDto> giftCertificateDtos;
-        List<GiftCertificate> giftCertificates = giftCertificateRepositoryImpl
-                .findCertificateByParam(param, page, size);
-        giftCertificateDtos = giftCertificates.stream()
-                .map(GiftCertificateConverter::mapToGiftCertificateDto)
-                .collect(Collectors.toList());
-        return Optional.of(giftCertificateDtos);
+    private BaseSpecificationForSorting<GiftCertificate> supportForSorting(String paramForSorting, String order) {
+        BaseSpecificationForSorting<GiftCertificate> orderBySpecification = null;
+        if (ParamForSorting.NAME.name().equalsIgnoreCase(paramForSorting)) {
+            orderBySpecification = new SortingNameSpecification(order);
+        }
+        if (ParamForSorting.DATE.name().equalsIgnoreCase(paramForSorting)) {
+            orderBySpecification = new SortingDateSpecification(order);
+        }
+        return orderBySpecification;
     }
 
     @Override
@@ -92,40 +94,6 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         giftCertificateDto = GiftCertificateConverter
                 .mapToGiftCertificateDto(giftCertificateRepositoryImpl.findCertificateById(id));
         return Optional.of(giftCertificateDto);
-    }
-
-    @Transactional
-    @Override
-    public Optional<List<GiftCertificateDto>> searchAllCertificatesByTagName(String tagName, int page, int size) {
-        List<GiftCertificateDto> giftCertificateDtos;
-        List<GiftCertificate> giftCertificates = processExceptionSearchCertificate(tagName, page, size);
-        giftCertificateDtos = giftCertificates.stream()
-                .map(GiftCertificateConverter::mapToGiftCertificateDto)
-                .collect(Collectors.toList());
-        return Optional.of(giftCertificateDtos);
-
-    }
-
-    private List<GiftCertificate> processExceptionSearchCertificate(String tagName, int page, int size) {
-        return giftCertificateRepositoryImpl
-                .searchAllCertificatesByTagName(tagName, page, size);
-    }
-
-    public Optional<List<GiftCertificateDto>> sortByParam(String paramForSorting, String order, int page, int size) {
-        SortingSpecification<GiftCertificate> orderBySpecification = null;
-        if (ParamForSorting.NAME.name().equalsIgnoreCase(paramForSorting)) {
-            orderBySpecification = new SortingNameSpecification(order);
-            return Optional.of(giftCertificateRepositoryImpl.sortByParam(orderBySpecification, page, size)
-                    .stream().map(GiftCertificateConverter::mapToGiftCertificateDto)
-                    .collect(Collectors.toList()));
-        }
-        if (ParamForSorting.DATE.name().equalsIgnoreCase(paramForSorting)) {
-            return Optional.of(giftCertificateRepositoryImpl.sortByParam(orderBySpecification, page, size)
-                    .stream().map(GiftCertificateConverter::mapToGiftCertificateDto)
-                    .collect(Collectors.toList()));
-        } else {
-            throw new UnsupportedParametersForSorting(SORTING_FAIL_MASSAGE);
-        }
     }
 
     @Transactional

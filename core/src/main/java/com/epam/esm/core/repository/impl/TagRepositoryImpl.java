@@ -58,7 +58,7 @@ public class TagRepositoryImpl implements TagRepository {
         return Optional.of(tag);
     }
 
-    public List<Tag> findAll(int page, int size) {
+    public List<Tag> findAllTags(int page, int size) {
         CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
         CriteriaQuery<Tag> tagCriteriaQuery =
                 criteriaBuilder.createQuery(Tag.class);

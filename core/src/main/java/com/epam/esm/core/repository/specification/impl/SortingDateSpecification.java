@@ -2,7 +2,7 @@ package com.epam.esm.core.repository.specification.impl;
 
 import com.epam.esm.core.entity.GiftCertificate;
 import com.epam.esm.core.exception.UnsupportedParametersForSorting;
-import com.epam.esm.core.repository.specification.SortingSpecification;
+import com.epam.esm.core.repository.specification.BaseSpecificationForSorting;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -14,7 +14,7 @@ import static com.epam.esm.core.repository.specification.SortingParameters.DESC;
 /**
  * Sorting date specification.
  */
-public class SortingDateSpecification implements SortingSpecification<GiftCertificate> {
+public class SortingDateSpecification implements BaseSpecificationForSorting<GiftCertificate> {
     private String order;
     private static final String SORTING_FAIL_MASSAGE = "sorting_param_fail";
 

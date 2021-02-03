@@ -1,7 +1,8 @@
 package com.epam.esm.core.repository;
 
 import com.epam.esm.core.entity.GiftCertificate;
-import com.epam.esm.core.repository.specification.SortingSpecification;
+import com.epam.esm.core.repository.specification.BaseSpecificationForSorting;
+import com.epam.esm.core.repository.specification.Resolver;
 
 import java.util.List;
 
@@ -17,35 +18,6 @@ public interface GiftCertificateRepository extends BaseRepository<GiftCertificat
      */
     GiftCertificate findCertificateById(long id);
 
-    /**
-     * Find certificate by param list.
-     *
-     * @param param the param
-     * @param page  the page
-     * @param size  the size
-     * @return the list
-     */
-    List<GiftCertificate> findCertificateByParam(String param, int page, int size);
-
-    /**
-     * Search all certificates by tag name list.
-     *
-     * @param tagName the tag name
-     * @param page    the page
-     * @param size    the size
-     * @return the list
-     */
-    List<GiftCertificate> searchAllCertificatesByTagName(String tagName, int page, int size);
-
-    /**
-     * Sort by param list.
-     *
-     * @param orderBySpecification the order by specification
-     * @param page                 the page
-     * @param size                 the size
-     * @return the list
-     */
-    List<GiftCertificate> sortByParam(SortingSpecification<GiftCertificate> orderBySpecification, int page, int size);
 
     /**
      * Find all by several tags list.
@@ -56,4 +28,8 @@ public interface GiftCertificateRepository extends BaseRepository<GiftCertificat
      * @return the list
      */
     List<GiftCertificate> findAllBySeveralTags(List<Long> tags, int page, int size);
+
+    List<GiftCertificate> findAllCertificates(Resolver resolver,
+                                              BaseSpecificationForSorting<GiftCertificate> baseSpecification,
+                                              int page, int size);
 }
