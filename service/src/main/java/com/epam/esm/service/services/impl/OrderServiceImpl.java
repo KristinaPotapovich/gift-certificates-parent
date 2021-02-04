@@ -3,7 +3,6 @@ package com.epam.esm.service.services.impl;
 import com.epam.esm.core.entity.Order;
 import com.epam.esm.core.repository.OrderRepository;
 import com.epam.esm.service.dto.*;
-import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.mapper.OrderConverter;
 import com.epam.esm.service.services.GiftCertificateService;
 import com.epam.esm.service.services.OrderService;

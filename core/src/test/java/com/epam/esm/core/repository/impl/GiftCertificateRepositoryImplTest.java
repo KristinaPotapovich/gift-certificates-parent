@@ -2,13 +2,17 @@ package com.epam.esm.core.repository.impl;
 
 
 import com.epam.esm.core.entity.GiftCertificate;
-import com.epam.esm.core.exception.RepositoryException;
+import com.epam.esm.core.exception.UnsupportedParametersForSorting;
 import com.epam.esm.core.repository.GiftCertificateRepository;
 
 import com.epam.esm.core.repository.impl.config.TestConfig;
+import com.epam.esm.core.repository.specification.ResolverForSearchParams;
+import com.epam.esm.core.repository.specification.impl.SortingNameSpecification;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
@@ -32,74 +36,99 @@ public class GiftCertificateRepositoryImplTest {
     @Autowired
     private GiftCertificateRepository giftCertificateRepository;
 
-//    @Test
-//    public void create() throws RepositoryException {
-//        GiftCertificate giftCertificate = new GiftCertificate();
-//        giftCertificate.setId(5);
-//        giftCertificate.setName("certificate five");
-//        giftCertificate.setDescription("description");
-//        giftCertificate.setPrice(BigDecimal.valueOf(12.5));
-//        giftCertificate.setDurationInDays(6);
-//        GiftCertificate expected = giftCertificateRepository.create(giftCertificate);
-//        List<GiftCertificate> certificates = giftCertificateRepository.findAll(1, 5);
-//        GiftCertificate giftCertificateFromDB = certificates.get(4);
-//        assertEquals(expected, giftCertificateFromDB);
-//    }
+    @Test
+    public void createPositiveTest() {
+        GiftCertificate giftCertificate = new GiftCertificate();
+        giftCertificate.setId(5);
+        giftCertificate.setName("certificate five");
+        giftCertificate.setDescription("description");
+        giftCertificate.setPrice(BigDecimal.valueOf(12.5));
+        giftCertificate.setDurationInDays(6);
+        GiftCertificate expected = giftCertificateRepository.create(giftCertificate);
+        assertTrue(expected.getId() > 0);
+        assertNotNull(expected.getCreateDate());
+    }
 
-//    @Test
-//    public void update() throws RepositoryException {
-//        GiftCertificate giftCertificate = new GiftCertificate();
-//        giftCertificate.setId(3);
-//        giftCertificate.setName("new name");
-//        giftCertificate.setDescription("description");
-//        giftCertificate.setPrice(BigDecimal.valueOf(14.5));
-//        giftCertificate.setDurationInDays(6);
-//        giftCertificate = giftCertificateRepository.update(giftCertificate);
-//        assertEquals(giftCertificate.getName(), "new name");
-//
-//    }
-//
-//    @Test
-//    public void delete() throws RepositoryException {
-//        GiftCertificate giftCertificate = new GiftCertificate();
-//        giftCertificate.setId(3);
-//        int expectedSizeOfList = giftCertificateRepository.findAll(1, 5).size() - 1;
-//        giftCertificateRepository.delete(giftCertificate);
-//        int actualSizeOfList = giftCertificateRepository.findAll(1, 5).size();
-//        assertEquals(expectedSizeOfList, actualSizeOfList);
-//    }
-//
-//    @Test
-//    public void findAll() throws RepositoryException {
-//        List<GiftCertificate> certificates = giftCertificateRepository.findAll(1, 5);
-//        assertEquals("certificate one", certificates.get(0).getName());
-//    }
-//
-//    @Test
-//    public void findCertificateByParam() throws RepositoryException {
-//        List<GiftCertificate> certificates = giftCertificateRepository
-//                .findCertificateByParam("%tw%", 1, 5);
-//        assertFalse(certificates.isEmpty());
-//    }
-//
-//    @Test
-//    public void searchAllCertificatesByTagName() throws RepositoryException {
-//        List<GiftCertificate> certificates = giftCertificateRepository
-//                .searchAllCertificatesByTagName("tag one", 1, 5);
-//        assertFalse(certificates.isEmpty());
-//    }
-//
-//    @Test
-//    public void findAllBySeveralTags() throws RepositoryException {
-//        List<Long> tagsId = new ArrayList<>();
-//        tagsId.add(1L);
-//        tagsId.add(2L);
-//        List<GiftCertificate> certificates = giftCertificateRepository.findAllBySeveralTags(tagsId,1,5);
-//        assertFalse(certificates.isEmpty());
-//    }
-//    @Test
-//    public void findCertificateById() throws RepositoryException{
-//        GiftCertificate giftCertificate = giftCertificateRepository.findCertificateById(1);
-//        assertNotNull(giftCertificate);
-//    }
+    @Test
+    public void updatePositiveTest() {
+        GiftCertificate expected = new GiftCertificate();
+        expected.setId(3);
+        expected.setName("new name");
+        expected.setDescription("description");
+        expected.setPrice(BigDecimal.valueOf(14.5));
+        expected.setDurationInDays(6);
+        expected = giftCertificateRepository.update(expected);
+        assertEquals(expected.getName(), "new name");
+        assertNotNull(expected.getLastUpdateDate());
+        assertEquals(expected.getPrice(), new BigDecimal("14.5"));
+    }
+
+    @Test
+    public void deletePositiveTest() {
+        GiftCertificate giftCertificate = new GiftCertificate();
+        giftCertificate.setId(1);
+        int expectedSizeOfList = giftCertificateRepository
+                .findAllCertificates(new ResolverForSearchParams("tag one", ""),
+                        new SortingNameSpecification("asc"), 1, 5).size() - 1;
+        giftCertificateRepository.delete(giftCertificate);
+        int actualSizeOfList = giftCertificateRepository
+                .findAllCertificates(new ResolverForSearchParams("tag one", ""),
+                        new SortingNameSpecification("asc"), 1, 5).size();
+        assertEquals(expectedSizeOfList, actualSizeOfList);
+    }
+
+    @Test(expected = DataIntegrityViolationException.class)
+    public void deleteNegativeTest() {
+        GiftCertificate giftCertificate = new GiftCertificate();
+        giftCertificate.setId(7);
+        giftCertificateRepository.delete(giftCertificate);
+    }
+
+    @Test
+    public void findAllCertificatesPositiveTest() {
+        List<GiftCertificate> certificates = giftCertificateRepository
+                .findAllCertificates(new ResolverForSearchParams("tag one", ""),
+                        new SortingNameSpecification("asc"), 1, 5);
+        assertFalse(certificates.isEmpty());
+        assertNotNull(certificates.get(0).getName());
+        assertEquals("certificate one", certificates.get(0).getName());
+    }
+
+    @Test(expected = UnsupportedParametersForSorting.class)
+    public void findAllNegativeTest() {
+        giftCertificateRepository
+                .findAllCertificates(new ResolverForSearchParams("tag one", ""),
+                        new SortingNameSpecification("jjj"), 1, 5);
+    }
+
+    @Test
+    public void findAllBySeveralTagsPositiveTest() {
+        List<Long> tagsId = new ArrayList<>();
+        tagsId.add(1L);
+        tagsId.add(2L);
+        List<GiftCertificate> certificates = giftCertificateRepository.findAllBySeveralTags(tagsId, 1, 5);
+        assertFalse(certificates.isEmpty());
+        assertEquals("certificate one", certificates.get(0).getName());
+    }
+
+    @Test
+    public void findAllBySeveralTagsNegativeTest() {
+        List<Long> tagsId = new ArrayList<>();
+        tagsId.add(7L);
+        tagsId.add(2L);
+        List<GiftCertificate> certificates = giftCertificateRepository.findAllBySeveralTags(tagsId, 1, 5);
+        assertTrue(certificates.isEmpty());
+    }
+
+    @Test
+    public void findCertificateByIdPositiveTest() {
+        GiftCertificate giftCertificate = giftCertificateRepository.findCertificateById(1);
+        assertNotNull(giftCertificate);
+        assertEquals("certificate one", giftCertificate.getName());
+    }
+
+    @Test(expected = EmptyResultDataAccessException.class)
+    public void findCertificateByIdNegativeTest() {
+        giftCertificateRepository.findCertificateById(6);
+    }
 }

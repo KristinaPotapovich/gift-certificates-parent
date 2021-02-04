@@ -1,6 +1,5 @@
 package com.epam.esm.core.repository;
 
-import com.epam.esm.core.entity.GiftCertificate;
 import com.epam.esm.core.entity.Tag;
 
 import java.util.List;
@@ -35,5 +34,6 @@ public interface TagRepository extends BaseRepository<Tag> {
      * @return the tag
      */
     Tag findPopularTag();
+
     List<Tag> findAllTags(int page, int size);
 }

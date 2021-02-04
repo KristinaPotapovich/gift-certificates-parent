@@ -2,7 +2,7 @@ package com.epam.esm.core.repository;
 
 import com.epam.esm.core.entity.GiftCertificate;
 import com.epam.esm.core.repository.specification.BaseSpecificationForSorting;
-import com.epam.esm.core.repository.specification.Resolver;
+import com.epam.esm.core.repository.specification.ResolverForSearchParams;
 
 import java.util.List;
 
@@ -29,7 +29,9 @@ public interface GiftCertificateRepository extends BaseRepository<GiftCertificat
      */
     List<GiftCertificate> findAllBySeveralTags(List<Long> tags, int page, int size);
 
-    List<GiftCertificate> findAllCertificates(Resolver resolver,
+    List<GiftCertificate> findAllCertificates(ResolverForSearchParams resolver,
                                               BaseSpecificationForSorting<GiftCertificate> baseSpecification,
                                               int page, int size);
+
+    List<GiftCertificate> findCertificateByName(String name);
 }

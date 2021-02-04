@@ -1,11 +1,9 @@
 package com.epam.esm.service.services.impl;
 
 import com.epam.esm.core.entity.Tag;
-import com.epam.esm.core.exception.RepositoryException;
 import com.epam.esm.core.repository.TagRepository;
 import com.epam.esm.core.repository.impl.TagRepositoryImpl;
 import com.epam.esm.service.dto.TagDto;
-import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.mapper.TagConverter;
 import com.epam.esm.service.services.TagService;
 import org.junit.jupiter.api.*;
@@ -47,23 +45,24 @@ class TagServiceImplTest {
     }
 
     @Test
-    void create() throws RepositoryException, ServiceException {
+    void create() {
         when(tagRepository.create(tag)).thenReturn(tag);
         Optional<TagDto> actual = tagService.create(tagDto);
         verify(tagRepository).create(tag);
-        assertNotNull(actual);
+        assertTrue(actual.isPresent());
+        assertTrue(actual.get().getId() > 0);
     }
 
     @Test
-    void update() throws RepositoryException, ServiceException {
+    void update() {
         when(tagRepository.update(tag)).thenReturn(tag);
         Optional<TagDto> actual = tagService.update(tagDto);
         verify(tagRepository).update(tag);
-        assertNotNull(actual);
+        assertTrue(actual.isPresent());
     }
 
     @Test
-    void delete() throws RepositoryException, ServiceException {
+    void delete() {
         Tag tagForDelete = new Tag();
         tagForDelete.setId(1);
         doNothing().when(tagRepository).delete(tagForDelete);
@@ -72,31 +71,32 @@ class TagServiceImplTest {
     }
 
     @Test
-    void findAll() throws RepositoryException, ServiceException {
-        when(tagRepository.findAllTags(5, 6)).thenReturn(tags);
-        List<TagDto> actual = tagService.findAllTags(5, 6);
-        verify(tagRepository).findAllTags(5, 6);
+    void findAll() {
+        when(tagRepository.findAllTags(1, 5)).thenReturn(tags);
+        List<TagDto> actual = tagService.findAllTags(1, 5);
+        verify(tagRepository).findAllTags(1, 5);
         assertFalse(actual.isEmpty());
+        assertEquals(1, actual.get(0).getId());
     }
 
     @Test
-    void findTagById() throws RepositoryException, ServiceException {
+    void findTagById() {
         when(tagRepository.findTagById(1)).thenReturn(Optional.of(tag));
         Optional<TagDto> actual = tagService.findTagById(1);
         verify(tagRepository).findTagById(1);
-        assertNotNull(actual);
+        assertTrue(actual.isPresent());
     }
 
     @Test
-    void findPopularTag() throws RepositoryException, ServiceException {
+    void findPopularTag() {
         when(tagRepository.findPopularTag()).thenReturn(tag);
         Optional<TagDto> actual = tagService.findPopularTag();
         verify(tagRepository).findPopularTag();
-        assertNotNull(actual);
+        assertTrue(actual.isPresent());
     }
 
     @Test
-    void findAllTagsByCertificateId() throws RepositoryException, ServiceException {
+    void findAllTagsByCertificateId() {
         when(tagRepository.findAllTagsByCertificateId(1, 1, 3))
                 .thenReturn(tags);
         Optional<List<TagDto>> actual = tagService.findAllTagsByCertificateId(1, 1, 3);

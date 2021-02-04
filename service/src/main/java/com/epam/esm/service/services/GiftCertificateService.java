@@ -1,6 +1,5 @@
 package com.epam.esm.service.services;
 
-import com.epam.esm.core.entity.GiftCertificate;
 import com.epam.esm.service.dto.GiftCertificateDto;
 
 import java.util.List;
@@ -37,5 +36,6 @@ public interface GiftCertificateService extends BaseService<GiftCertificateDto> 
     Optional<List<GiftCertificateDto>> findAllBySeveralTags(List<Long> tags, int page, int size);
 
     List<GiftCertificateDto> findAllCertificates(String param, String tagName, String paramForSorting,
-                                     String order, int page, int size);
+                                                 String order, int page, int size);
+
 }

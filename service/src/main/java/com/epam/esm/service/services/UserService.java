@@ -17,5 +17,6 @@ public interface UserService extends BaseService<UserDto> {
      * @return the optional
      */
     Optional<UserDto> findUserById(long id);
+
     List<UserDto> findAllUsers(int page, int size);
 }

@@ -12,6 +12,7 @@ import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -25,11 +26,14 @@ import java.util.Optional;
 /**
  * User rest controller.
  */
+@Validated
 @RestController
 @RequestMapping(path = "/users")
 @EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.HAL_FORMS)
 public class UserController {
     private UserService userService;
+    private static final String VALIDATION_FAIL_PAGE_MESSAGE = "validation_fail_page";
+    private static final String VALIDATION_FAIL_SIZE_MESSAGE = "validation_fail_size";
     private static final String CURRENT_USER = "current user";
     private static final String ORDERS = "orders";
     private static final String DEFAULT_PAGE = "1";
@@ -59,9 +63,9 @@ public class UserController {
     @GetMapping
     public ResponseEntity<List<UserDto>> findAllUsers(
             @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)
-            @Min(value = 1, message = VALIDATION_FAIL) int page,
+            @Min(value = 1, message = VALIDATION_FAIL_PAGE_MESSAGE) int page,
             @Valid @RequestParam(value = VALUE_SIZE, required = false, defaultValue = DEFAULT_SIZE)
-            @Min(value = 1, message = VALIDATION_FAIL) int size) {
+            @Min(value = 1, message = VALIDATION_FAIL_SIZE_MESSAGE) int size) {
         List<UserDto> userDtos = userService.findAllUsers(page, size);
         userDtos.forEach(userDto -> processExceptionByFindUser(page, size, userDto));
         return new ResponseEntity<>(userDtos, HttpStatus.OK);
@@ -89,16 +93,18 @@ public class UserController {
     public ResponseEntity<EntityModel<UserDto>> findUserById(
             @Valid @PathVariable(VALUE_ID) long id,
             @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)
-            @Min(value = 1, message = VALIDATION_FAIL) int page,
+            @Min(value = 1, message = VALIDATION_FAIL_PAGE_MESSAGE) int page,
             @Valid @RequestParam(value = VALUE_SIZE, required = false, defaultValue = DEFAULT_SIZE)
-            @Min(value = 1, message = VALIDATION_FAIL) int size) {
+            @Min(value = 1, message = VALIDATION_FAIL_SIZE_MESSAGE) int size) {
         Optional<UserDto> userDtoOpt = userService.findUserById(id);
-        return userDtoOpt.map(userDto -> new ResponseEntity<>(EntityModel.of(userDto, linkTo(methodOn(UserController.class)
+        return userDtoOpt.map(userDto -> new ResponseEntity<>(EntityModel.of(userDto,
+                linkTo(methodOn(UserController.class)
                         .findUserById(userDto.getId(), page, size))
                         .withSelfRel(),
                 linkTo(methodOn(OrderController.class).findCertificateByUser(userDto.getId(),
                         page, size))
                         .withRel(ORDERS)
-                        .withType(HttpMethod.GET.name())), HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.BAD_REQUEST));
+                        .withType(HttpMethod.GET.name())), HttpStatus.OK)).orElseGet(() ->
+                new ResponseEntity<>(HttpStatus.BAD_REQUEST));
     }
 }

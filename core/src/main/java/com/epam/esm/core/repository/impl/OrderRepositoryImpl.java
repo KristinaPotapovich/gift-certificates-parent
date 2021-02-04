@@ -1,7 +1,6 @@
 package com.epam.esm.core.repository.impl;
 
 import com.epam.esm.core.entity.Order;
-import com.epam.esm.core.exception.RepositoryException;
 import com.epam.esm.core.repository.OrderRepository;
 import org.hibernate.Session;
 import org.springframework.stereotype.Repository;

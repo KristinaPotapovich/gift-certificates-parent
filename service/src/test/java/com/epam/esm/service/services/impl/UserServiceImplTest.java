@@ -2,11 +2,9 @@ package com.epam.esm.service.services.impl;
 
 import com.epam.esm.core.entity.User;
 import com.epam.esm.core.entity.UserRole;
-import com.epam.esm.core.exception.RepositoryException;
 import com.epam.esm.core.repository.UserRepository;
 import com.epam.esm.core.repository.impl.UserRepositoryImpl;
 import com.epam.esm.service.dto.UserDto;
-import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.mapper.UserConverter;
 import com.epam.esm.service.services.UserService;
 import org.junit.jupiter.api.AfterAll;
@@ -47,7 +45,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void findUserById() throws RepositoryException, ServiceException {
+    void findUserById() {
         when(userRepository.findUserById(1L)).thenReturn(user);
         Optional<UserDto> actual = userService.findUserById(1L);
         verify(userRepository).findUserById(1L);
@@ -55,10 +53,11 @@ class UserServiceImplTest {
     }
 
     @Test
-    void findAll() throws RepositoryException, ServiceException {
+    void findAll() {
         when(userRepository.findAllUsers(1, 3)).thenReturn(users);
         List<UserDto> actual = userService.findAllUsers(1, 3);
         verify(userRepository).findAllUsers(1, 3);
         assertFalse(actual.isEmpty());
+        assertEquals(1, actual.get(0).getId());
     }
 }

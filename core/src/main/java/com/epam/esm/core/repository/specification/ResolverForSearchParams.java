@@ -11,16 +11,39 @@ import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Resolver {
+/**
+ * Resolver for search params.
+ */
+public class ResolverForSearchParams {
+    /**
+     * Tag name.
+     */
     String tagName;
+    /**
+     * Part name or description.
+     */
     String param;
 
 
-    public Resolver(String tagName, String param) {
+    /**
+     * Instantiates a new Resolver for search params.
+     *
+     * @param tagName the tag name
+     * @param param   the param
+     */
+    public ResolverForSearchParams(String tagName, String param) {
         this.tagName = tagName;
         this.param = param;
     }
 
+    /**
+     * Build list predicates for query list.
+     *
+     * @param criteriaQuery   the criteria query
+     * @param criteriaBuilder the criteria builder
+     * @param root            the root
+     * @return the list
+     */
     public List<Predicate> buildListPredicatesForQuery(CriteriaQuery<GiftCertificate> criteriaQuery,
                                                        CriteriaBuilder criteriaBuilder, Root<GiftCertificate> root) {
         List<Predicate> predicates = new ArrayList<>();

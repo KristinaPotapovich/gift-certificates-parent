@@ -1,12 +1,10 @@
 package com.epam.esm.core.repository.impl;
 
 import com.epam.esm.core.entity.User;
-import com.epam.esm.core.exception.RepositoryException;
 import com.epam.esm.core.repository.UserRepository;
 import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -25,8 +23,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User create(User user) {
-        session.persist(user);
-        return user;
+        return null;
     }
 
     @Override

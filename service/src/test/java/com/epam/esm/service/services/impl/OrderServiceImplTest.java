@@ -4,7 +4,6 @@ import com.epam.esm.core.entity.GiftCertificate;
 import com.epam.esm.core.entity.Order;
 import com.epam.esm.core.entity.User;
 import com.epam.esm.core.entity.UserRole;
-import com.epam.esm.core.exception.RepositoryException;
 import com.epam.esm.core.repository.GiftCertificateRepository;
 import com.epam.esm.core.repository.OrderRepository;
 import com.epam.esm.core.repository.UserRepository;
@@ -12,7 +11,6 @@ import com.epam.esm.core.repository.impl.GiftCertificateRepositoryImpl;
 import com.epam.esm.core.repository.impl.OrderRepositoryImpl;
 import com.epam.esm.core.repository.impl.UserRepositoryImpl;
 import com.epam.esm.service.dto.*;
-import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.mapper.GiftCertificateConverter;
 import com.epam.esm.service.mapper.OrderConverter;
 import com.epam.esm.service.mapper.UserConverter;
@@ -94,7 +92,7 @@ class OrderServiceImplTest {
     }
 
     @Test
-    void purchaseCertificate() throws RepositoryException, ServiceException {
+    void purchaseCertificate() {
         when(giftCertificateRepository.findCertificateById(1L))
                 .thenReturn(GiftCertificateConverter.mapToGiftCertificate(giftCertificateDto1));
         when(userRepository.findUserById(1L)).thenReturn(UserConverter.mapToUser(user));
@@ -109,15 +107,16 @@ class OrderServiceImplTest {
     }
 
     @Test
-    void findAll() throws RepositoryException, ServiceException {
+    void findAll() {
         when(orderRepository.findAllOrders(1, 3)).thenReturn(orders);
         List<OrderDto> actual = orderService.findAllOrders(1, 3);
         verify(orderRepository).findAllOrders(1, 3);
         assertFalse(actual.isEmpty());
+        assertEquals(1, actual.get(0).getId());
     }
 
     @Test
-    void findOrderById() throws RepositoryException, ServiceException {
+    void findOrderById() {
         User user1 = new User(1L, "testLogin", "testPassword", UserRole.USER, orders);
         Order orderForCreate = new Order(1L, BigDecimal.valueOf(15.22),
                 LocalDateTime.of(2021, 1, 16, 19, 15), giftCertificates,
@@ -125,11 +124,11 @@ class OrderServiceImplTest {
         when(orderRepository.findOrderById(orderForCreate.getId())).thenReturn(orderForCreate);
         Optional<Map<String, Object>> actual = orderService.findOrderById(orderForCreate.getId());
         verify(orderRepository).findOrderById(orderForCreate.getId());
-        assertNotNull(actual);
+        assertTrue(actual.isPresent());
     }
 
     @Test
-    void findAllOrdersByUser() throws RepositoryException, ServiceException {
+    void findAllOrdersByUser() {
         when(orderRepository.findAllOrdersByUser(1L, 1, 3)).thenReturn(orders);
         Optional<List<OrderDto>> actual = orderService.findAllOrdersByUser(1L, 1, 3);
         verify(orderRepository).findAllOrdersByUser(1L, 1, 3);

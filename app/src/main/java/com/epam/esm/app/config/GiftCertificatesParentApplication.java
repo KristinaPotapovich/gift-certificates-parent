@@ -7,6 +7,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 
 import java.util.Locale;
 
@@ -21,19 +22,11 @@ public class GiftCertificatesParentApplication {
 
     /**
      * The entry point of application.
+     *
      * @param args the input arguments
      */
     public static void main(String[] args) {
         SpringApplication.run(GiftCertificatesParentApplication.class, args);
 
-    }
-
-    @Bean
-    public MessageSource messageSource() {
-        ResourceBundleMessageSource source = new ResourceBundleMessageSource();
-        source.setBasename("message");
-        source.setDefaultEncoding("UTF-8");
-        source.setDefaultLocale(Locale.ENGLISH);
-        return source;
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -23,19 +24,21 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 /**
  * Order rest controller.
  */
+@Validated
 @RestController
 @RequestMapping(path = "/orders")
 @EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.HAL_FORMS)
 public class OrderController {
 
     private OrderService orderService;
+    private static final String VALIDATION_FAIL_PAGE_MESSAGE = "validation_fail_page";
+    private static final String VALIDATION_FAIL_SIZE_MESSAGE = "validation_fail_size";
     private static final String CURRENT_ORDER = "current order";
     private static final String DEFAULT_PAGE = "1";
     private static final String DEFAULT_SIZE = "25";
     private static final String VALUE_PAGE = "page";
     private static final String VALUE_SIZE = "size";
     private static final String VALUE_ID = "id";
-    private static final String VALIDATION_FAIL = "validation_fail";
     private static final String CURRENT_CERTIFICATE = "current certificate";
     private static final String CURRENT_TAG = "current tag";
     private static final String CURRENT_USER = "current user";
@@ -78,9 +81,9 @@ public class OrderController {
     public ResponseEntity<List<OrderDto>> findCertificateByUser(
             @Valid @PathVariable(VALUE_ID) Long id,
             @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)
-            @Min(value = 1, message = VALIDATION_FAIL) int page,
+            @Min(value = 1, message = VALIDATION_FAIL_PAGE_MESSAGE) int page,
             @Valid @RequestParam(value = VALUE_SIZE, required = false, defaultValue = DEFAULT_SIZE)
-            @Min(value = 1, message = VALIDATION_FAIL) int size) {
+            @Min(value = 1, message = VALIDATION_FAIL_SIZE_MESSAGE) int size) {
         Optional<List<OrderDto>> optionalUserDto = orderService.findAllOrdersByUser(id, page, size);
         if (optionalUserDto.isPresent()) {
             optionalUserDto.get().forEach(orderDto -> buildLinkForOrder(orderDto, page, size));
@@ -113,9 +116,9 @@ public class OrderController {
     @GetMapping
     public ResponseEntity<List<OrderDto>> findAllOrders(
             @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)
-            @Min(value = 1, message = VALIDATION_FAIL) int page,
+            @Min(value = 1, message = VALIDATION_FAIL_PAGE_MESSAGE) int page,
             @Valid @RequestParam(value = VALUE_SIZE, required = false, defaultValue = DEFAULT_SIZE)
-            @Min(value = 1, message = VALIDATION_FAIL) int size) {
+            @Min(value = 1, message = VALIDATION_FAIL_SIZE_MESSAGE) int size) {
         List<OrderDto> orderDtos = orderService.findAllOrders(page, size);
         if (!orderDtos.isEmpty()) {
             orderDtos.forEach(orderDto -> buildLinkForOrder(orderDto, page, size));

@@ -10,6 +10,7 @@ import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -25,6 +26,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 /**
  * Gift certificate rest controller.
  */
+@Validated
 @RestController
 @RequestMapping(path = "/certificates")
 @EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.COLLECTION_JSON)
@@ -42,7 +44,8 @@ public class GiftCertificateController {
     private static final String VALUE_PAGE = "page";
     private static final String VALUE_SIZE = "size";
     private static final String VALUE_ID = "id";
-    private static final String VALIDATION_FAIL_MESSAGE = "validation_fail";
+    private static final String VALIDATION_FAIL_PAGE_MESSAGE = "validation_fail_page";
+    private static final String VALIDATION_FAIL_SIZE_MESSAGE = "validation_fail_size";
 
     /**
      * Instantiates a new Gift certificate controller.
@@ -84,9 +87,9 @@ public class GiftCertificateController {
     public ResponseEntity<EntityModel<GiftCertificateDto>> findGiftCertificateById(
             @Valid @PathVariable(VALUE_ID) long id,
             @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)
-            @Min(value = 1, message = VALIDATION_FAIL_MESSAGE) int page,
+            @Min(value = 1, message = VALIDATION_FAIL_PAGE_MESSAGE) int page,
             @Valid @RequestParam(value = VALUE_SIZE, required = false, defaultValue = DEFAULT_SIZE)
-            @Min(value = 1, message = VALIDATION_FAIL_MESSAGE) int size) {
+            @Min(value = 1, message = VALIDATION_FAIL_SIZE_MESSAGE) int size) {
         Optional<GiftCertificateDto> certificateDtoOptional =
                 giftCertificateServiceImpl.findCertificateById(id);
         return certificateDtoOptional.map(giftCertificateDto -> new ResponseEntity<>(EntityModel.of(giftCertificateDto,
@@ -122,15 +125,15 @@ public class GiftCertificateController {
     @GetMapping
     public ResponseEntity<List<GiftCertificateDto>> findAllGiftCertificates(
             @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)
-            @Min(value = 1, message = VALIDATION_FAIL_MESSAGE) int page,
+            @Min(value = 1, message = VALIDATION_FAIL_PAGE_MESSAGE) int page,
             @Valid @RequestParam(value = VALUE_SIZE, required = false, defaultValue = DEFAULT_SIZE)
-            @Min(value = 1, message = VALIDATION_FAIL_MESSAGE) int size,
-            @Valid @RequestParam(value = "tagName",required = false) String tagName,
-            @Valid @RequestParam(value = "sort",required = false) String paramForSorting,
-            @Valid @RequestParam(value = "order",required = false) String order,
-            @Valid @RequestParam(value = "parameter",required = false) String param){
+            @Min(value = 1, message = VALIDATION_FAIL_SIZE_MESSAGE) int size,
+            @Valid @RequestParam(value = "tagName", required = false) String tagName,
+            @Valid @RequestParam(value = "sort", required = false) String paramForSorting,
+            @Valid @RequestParam(value = "order", required = false) String order,
+            @Valid @RequestParam(value = "parameter", required = false) String param) {
         List<GiftCertificateDto> giftCertificateDtos = giftCertificateServiceImpl
-                .findAllCertificates(param,tagName,paramForSorting,order,page, size);
+                .findAllCertificates(param, tagName, paramForSorting, order, page, size);
         processExceptionForBuildCertificatesLink(page, size, giftCertificateDtos);
         return new ResponseEntity<>(giftCertificateDtos, HttpStatus.OK);
     }
@@ -147,9 +150,9 @@ public class GiftCertificateController {
     public ResponseEntity<EntityModel<GiftCertificateDto>> createGiftCertificate(
             @Valid @RequestBody GiftCertificateDto giftCertificateDto,
             @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)
-            @Min(value = 1, message = VALIDATION_FAIL_MESSAGE) int page,
+            @Min(value = 1, message = VALIDATION_FAIL_PAGE_MESSAGE) int page,
             @Valid @RequestParam(value = VALUE_SIZE, required = false, defaultValue = DEFAULT_SIZE)
-            @Min(value = 1, message = VALIDATION_FAIL_MESSAGE) int size) {
+            @Min(value = 1, message = VALIDATION_FAIL_SIZE_MESSAGE) int size) {
         Optional<GiftCertificateDto> giftCertificateDtoOpt = giftCertificateServiceImpl.create(giftCertificateDto);
         return giftCertificateDtoOpt.map(certificateDto -> new ResponseEntity<>(EntityModel.of(certificateDto,
                 linkTo(methodOn(GiftCertificateController.class)
@@ -188,9 +191,9 @@ public class GiftCertificateController {
             @Valid @PathVariable(VALUE_ID) long id,
             @Valid @RequestBody GiftCertificateDto giftCertificateDto,
             @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)
-            @Min(value = 1, message = VALIDATION_FAIL_MESSAGE) int page,
+            @Min(value = 1, message = VALIDATION_FAIL_PAGE_MESSAGE) int page,
             @Valid @RequestParam(value = VALUE_SIZE, required = false, defaultValue = DEFAULT_SIZE)
-            @Min(value = 1, message = VALIDATION_FAIL_MESSAGE) int size) {
+            @Min(value = 1, message = VALIDATION_FAIL_SIZE_MESSAGE) int size) {
         giftCertificateDto.setId(id);
         Optional<GiftCertificateDto> certificateDtoOptional = giftCertificateServiceImpl
                 .update(giftCertificateDto);
@@ -231,9 +234,9 @@ public class GiftCertificateController {
             @Valid @PathVariable(VALUE_ID) long id,
             @RequestBody GiftCertificateDto giftCertificateDto,
             @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)
-            @Min(value = 1, message = VALIDATION_FAIL_MESSAGE) int page,
+            @Min(value = 1, message = VALIDATION_FAIL_PAGE_MESSAGE) int page,
             @Valid @RequestParam(value = VALUE_SIZE, required = false, defaultValue = DEFAULT_SIZE)
-            @Min(value = 1, message = VALIDATION_FAIL_MESSAGE) int size) {
+            @Min(value = 1, message = VALIDATION_FAIL_SIZE_MESSAGE) int size) {
         giftCertificateDto.setId(id);
         Optional<GiftCertificateDto> certificateDtoOptional =
                 giftCertificateServiceImpl.patch(giftCertificateDto);
@@ -260,45 +263,45 @@ public class GiftCertificateController {
                         .withType(HttpMethod.PUT.name())), HttpStatus.CREATED)).orElseGet(() -> new ResponseEntity<>(HttpStatus.BAD_REQUEST));
     }
 
-        /**
-         * Delete gift certificate.
-         *
-         * @param id id
-         * @return response entity
-         */
-        @DeleteMapping(value = "/{id}")
-        public ResponseEntity<HttpStatus> deleteGiftCertificate ( @Valid @PathVariable(VALUE_ID) long id) {
-            if (giftCertificateServiceImpl.findCertificateById(id).isPresent()) {
-                giftCertificateServiceImpl.delete(id);
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            } else {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
-        }
-
-        /**
-         * Find all by several tags list.
-         *
-         * @param tags tags
-         * @param page page
-         * @param size size
-         * @return list
-         */
-        @GetMapping(params = "tags")
-        public ResponseEntity<List<GiftCertificateDto>> findAllBySeveralTags (
-                @Valid @RequestParam(value = "tags", required = false) List < Long > tags,
-        @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)
-        @Min(value = 1, message = VALIDATION_FAIL_MESSAGE) int page,
-        @Valid @RequestParam(value = VALUE_SIZE, required = false, defaultValue = DEFAULT_SIZE)
-        @Min(value = 1, message = VALIDATION_FAIL_MESSAGE) int size) {
-            Optional<List<GiftCertificateDto>> certificateDtos =
-                    giftCertificateServiceImpl
-                            .findAllBySeveralTags(tags, page, size);
-            if (certificateDtos.isPresent()) {
-                processExceptionForBuildCertificatesLink(page, size, certificateDtos.get());
-                return new ResponseEntity<>(certificateDtos.get(), HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            }
+    /**
+     * Delete gift certificate.
+     *
+     * @param id id
+     * @return response entity
+     */
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<HttpStatus> deleteGiftCertificate(@Valid @PathVariable(VALUE_ID) long id) {
+        if (giftCertificateServiceImpl.findCertificateById(id).isPresent()) {
+            giftCertificateServiceImpl.delete(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+    /**
+     * Find all by several tags list.
+     *
+     * @param tags tags
+     * @param page page
+     * @param size size
+     * @return list
+     */
+    @GetMapping(params = "tags")
+    public ResponseEntity<List<GiftCertificateDto>> findAllBySeveralTags(
+            @Valid @RequestParam(value = "tags", required = false) List<Long> tags,
+            @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)
+            @Min(value = 1, message = VALIDATION_FAIL_PAGE_MESSAGE) int page,
+            @Valid @RequestParam(value = VALUE_SIZE, required = false, defaultValue = DEFAULT_SIZE)
+            @Min(value = 1, message = VALIDATION_FAIL_SIZE_MESSAGE) int size) {
+        Optional<List<GiftCertificateDto>> certificateDtos =
+                giftCertificateServiceImpl
+                        .findAllBySeveralTags(tags, page, size);
+        if (certificateDtos.isPresent()) {
+            processExceptionForBuildCertificatesLink(page, size, certificateDtos.get());
+            return new ResponseEntity<>(certificateDtos.get(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+}

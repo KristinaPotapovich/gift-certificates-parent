@@ -4,7 +4,7 @@ package com.epam.esm.core.repository.impl;
 import com.epam.esm.core.entity.GiftCertificate;
 import com.epam.esm.core.repository.GiftCertificateRepository;
 import com.epam.esm.core.repository.specification.BaseSpecificationForSorting;
-import com.epam.esm.core.repository.specification.Resolver;
+import com.epam.esm.core.repository.specification.ResolverForSearchParams;
 import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 
@@ -22,8 +22,6 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
 
     @PersistenceContext
     private Session session;
-    private static final String NAME = "name";
-    private static final String DESCRIPTION = "description";
     private static final String ID_CERTIFICATE = "id";
     private static final String TAGS = "tags";
 
@@ -48,7 +46,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     }
 
     @Override
-    public List<GiftCertificate> findAllCertificates(Resolver resolver,
+    public List<GiftCertificate> findAllCertificates(ResolverForSearchParams resolver,
                                                      BaseSpecificationForSorting<GiftCertificate> specification,
                                                      int page, int size) {
         CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
@@ -76,6 +74,15 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         Root<GiftCertificate> giftCertificateRoot = criteriaQuery.from(GiftCertificate.class);
         criteriaQuery.where(criteriaBuilder.equal(giftCertificateRoot.get(ID_CERTIFICATE), id));
         return session.createQuery(criteriaQuery).getSingleResult();
+    }
+
+    @Override
+    public List<GiftCertificate> findCertificateByName(String name) {
+        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaQuery<GiftCertificate> criteriaQuery = criteriaBuilder.createQuery(GiftCertificate.class);
+        Root<GiftCertificate> giftCertificateRoot = criteriaQuery.from(GiftCertificate.class);
+        criteriaQuery.where(criteriaBuilder.equal(giftCertificateRoot.get("name"), name));
+        return session.createQuery(criteriaQuery).getResultList();
     }
 
     @Override

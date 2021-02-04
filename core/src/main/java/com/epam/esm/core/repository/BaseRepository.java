@@ -1,8 +1,6 @@
 package com.epam.esm.core.repository;
 
 
-import java.util.List;
-
 /**
  * The interface Base repository.
  *

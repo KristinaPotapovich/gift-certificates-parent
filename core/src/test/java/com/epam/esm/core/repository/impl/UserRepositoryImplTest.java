@@ -1,13 +1,12 @@
 package com.epam.esm.core.repository.impl;
 
 import com.epam.esm.core.entity.User;
-import com.epam.esm.core.entity.UserRole;
-import com.epam.esm.core.exception.RepositoryException;
 import com.epam.esm.core.repository.UserRepository;
 import com.epam.esm.core.repository.impl.config.TestConfig;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
@@ -28,24 +27,21 @@ public class UserRepositoryImplTest {
     private UserRepository userRepository;
 
     @Test
-    public void findAll() throws RepositoryException {
+    public void findAllPositiveTest() {
         List<User> users = userRepository.findAllUsers(1, 5);
         assertFalse(users.isEmpty());
+        assertEquals(1, users.get(0).getId());
     }
 
     @Test
-    public void findUserById() throws RepositoryException {
+    public void findUserByIdPositiveTest() {
         User user = userRepository.findUserById(1);
         assertNotNull(user);
+        assertEquals(1, user.getId());
     }
 
-    @Test
-    public void create() throws RepositoryException {
-        User user = new User();
-        user.setLogin("user");
-        user.setPassword("123456");
-        user.setUserRole(UserRole.USER);
-        user = userRepository.create(user);
-        assertNotNull(user);
+    @Test(expected = EmptyResultDataAccessException.class)
+    public void findUserByIdNegativeTest() {
+        userRepository.findUserById(5);
     }
 }

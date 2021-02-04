@@ -1,6 +1,5 @@
 package com.epam.esm.core.repository;
 
-import com.epam.esm.core.entity.GiftCertificate;
 import com.epam.esm.core.entity.User;
 
 import java.util.List;
@@ -17,5 +16,6 @@ public interface UserRepository extends BaseRepository<User> {
      * @return the user
      */
     User findUserById(long id);
+
     List<User> findAllUsers(int page, int size);
 }

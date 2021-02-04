@@ -8,6 +8,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -22,12 +23,15 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 /**
  * Tag rest controller.
  */
+@Validated
 @RestController
 @RequestMapping(path = "/tags",
         produces = APPLICATION_JSON_VALUE)
 public class TagController {
 
     private TagService tagServiceImpl;
+    private static final String VALIDATION_FAIL_PAGE_MESSAGE = "validation_fail_page";
+    private static final String VALIDATION_FAIL_SIZE_MESSAGE = "validation_fail_size";
     private static final String CURRENT_TAG = "current tag";
     private static final String DELETE_TAG = "delete tag";
     private static final String UPDATE_TAG = "update tag";
@@ -82,11 +86,9 @@ public class TagController {
     @GetMapping
     public ResponseEntity<List<TagDto>> findAllTags(
             @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)
-            @Min(value = 1, message = VALIDATION_FAIL)
-                    int page,
+            @Min(value = 1, message = VALIDATION_FAIL_PAGE_MESSAGE) int page,
             @Valid @RequestParam(value = VALUE_SIZE, required = false, defaultValue = DEFAULT_SIZE)
-            @Min(value = 1, message = VALIDATION_FAIL)
-                    int size) {
+            @Min(value = 1, message = VALIDATION_FAIL_SIZE_MESSAGE) int size) {
         List<TagDto> tagDtos = tagServiceImpl.findAllTags(page, size);
         processExceptionForFindTagByName(tagDtos);
         return new ResponseEntity<>(tagDtos, HttpStatus.OK);
@@ -109,11 +111,9 @@ public class TagController {
     public ResponseEntity<List<TagDto>> findAllTagsByCertificateId(
             @Valid @PathVariable(VALUE_ID) long idCertificate,
             @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)
-            @Min(value = 1, message = VALIDATION_FAIL)
-                    int page,
+            @Min(value = 1, message = VALIDATION_FAIL_PAGE_MESSAGE) int page,
             @Valid @RequestParam(value = VALUE_SIZE, required = false, defaultValue = DEFAULT_SIZE)
-            @Min(value = 1, message = VALIDATION_FAIL)
-                    int size) {
+            @Min(value = 1, message = VALIDATION_FAIL_SIZE_MESSAGE) int size) {
         Optional<List<TagDto>> tagDtosOptional = tagServiceImpl.findAllTagsByCertificateId(idCertificate, page, size);
         if (tagDtosOptional.isPresent()) {
             processExceptionForFindTagByName(tagDtosOptional.get());

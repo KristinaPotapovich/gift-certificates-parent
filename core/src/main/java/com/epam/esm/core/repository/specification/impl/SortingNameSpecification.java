@@ -17,6 +17,7 @@ import static com.epam.esm.core.repository.specification.SortingParameters.DESC;
 public class SortingNameSpecification implements BaseSpecificationForSorting<GiftCertificate> {
     private String order;
     private static final String SORTING_FAIL_MASSAGE = "sorting_param_fail";
+
     /**
      * Instantiates a new Sorting name specification.
      *
@@ -34,7 +35,7 @@ public class SortingNameSpecification implements BaseSpecificationForSorting<Gif
             criteriaQuery.orderBy(criteriaBuilder.asc(giftCertificateRoot.get("name")));
         } else if (DESC.name().equalsIgnoreCase(order)) {
             criteriaQuery.orderBy(criteriaBuilder.desc(giftCertificateRoot.get("name")));
-        }else {
+        } else {
             throw new UnsupportedParametersForSorting(SORTING_FAIL_MASSAGE);
         }
     }
