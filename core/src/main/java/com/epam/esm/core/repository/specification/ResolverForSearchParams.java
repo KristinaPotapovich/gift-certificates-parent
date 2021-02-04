@@ -3,6 +3,7 @@ package com.epam.esm.core.repository.specification;
 import com.epam.esm.core.entity.GiftCertificate;
 import com.epam.esm.core.repository.specification.impl.FindCertificatesByParamSpecification;
 import com.epam.esm.core.repository.specification.impl.FindCertificatesByTagNameSpecification;
+import lombok.Getter;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -14,25 +15,20 @@ import java.util.List;
 /**
  * Resolver for search params.
  */
+@Getter
 public class ResolverForSearchParams {
     /**
      * Tag name.
      */
-    String tagName;
+    List<String> tags;
     /**
      * Part name or description.
      */
     String param;
 
 
-    /**
-     * Instantiates a new Resolver for search params.
-     *
-     * @param tagName the tag name
-     * @param param   the param
-     */
-    public ResolverForSearchParams(String tagName, String param) {
-        this.tagName = tagName;
+    public ResolverForSearchParams(List<String> tags, String param) {
+        this.tags = tags;
         this.param = param;
     }
 
@@ -48,8 +44,8 @@ public class ResolverForSearchParams {
                                                        CriteriaBuilder criteriaBuilder, Root<GiftCertificate> root) {
         List<Predicate> predicates = new ArrayList<>();
         BaseSpecificationForSearch<GiftCertificate> specificationForSearch;
-        if (tagName != null && !tagName.isEmpty()) {
-            specificationForSearch = new FindCertificatesByTagNameSpecification(tagName);
+        if (tags != null && !tags.isEmpty()) {
+            specificationForSearch = new FindCertificatesByTagNameSpecification(tags);
             predicates.add(specificationForSearch.buildWherePart(criteriaQuery, criteriaBuilder, root));
         }
         if (param != null && !param.isEmpty()) {

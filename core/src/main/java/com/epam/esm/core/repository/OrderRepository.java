@@ -1,6 +1,5 @@
 package com.epam.esm.core.repository;
 
-import com.epam.esm.core.entity.GiftCertificate;
 import com.epam.esm.core.entity.Order;
 
 import java.util.List;
@@ -19,15 +18,6 @@ public interface OrderRepository extends BaseRepository<Order> {
      */
     Order findOrderById(long id);
 
-    /**
-     * Find all orders by user list.
-     *
-     * @param id   the id
-     * @param page the page
-     * @param size the size
-     * @return the list
-     */
-    List<Order> findAllOrdersByUser(long id, int page, int size);
 
     List<Order> findAllOrders(int page, int size);
 }

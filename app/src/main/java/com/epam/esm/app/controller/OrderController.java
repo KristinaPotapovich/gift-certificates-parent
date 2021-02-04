@@ -69,29 +69,6 @@ public class OrderController {
                         .withType(HttpMethod.GET.name())), HttpStatus.CREATED)).orElseGet(() -> new ResponseEntity<>(HttpStatus.BAD_REQUEST));
     }
 
-    /**
-     * Find certificate by user.
-     *
-     * @param id   id
-     * @param page page
-     * @param size size
-     * @return response entity
-     */
-    @GetMapping(value = "/{id}/users")
-    public ResponseEntity<List<OrderDto>> findCertificateByUser(
-            @Valid @PathVariable(VALUE_ID) Long id,
-            @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)
-            @Min(value = 1, message = VALIDATION_FAIL_PAGE_MESSAGE) int page,
-            @Valid @RequestParam(value = VALUE_SIZE, required = false, defaultValue = DEFAULT_SIZE)
-            @Min(value = 1, message = VALIDATION_FAIL_SIZE_MESSAGE) int size) {
-        Optional<List<OrderDto>> optionalUserDto = orderService.findAllOrdersByUser(id, page, size);
-        if (optionalUserDto.isPresent()) {
-            optionalUserDto.get().forEach(orderDto -> buildLinkForOrder(orderDto, page, size));
-            return new ResponseEntity<>(optionalUserDto.get(), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-    }
 
     /**
      * Find order by id .
@@ -129,12 +106,11 @@ public class OrderController {
     }
 
     private void buildLinkForOrder(OrderDto orderDto, int page, int size) {
-
         orderDto.add(linkTo(methodOn(OrderController.class)
                 .findOrderById(orderDto.getId())).withRel(CURRENT_ORDER)
                 .withType(HttpMethod.GET.name()));
         orderDto.getUser().add(linkTo(methodOn(UserController.class)
-                .findUserById(orderDto.getUser().getId(), page, size))
+                .findUserById(orderDto.getUser().getId()))
                 .withRel(CURRENT_USER));
         orderDto.getCertificates()
                 .forEach(giftCertificateDto ->

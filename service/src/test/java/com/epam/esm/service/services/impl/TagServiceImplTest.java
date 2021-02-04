@@ -94,13 +94,4 @@ class TagServiceImplTest {
         verify(tagRepository).findPopularTag();
         assertTrue(actual.isPresent());
     }
-
-    @Test
-    void findAllTagsByCertificateId() {
-        when(tagRepository.findAllTagsByCertificateId(1, 1, 3))
-                .thenReturn(tags);
-        Optional<List<TagDto>> actual = tagService.findAllTagsByCertificateId(1, 1, 3);
-        verify(tagRepository).findAllTagsByCertificateId(1, 1, 3);
-        assertTrue(actual.isPresent());
-    }
 }

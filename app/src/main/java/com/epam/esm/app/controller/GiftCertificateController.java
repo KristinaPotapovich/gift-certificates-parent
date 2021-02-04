@@ -57,24 +57,6 @@ public class GiftCertificateController {
         this.giftCertificateServiceImpl = giftCertificateService;
     }
 
-    private void processExceptionForBuildCertificatesLink(int page, int size,
-                                                          List<GiftCertificateDto> giftCertificateDtos) {
-        giftCertificateDtos.forEach(giftCertificateDto ->
-        {
-            giftCertificateDto.add(linkTo(methodOn(GiftCertificateController.class)
-                    .findGiftCertificateById(giftCertificateDto.getId(), page, size))
-                    .withRel(CURRENT_CERTIFICATE));
-            giftCertificateDto.getTags()
-                    .forEach(this::buildTagsLinks);
-        });
-    }
-
-    private void buildTagsLinks(TagDto tagDto) {
-        tagDto.add(linkTo(methodOn(TagController.class)
-                .findTagById(tagDto.getId())).withRel(CURRENT_TAG)
-                .withType(HttpMethod.GET.name()));
-    }
-
     /**
      * Find gift certificate by id.
      *
@@ -128,13 +110,13 @@ public class GiftCertificateController {
             @Min(value = 1, message = VALIDATION_FAIL_PAGE_MESSAGE) int page,
             @Valid @RequestParam(value = VALUE_SIZE, required = false, defaultValue = DEFAULT_SIZE)
             @Min(value = 1, message = VALIDATION_FAIL_SIZE_MESSAGE) int size,
-            @Valid @RequestParam(value = "tagName", required = false) String tagName,
+            @Valid @RequestParam(value = "tags", required = false) List<String> tags,
             @Valid @RequestParam(value = "sort", required = false) String paramForSorting,
             @Valid @RequestParam(value = "order", required = false) String order,
             @Valid @RequestParam(value = "parameter", required = false) String param) {
         List<GiftCertificateDto> giftCertificateDtos = giftCertificateServiceImpl
-                .findAllCertificates(param, tagName, paramForSorting, order, page, size);
-        processExceptionForBuildCertificatesLink(page, size, giftCertificateDtos);
+                .findAllCertificates(param, paramForSorting,tags, order, page, size);
+        buildCertificatesLink(page, size, giftCertificateDtos);
         return new ResponseEntity<>(giftCertificateDtos, HttpStatus.OK);
     }
 
@@ -221,6 +203,31 @@ public class GiftCertificateController {
     }
 
     /**
+     * Find all tags by certificate id.
+     *
+     * @param idCertificate id certificate
+     * @param page          page
+     * @param size          size
+     * @return response entity
+     */
+    @GetMapping(value = "/{id}/tags")
+    public ResponseEntity<List<TagDto>> getInformationAboutCertificatesTags(
+            @Valid @PathVariable(VALUE_ID) long idCertificate,
+            @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)
+            @Min(value = 1, message = VALIDATION_FAIL_PAGE_MESSAGE) int page,
+            @Valid @RequestParam(value = VALUE_SIZE, required = false, defaultValue = DEFAULT_SIZE)
+            @Min(value = 1, message = VALIDATION_FAIL_SIZE_MESSAGE) int size) {
+        Optional<List<TagDto>> tagDtosOptional = giftCertificateServiceImpl.getInformationAboutCertificatesTags(idCertificate, page, size);
+        if (tagDtosOptional.isPresent()) {
+            tagDtosOptional.get().forEach(tag -> tag.add(linkTo(methodOn(TagController.class)
+                    .findTagById(tag.getId())).withSelfRel()));
+            return new ResponseEntity<>(tagDtosOptional.get(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    /**
      * Update one field gift certificate.
      *
      * @param id                 id
@@ -279,29 +286,22 @@ public class GiftCertificateController {
         }
     }
 
-    /**
-     * Find all by several tags list.
-     *
-     * @param tags tags
-     * @param page page
-     * @param size size
-     * @return list
-     */
-    @GetMapping(params = "tags")
-    public ResponseEntity<List<GiftCertificateDto>> findAllBySeveralTags(
-            @Valid @RequestParam(value = "tags", required = false) List<Long> tags,
-            @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)
-            @Min(value = 1, message = VALIDATION_FAIL_PAGE_MESSAGE) int page,
-            @Valid @RequestParam(value = VALUE_SIZE, required = false, defaultValue = DEFAULT_SIZE)
-            @Min(value = 1, message = VALIDATION_FAIL_SIZE_MESSAGE) int size) {
-        Optional<List<GiftCertificateDto>> certificateDtos =
-                giftCertificateServiceImpl
-                        .findAllBySeveralTags(tags, page, size);
-        if (certificateDtos.isPresent()) {
-            processExceptionForBuildCertificatesLink(page, size, certificateDtos.get());
-            return new ResponseEntity<>(certificateDtos.get(), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    private void buildCertificatesLink(int page, int size,
+                                       List<GiftCertificateDto> giftCertificateDtos) {
+        giftCertificateDtos.forEach(giftCertificateDto ->
+        {
+            giftCertificateDto.add(linkTo(methodOn(GiftCertificateController.class)
+                    .findGiftCertificateById(giftCertificateDto.getId(), page, size))
+                    .withRel(CURRENT_CERTIFICATE));
+            giftCertificateDto.getTags()
+                    .forEach(this::buildTagsLinks);
+        });
     }
+
+    private void buildTagsLinks(TagDto tagDto) {
+        tagDto.add(linkTo(methodOn(TagController.class)
+                .findTagById(tagDto.getId())).withRel(CURRENT_TAG)
+                .withType(HttpMethod.GET.name()));
+    }
+
 }

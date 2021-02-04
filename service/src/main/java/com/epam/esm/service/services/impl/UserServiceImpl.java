@@ -1,8 +1,11 @@
 package com.epam.esm.service.services.impl;
 
+import com.epam.esm.core.entity.Order;
 import com.epam.esm.core.entity.User;
 import com.epam.esm.core.repository.UserRepository;
+import com.epam.esm.service.dto.OrderDto;
 import com.epam.esm.service.dto.UserDto;
+import com.epam.esm.service.mapper.OrderConverter;
 import com.epam.esm.service.mapper.UserConverter;
 import com.epam.esm.service.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,5 +59,16 @@ public class UserServiceImpl implements UserService {
         return users.stream()
                 .map(UserConverter::mapToUserDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Optional<List<OrderDto>> getInformationAboutUsersOrders(long id, int page, int size) {
+        List<OrderDto> orderDtos;
+        List<Order> orders;
+        orders = userRepository.getInformationAboutUsersOrders(id, page, size);
+        orderDtos = orders.stream()
+                .map(OrderConverter::mapToOrderDto)
+                .collect(Collectors.toList());
+        return Optional.of(orderDtos);
     }
 }

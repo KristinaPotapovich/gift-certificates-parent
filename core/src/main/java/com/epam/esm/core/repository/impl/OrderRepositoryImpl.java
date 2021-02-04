@@ -29,19 +29,6 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
-    public List<Order> findAllOrdersByUser(long id, int page, int size) {
-        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-        CriteriaQuery<Order> criteriaQuery = criteriaBuilder.createQuery(Order.class);
-        Root<Order> orderRoot = criteriaQuery.from(Order.class);
-        criteriaQuery.select(orderRoot)
-                .where(criteriaBuilder.equal(orderRoot.join("user").get("id"), id));
-        return session.createQuery(criteriaQuery)
-                .setFirstResult((page - 1) * size)
-                .setMaxResults(size)
-                .getResultList();
-    }
-
-    @Override
     public Order update(Order order) {
         return null;
     }

@@ -126,12 +126,4 @@ class OrderServiceImplTest {
         verify(orderRepository).findOrderById(orderForCreate.getId());
         assertTrue(actual.isPresent());
     }
-
-    @Test
-    void findAllOrdersByUser() {
-        when(orderRepository.findAllOrdersByUser(1L, 1, 3)).thenReturn(orders);
-        Optional<List<OrderDto>> actual = orderService.findAllOrdersByUser(1L, 1, 3);
-        verify(orderRepository).findAllOrdersByUser(1L, 1, 3);
-        assertTrue(actual.isPresent());
-    }
 }

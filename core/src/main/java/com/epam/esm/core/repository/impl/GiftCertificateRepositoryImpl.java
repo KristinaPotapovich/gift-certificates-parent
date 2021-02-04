@@ -2,6 +2,7 @@ package com.epam.esm.core.repository.impl;
 
 
 import com.epam.esm.core.entity.GiftCertificate;
+import com.epam.esm.core.entity.Tag;
 import com.epam.esm.core.repository.GiftCertificateRepository;
 import com.epam.esm.core.repository.specification.BaseSpecificationForSorting;
 import com.epam.esm.core.repository.specification.ResolverForSearchParams;
@@ -11,7 +12,6 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -46,6 +46,19 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     }
 
     @Override
+    public List<Tag> getInformationAboutCertificatesTags(long idCertificate, int page, int size) {
+        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaQuery<Tag> criteriaQuery = criteriaBuilder.createQuery(Tag.class);
+        Root<Tag> tagRoot = criteriaQuery.from(Tag.class);
+        criteriaQuery.select(tagRoot)
+                .where(criteriaBuilder.equal(tagRoot.join("certificates").get("id"), idCertificate));
+        return session.createQuery(criteriaQuery)
+                .setFirstResult((page - 1) * size)
+                .setMaxResults(size)
+                .getResultList();
+    }
+
+    @Override
     public List<GiftCertificate> findAllCertificates(ResolverForSearchParams resolver,
                                                      BaseSpecificationForSorting<GiftCertificate> specification,
                                                      int page, int size) {
@@ -55,8 +68,10 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         Root<GiftCertificate> giftCertificateRoot = giftCertificateCriteriaQuery.from(GiftCertificate.class);
         CriteriaQuery<GiftCertificate> query = giftCertificateCriteriaQuery.select(giftCertificateRoot);
         if (resolver != null) {
+            Expression<Long> countCertificates = criteriaBuilder.count(giftCertificateRoot);
             query = query.distinct(true).where(resolver.buildListPredicatesForQuery(query,
                     criteriaBuilder, giftCertificateRoot).toArray(new Predicate[0]));
+            concatQuery(query, criteriaBuilder, countCertificates, resolver, giftCertificateRoot);
         }
         if (specification != null) {
             specification.buildQuery(query, criteriaBuilder, giftCertificateRoot);
@@ -85,28 +100,12 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         return session.createQuery(criteriaQuery).getResultList();
     }
 
-    @Override
-    public List<GiftCertificate> findAllBySeveralTags(List<Long> tags, int page, int size) {
-        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-        CriteriaQuery<GiftCertificate> giftCertificateCriteriaQuery =
-                criteriaBuilder.createQuery(GiftCertificate.class);
-        Root<GiftCertificate> giftCertificateRoot = giftCertificateCriteriaQuery.from(GiftCertificate.class);
-        giftCertificateCriteriaQuery.select(giftCertificateRoot);
-        List<Predicate> predicates = new ArrayList<>();
-        if (tags != null) {
-            Expression<Long> countCertificates = criteriaBuilder.count(giftCertificateRoot);
-            Predicate joinCertificateAndTag = giftCertificateRoot.join(TAGS).get(ID_CERTIFICATE).in(tags);
-            predicates.add(joinCertificateAndTag);
-            giftCertificateCriteriaQuery.where(criteriaBuilder.and(predicates.toArray(new Predicate[0])))
-                    .having(criteriaBuilder.equal(countCertificates, tags.size()))
-                    .groupBy(giftCertificateRoot);
-        } else {
-            giftCertificateCriteriaQuery.where(criteriaBuilder.and(predicates.toArray(new Predicate[0])));
+    private void concatQuery(CriteriaQuery<GiftCertificate> criteriaQuery, CriteriaBuilder criteriaBuilder
+            , Expression<Long> countCertificates, ResolverForSearchParams resolver, Root<GiftCertificate> root) {
+        if (resolver.getTags() != null && !resolver.getTags().isEmpty()) {
+            criteriaQuery.having(criteriaBuilder.equal(countCertificates, resolver.getTags().size()))
+                    .groupBy(root);
         }
-        return session.createQuery(giftCertificateCriteriaQuery)
-                .setFirstResult((page - 1) * size)
-                .setMaxResults(size)
-                .getResultList();
     }
 }
 

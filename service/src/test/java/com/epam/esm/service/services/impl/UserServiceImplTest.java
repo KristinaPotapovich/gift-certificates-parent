@@ -1,10 +1,13 @@
 package com.epam.esm.service.services.impl;
 
-import com.epam.esm.core.entity.User;
-import com.epam.esm.core.entity.UserRole;
+import com.epam.esm.core.entity.*;
 import com.epam.esm.core.repository.UserRepository;
 import com.epam.esm.core.repository.impl.UserRepositoryImpl;
+import com.epam.esm.service.dto.GiftCertificateDto;
+import com.epam.esm.service.dto.OrderDto;
+import com.epam.esm.service.dto.TagDto;
 import com.epam.esm.service.dto.UserDto;
+import com.epam.esm.service.mapper.OrderConverter;
 import com.epam.esm.service.mapper.UserConverter;
 import com.epam.esm.service.services.UserService;
 import org.junit.jupiter.api.AfterAll;
@@ -12,6 +15,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -21,10 +26,11 @@ import static org.mockito.Mockito.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class UserServiceImplTest {
-    UserRepository userRepository;
-    UserService userService;
-    User user;
-    List<User> users;
+    private UserRepository userRepository;
+    private UserService userService;
+    private User user;
+    private List<User> users;
+
 
     @BeforeAll
     void setUp() {
@@ -59,5 +65,29 @@ class UserServiceImplTest {
         verify(userRepository).findAllUsers(1, 3);
         assertFalse(actual.isEmpty());
         assertEquals(1, actual.get(0).getId());
+    }
+
+    @Test
+    void getInformationAboutUsersOrders() {
+        Tag tag = new Tag();
+        tag.setId(1);
+        tag.setName("newTag");
+        List<Tag> tags = new ArrayList<>();
+        tags.add(tag);
+        GiftCertificate giftCertificate = new GiftCertificate(1L, "testCertificate2",
+                "testDescription1",
+                BigDecimal.valueOf(15.22), 5,
+                LocalDateTime.of(2021, 1, 16, 19, 10),
+                LocalDateTime.of(2021, 1, 16, 19, 10), tags);
+        List<GiftCertificate> giftCertificates = new ArrayList<>();
+        giftCertificates.add(giftCertificate);
+        Order order = new Order(1L, BigDecimal.valueOf(15.22),
+                LocalDateTime.of(2021, 1, 16, 19, 15), giftCertificates, user);
+        List<Order> orders = new ArrayList<>();
+        orders.add(order);
+        when(userRepository.getInformationAboutUsersOrders(1L, 1, 3)).thenReturn(orders);
+        Optional<List<OrderDto>> actual = userService.getInformationAboutUsersOrders(1L, 1, 3);
+        verify(userRepository).getInformationAboutUsersOrders(1L, 1, 3);
+        assertTrue(actual.isPresent());
     }
 }

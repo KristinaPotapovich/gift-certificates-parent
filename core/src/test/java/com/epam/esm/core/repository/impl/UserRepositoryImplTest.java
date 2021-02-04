@@ -1,5 +1,6 @@
 package com.epam.esm.core.repository.impl;
 
+import com.epam.esm.core.entity.Order;
 import com.epam.esm.core.entity.User;
 import com.epam.esm.core.repository.UserRepository;
 import com.epam.esm.core.repository.impl.config.TestConfig;
@@ -31,6 +32,12 @@ public class UserRepositoryImplTest {
         List<User> users = userRepository.findAllUsers(1, 5);
         assertFalse(users.isEmpty());
         assertEquals(1, users.get(0).getId());
+    }
+    @Test
+    public void findAllOrdersByUserPositiveTest() {
+        List<Order> orders = userRepository.getInformationAboutUsersOrders(1, 1, 5);
+        assertFalse(orders.isEmpty());
+        assertEquals(1, orders.get(0).getId());
     }
 
     @Test

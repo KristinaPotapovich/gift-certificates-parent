@@ -27,7 +27,6 @@ public class OrderServiceImpl implements OrderService {
     private GiftCertificateService giftCertificateService;
     private UserService userService;
     private OrderRepository orderRepository;
-    private static final String USER_NOT_FOUND = "user_find_by_id";
 
     /**
      * Instantiates a new Order service.
@@ -50,7 +49,7 @@ public class OrderServiceImpl implements OrderService {
         AtomicReference<BigDecimal> fullPrice = new AtomicReference<>(new BigDecimal(0));
         List<GiftCertificateDto> certificates = purchaseParam.getCertificatesIds()
                 .stream()
-                .map(this::processExceptionForFindByCertificateId)
+                .map(idCertificate -> giftCertificateService.findCertificateById(idCertificate))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toList());
@@ -64,10 +63,6 @@ public class OrderServiceImpl implements OrderService {
         orderDto.setPrice(fullPrice.get());
         Order order = orderRepository.create(OrderConverter.mapToOrder(orderDto));
         return Optional.ofNullable(OrderConverter.mapToOrderDto(order));
-    }
-
-    private Optional<GiftCertificateDto> processExceptionForFindByCertificateId(Long aLong) {
-        return giftCertificateService.findCertificateById(aLong);
     }
 
     @Override
@@ -102,16 +97,5 @@ public class OrderServiceImpl implements OrderService {
         dataOrder.put("time_of_purchase", orderDto.getTimeOfPurchase());
         dataOrder.put("price", orderDto.getPrice());
         return Optional.ofNullable(dataOrder);
-    }
-
-    @Override
-    public Optional<List<OrderDto>> findAllOrdersByUser(long id, int page, int size) {
-        List<OrderDto> orderDtos;
-        List<Order> orders;
-        orders = orderRepository.findAllOrdersByUser(id, page, size);
-        orderDtos = orders.stream()
-                .map(OrderConverter::mapToOrderDto)
-                .collect(Collectors.toList());
-        return Optional.of(orderDtos);
     }
 }

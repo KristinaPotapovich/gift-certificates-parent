@@ -27,15 +27,5 @@ public interface OrderService extends BaseService<OrderDto> {
      */
     Optional<Map<String, Object>> findOrderById(long id);
 
-    /**
-     * Find all orders by user optional.
-     *
-     * @param id   the id
-     * @param page the page
-     * @param size the size
-     * @return the optional
-     */
-    Optional<List<OrderDto>> findAllOrdersByUser(long id, int page, int size);
-
     List<OrderDto> findAllOrders(int page, int size);
 }

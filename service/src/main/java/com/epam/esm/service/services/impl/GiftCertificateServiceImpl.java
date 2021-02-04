@@ -1,14 +1,17 @@
 package com.epam.esm.service.services.impl;
 
 import com.epam.esm.core.entity.GiftCertificate;
+import com.epam.esm.core.entity.Tag;
 import com.epam.esm.core.repository.GiftCertificateRepository;
 import com.epam.esm.core.repository.specification.BaseSpecificationForSorting;
 import com.epam.esm.core.repository.specification.ParamForSorting;
 import com.epam.esm.core.repository.specification.ResolverForSearchParams;
 import com.epam.esm.core.repository.specification.impl.*;
 import com.epam.esm.service.dto.GiftCertificateDto;
+import com.epam.esm.service.dto.TagDto;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.mapper.GiftCertificateConverter;
+import com.epam.esm.service.mapper.TagConverter;
 import com.epam.esm.service.services.GiftCertificateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.Nullable;
@@ -76,27 +79,16 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public List<GiftCertificateDto> findAllCertificates(String param, String tagName, String paramForSorting,
-                                                        String order, int page, int size) {
+    public List<GiftCertificateDto> findAllCertificates(String param, String paramForSorting,
+                                                        List<String> tags, String order,
+                                                        int page, int size) {
         List<GiftCertificate> giftCertificates;
         BaseSpecificationForSorting<GiftCertificate> orderBySpecification = buildSortingParams(paramForSorting, order);
-        giftCertificates = giftCertificateRepositoryImpl.findAllCertificates(new ResolverForSearchParams(tagName, param),
+        giftCertificates = giftCertificateRepositoryImpl.findAllCertificates(new ResolverForSearchParams(tags, param),
                 orderBySpecification, page, size);
         return giftCertificates
                 .stream().map(GiftCertificateConverter::mapToGiftCertificateDto)
                 .collect(Collectors.toList());
-    }
-
-    @Nullable
-    private BaseSpecificationForSorting<GiftCertificate> buildSortingParams(String paramForSorting, String order) {
-        BaseSpecificationForSorting<GiftCertificate> orderBySpecification = null;
-        ValidationService.validateParamForSearch(paramForSorting);
-        if (ParamForSorting.NAME.name().equalsIgnoreCase(paramForSorting)) {
-            orderBySpecification = new SortingNameSpecification(order);
-        } else if (ParamForSorting.DATE.name().equalsIgnoreCase(paramForSorting)) {
-            orderBySpecification = new SortingDateSpecification(order);
-        }
-        return orderBySpecification;
     }
 
     @Override
@@ -135,11 +127,24 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
                         .mapToGiftCertificateDto(giftCertificateRepositoryImpl.update(giftCertificate)));
     }
 
-    public Optional<List<GiftCertificateDto>> findAllBySeveralTags(List<Long> tags, int page, int size) {
-        List<GiftCertificate> giftCertificates;
-        giftCertificates = giftCertificateRepositoryImpl.findAllBySeveralTags(tags, page, size);
-        return Optional.of(giftCertificates.stream()
-                .map(GiftCertificateConverter::mapToGiftCertificateDto)
+    @Override
+    public Optional<List<TagDto>> getInformationAboutCertificatesTags(long idCertificate, int page, int size) {
+        List<Tag> tags;
+        tags = giftCertificateRepositoryImpl.getInformationAboutCertificatesTags(idCertificate, page, size);
+        return Optional.of(tags.stream()
+                .map(TagConverter::mapToTagDto)
                 .collect(Collectors.toList()));
+    }
+
+    @Nullable
+    private BaseSpecificationForSorting<GiftCertificate> buildSortingParams(String paramForSorting, String order) {
+        BaseSpecificationForSorting<GiftCertificate> orderBySpecification = null;
+        ValidationService.validateParamForSearch(paramForSorting);
+        if (ParamForSorting.NAME.name().equalsIgnoreCase(paramForSorting)) {
+            orderBySpecification = new SortingNameSpecification(order);
+        } else if (ParamForSorting.DATE.name().equalsIgnoreCase(paramForSorting)) {
+            orderBySpecification = new SortingDateSpecification(order);
+        }
+        return orderBySpecification;
     }
 }

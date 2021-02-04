@@ -1,6 +1,7 @@
 package com.epam.esm.service.services;
 
 import com.epam.esm.service.dto.GiftCertificateDto;
+import com.epam.esm.service.dto.TagDto;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,16 +27,28 @@ public interface GiftCertificateService extends BaseService<GiftCertificateDto> 
     Optional<GiftCertificateDto> patch(GiftCertificateDto giftCertificateDto);
 
     /**
-     * Find all by several tags optional.
+     * Find all certificates list.
      *
-     * @param tags the tags
-     * @param page the page
-     * @param size the size
-     * @return the optional
+     * @param param           the param
+     * @param paramForSorting the param for sorting
+     * @param tags            the tags
+     * @param order           the order
+     * @param page            the page
+     * @param size            the size
+     * @return the list
      */
-    Optional<List<GiftCertificateDto>> findAllBySeveralTags(List<Long> tags, int page, int size);
-
-    List<GiftCertificateDto> findAllCertificates(String param, String tagName, String paramForSorting,
+    List<GiftCertificateDto> findAllCertificates(String param, String paramForSorting,
+                                                 List<String> tags,
                                                  String order, int page, int size);
+
+    /**
+     * Gets information about certificates tags.
+     *
+     * @param idCertificate the id certificate
+     * @param page          the page
+     * @param size          the size
+     * @return the information about certificates tags
+     */
+    Optional<List<TagDto>> getInformationAboutCertificatesTags(long idCertificate, int page, int size);
 
 }

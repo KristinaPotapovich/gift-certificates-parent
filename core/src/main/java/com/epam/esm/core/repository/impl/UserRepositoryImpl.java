@@ -1,5 +1,6 @@
 package com.epam.esm.core.repository.impl;
 
+import com.epam.esm.core.entity.Order;
 import com.epam.esm.core.entity.User;
 import com.epam.esm.core.repository.UserRepository;
 import org.hibernate.Session;
@@ -43,6 +44,19 @@ public class UserRepositoryImpl implements UserRepository {
         Root<User> userRoot = userCriteriaQuery.from(User.class);
         userCriteriaQuery.select(userRoot);
         return session.createQuery(userCriteriaQuery)
+                .setFirstResult((page - 1) * size)
+                .setMaxResults(size)
+                .getResultList();
+    }
+
+    @Override
+    public List<Order> getInformationAboutUsersOrders(long id, int page, int size) {
+        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaQuery<Order> criteriaQuery = criteriaBuilder.createQuery(Order.class);
+        Root<Order> orderRoot = criteriaQuery.from(Order.class);
+        criteriaQuery.select(orderRoot)
+                .where(criteriaBuilder.equal(orderRoot.join("user").get("id"), id));
+        return session.createQuery(criteriaQuery)
                 .setFirstResult((page - 1) * size)
                 .setMaxResults(size)
                 .getResultList();

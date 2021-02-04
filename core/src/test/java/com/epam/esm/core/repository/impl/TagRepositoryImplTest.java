@@ -88,19 +88,6 @@ public class TagRepositoryImplTest {
     }
 
     @Test
-    public void findAllTagsByCertificateIdPositiveTest() {
-        List<Tag> tags = tagRepository.findAllTagsByCertificateId(1, 1, 5);
-        assertFalse(tags.isEmpty());
-        assertEquals(1, tags.get(0).getId());
-    }
-
-    @Test
-    public void findAllTagsByCertificateIdNegativeTest() {
-        List<Tag> tags = tagRepository.findAllTagsByCertificateId(0, 1, 5);
-        assertTrue(tags.isEmpty());
-    }
-
-    @Test
     public void findPopularTagPositiveTest() {
         Tag tag = tagRepository.findPopularTag();
         assertNotNull(tag);

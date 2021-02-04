@@ -1,6 +1,7 @@
 package com.epam.esm.service.services.impl;
 
 import com.epam.esm.core.entity.GiftCertificate;
+import com.epam.esm.core.entity.Tag;
 import com.epam.esm.core.repository.GiftCertificateRepository;
 import com.epam.esm.core.repository.impl.GiftCertificateRepositoryImpl;
 import com.epam.esm.service.dto.GiftCertificateDto;
@@ -133,12 +134,16 @@ class GiftCertificateServiceImplTest {
     }
 
     @Test
-    void findAllBySeveralTagsPositiveTest() {
-        List<Long> tags = new ArrayList<>();
-        tags.add(1L);
-        when(giftCertificateRepository.findAllBySeveralTags(tags, 1, 3)).thenReturn(giftCertificates);
-        Optional<List<GiftCertificateDto>> actual = giftCertificateService.findAllBySeveralTags(tags, 1, 3);
-        verify(giftCertificateRepository).findAllBySeveralTags(tags, 1, 3);
+    void getInformationAboutCertificatesTags() {
+        Tag tag = new Tag();
+        tagDto.setId(1);
+        tag.setName("testTag");
+        List<Tag> tags = new ArrayList<>();
+        tags.add(tag);
+        when(giftCertificateRepository.getInformationAboutCertificatesTags(1, 1, 3))
+                .thenReturn(tags);
+        Optional<List<TagDto>> actual = giftCertificateService.getInformationAboutCertificatesTags(1, 1, 3);
+        verify(giftCertificateRepository).getInformationAboutCertificatesTags(1, 1, 3);
         assertTrue(actual.isPresent());
     }
 }

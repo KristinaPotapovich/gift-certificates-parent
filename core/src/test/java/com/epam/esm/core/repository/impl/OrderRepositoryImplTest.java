@@ -27,13 +27,6 @@ public class OrderRepositoryImplTest {
     OrderRepository orderRepository;
 
     @Test
-    public void findAllOrdersByUserPositiveTest() {
-        List<Order> orders = orderRepository.findAllOrdersByUser(1, 1, 5);
-        assertFalse(orders.isEmpty());
-        assertEquals(1, orders.get(0).getId());
-    }
-
-    @Test
     public void findAllPositiveTest() {
         List<Order> orders = orderRepository.findAllOrders(1, 5);
         assertFalse(orders.isEmpty());

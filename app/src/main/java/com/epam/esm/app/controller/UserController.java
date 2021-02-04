@@ -1,5 +1,7 @@
 package com.epam.esm.app.controller;
 
+import com.epam.esm.service.dto.OrderDto;
+import com.epam.esm.service.dto.TagDto;
 import com.epam.esm.service.dto.UserDto;
 import com.epam.esm.service.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,10 +40,14 @@ public class UserController {
     private static final String ORDERS = "orders";
     private static final String DEFAULT_PAGE = "1";
     private static final String DEFAULT_SIZE = "25";
+    private static final int PAGE = 1;
+    private static final int SIZE = 25;
     private static final String VALUE_PAGE = "page";
     private static final String VALUE_SIZE = "size";
     private static final String VALUE_ID = "id";
-    private static final String VALIDATION_FAIL = "validation_fail";
+    private static final String CURRENT_TAG = "current tag";
+    private static final String CURRENT_ORDER = "current order";
+    private static final String CURRENT_CERTIFICATE = "current certificate";
 
     /**
      * Instantiates a new User controller.
@@ -67,44 +73,88 @@ public class UserController {
             @Valid @RequestParam(value = VALUE_SIZE, required = false, defaultValue = DEFAULT_SIZE)
             @Min(value = 1, message = VALIDATION_FAIL_SIZE_MESSAGE) int size) {
         List<UserDto> userDtos = userService.findAllUsers(page, size);
-        userDtos.forEach(userDto -> processExceptionByFindUser(page, size, userDto));
+        userDtos.forEach(userDto -> buildLinkForUser(page, size, userDto));
         return new ResponseEntity<>(userDtos, HttpStatus.OK);
     }
 
-    private void processExceptionByFindUser(int page, int size, UserDto userDto) {
-        userDto
-                .add(linkTo(methodOn(UserController.class).findUserById(userDto.getId(), page, size))
-                        .withRel(CURRENT_USER)
-                        .withType(HttpMethod.GET.name()));
-        userDto.add(linkTo(methodOn(OrderController.class).findCertificateByUser(userDto.getId(), page, size))
-                .withRel(ORDERS)
-                .withType(HttpMethod.GET.name()));
-    }
-
     /**
-     * Find user by id.
+     * Find certificate by user.
      *
      * @param id   id
      * @param page page
      * @param size size
      * @return response entity
      */
-    @GetMapping(value = "/{id}")
-    public ResponseEntity<EntityModel<UserDto>> findUserById(
-            @Valid @PathVariable(VALUE_ID) long id,
+    @GetMapping(value = "/{id}/orders")
+    public ResponseEntity<List<OrderDto>> getInformationAboutUsersOrders(
+            @Valid @PathVariable(VALUE_ID) Long id,
             @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)
             @Min(value = 1, message = VALIDATION_FAIL_PAGE_MESSAGE) int page,
             @Valid @RequestParam(value = VALUE_SIZE, required = false, defaultValue = DEFAULT_SIZE)
             @Min(value = 1, message = VALIDATION_FAIL_SIZE_MESSAGE) int size) {
+        Optional<List<OrderDto>> optionalUserDto = userService.getInformationAboutUsersOrders(id, page, size);
+        if (optionalUserDto.isPresent()) {
+            optionalUserDto.get().forEach(orderDto -> buildLinkForOrder(orderDto, page, size));
+            return new ResponseEntity<>(optionalUserDto.get(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    /**
+     * Find user by id.
+     *
+     * @param id   id
+     * @return response entity
+     */
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<EntityModel<UserDto>> findUserById(
+            @Valid @PathVariable(VALUE_ID) long id) {
         Optional<UserDto> userDtoOpt = userService.findUserById(id);
         return userDtoOpt.map(userDto -> new ResponseEntity<>(EntityModel.of(userDto,
                 linkTo(methodOn(UserController.class)
-                        .findUserById(userDto.getId(), page, size))
+                        .findUserById(userDto.getId()))
                         .withSelfRel(),
-                linkTo(methodOn(OrderController.class).findCertificateByUser(userDto.getId(),
-                        page, size))
+                linkTo(methodOn(UserController.class).getInformationAboutUsersOrders(userDto.getId(),
+                        PAGE,SIZE))
                         .withRel(ORDERS)
                         .withType(HttpMethod.GET.name())), HttpStatus.OK)).orElseGet(() ->
                 new ResponseEntity<>(HttpStatus.BAD_REQUEST));
     }
+
+    private void buildLinkForUser(int page, int size, UserDto userDto) {
+        userDto
+                .add(linkTo(methodOn(UserController.class).findUserById(userDto.getId()))
+                        .withRel(CURRENT_USER)
+                        .withType(HttpMethod.GET.name()));
+        userDto.add(linkTo(methodOn(UserController.class).getInformationAboutUsersOrders(userDto.getId(), page, size))
+                .withRel(ORDERS)
+                .withType(HttpMethod.GET.name()));
+    }
+
+    private void buildLinkForOrder(OrderDto orderDto, int page, int size) {
+
+        orderDto.add(linkTo(methodOn(OrderController.class)
+                .findOrderById(orderDto.getId())).withRel(CURRENT_ORDER)
+                .withType(HttpMethod.GET.name()));
+        orderDto.getUser().add(linkTo(methodOn(UserController.class)
+                .findUserById(orderDto.getUser().getId()))
+                .withRel(CURRENT_USER));
+        orderDto.getCertificates()
+                .forEach(giftCertificateDto ->
+                {
+                    giftCertificateDto.add(linkTo(methodOn(GiftCertificateController.class)
+                            .findGiftCertificateById(giftCertificateDto.getId(), page, size))
+                            .withRel(CURRENT_CERTIFICATE));
+                    giftCertificateDto.getTags()
+                            .forEach(this::buildTagsLinks);
+                });
+    }
+
+    private void buildTagsLinks(TagDto tagDto) {
+        tagDto.add(linkTo(methodOn(TagController.class)
+                .findTagById(tagDto.getId())).withRel(CURRENT_TAG)
+                .withType(HttpMethod.GET.name()));
+    }
 }
+

@@ -77,14 +77,5 @@ public class TagServiceImpl implements TagService {
         TagDto tagDto = TagConverter.mapToTagDto(tag);
         return Optional.ofNullable(tagDto);
     }
-
-    @Override
-    public Optional<List<TagDto>> findAllTagsByCertificateId(long idCertificate, int page, int size) {
-        List<Tag> tags;
-        tags = tagRepository.findAllTagsByCertificateId(idCertificate, page, size);
-        return Optional.of(tags.stream()
-                .map(TagConverter::mapToTagDto)
-                .collect(Collectors.toList()));
-    }
 }
 

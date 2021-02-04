@@ -2,6 +2,7 @@ package com.epam.esm.core.repository.impl;
 
 
 import com.epam.esm.core.entity.GiftCertificate;
+import com.epam.esm.core.entity.Tag;
 import com.epam.esm.core.exception.UnsupportedParametersForSorting;
 import com.epam.esm.core.repository.GiftCertificateRepository;
 
@@ -19,7 +20,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,12 +68,14 @@ public class GiftCertificateRepositoryImplTest {
     public void deletePositiveTest() {
         GiftCertificate giftCertificate = new GiftCertificate();
         giftCertificate.setId(1);
+        List<String> tags = new ArrayList<>();
+        tags.add("tag one");
         int expectedSizeOfList = giftCertificateRepository
-                .findAllCertificates(new ResolverForSearchParams("tag one", ""),
+                .findAllCertificates(new ResolverForSearchParams(tags, ""),
                         new SortingNameSpecification("asc"), 1, 5).size() - 1;
         giftCertificateRepository.delete(giftCertificate);
         int actualSizeOfList = giftCertificateRepository
-                .findAllCertificates(new ResolverForSearchParams("tag one", ""),
+                .findAllCertificates(new ResolverForSearchParams(tags, ""),
                         new SortingNameSpecification("asc"), 1, 5).size();
         assertEquals(expectedSizeOfList, actualSizeOfList);
     }
@@ -86,38 +89,36 @@ public class GiftCertificateRepositoryImplTest {
 
     @Test
     public void findAllCertificatesPositiveTest() {
+        List<String> tags = new ArrayList<>();
+        tags.add("tag one");
         List<GiftCertificate> certificates = giftCertificateRepository
-                .findAllCertificates(new ResolverForSearchParams("tag one", ""),
+                .findAllCertificates(new ResolverForSearchParams(tags, ""),
                         new SortingNameSpecification("asc"), 1, 5);
         assertFalse(certificates.isEmpty());
         assertNotNull(certificates.get(0).getName());
         assertEquals("certificate one", certificates.get(0).getName());
     }
 
+    @Test
+    public void findAllTagsByCertificateIdPositiveTest() {
+        List<Tag> tags = giftCertificateRepository.getInformationAboutCertificatesTags(1, 1, 5);
+        assertFalse(tags.isEmpty());
+        assertEquals(1, tags.get(0).getId());
+    }
+
+    @Test
+    public void findAllTagsByCertificateIdNegativeTest() {
+        List<Tag> tags = giftCertificateRepository.getInformationAboutCertificatesTags(0, 1, 5);
+        assertTrue(tags.isEmpty());
+    }
+
     @Test(expected = UnsupportedParametersForSorting.class)
     public void findAllNegativeTest() {
+        List<String> tags = new ArrayList<>();
+        tags.add("tag one");
         giftCertificateRepository
-                .findAllCertificates(new ResolverForSearchParams("tag one", ""),
-                        new SortingNameSpecification("jjj"), 1, 5);
-    }
-
-    @Test
-    public void findAllBySeveralTagsPositiveTest() {
-        List<Long> tagsId = new ArrayList<>();
-        tagsId.add(1L);
-        tagsId.add(2L);
-        List<GiftCertificate> certificates = giftCertificateRepository.findAllBySeveralTags(tagsId, 1, 5);
-        assertFalse(certificates.isEmpty());
-        assertEquals("certificate one", certificates.get(0).getName());
-    }
-
-    @Test
-    public void findAllBySeveralTagsNegativeTest() {
-        List<Long> tagsId = new ArrayList<>();
-        tagsId.add(7L);
-        tagsId.add(2L);
-        List<GiftCertificate> certificates = giftCertificateRepository.findAllBySeveralTags(tagsId, 1, 5);
-        assertTrue(certificates.isEmpty());
+                .findAllCertificates(new ResolverForSearchParams(tags, ""),
+                        new SortingNameSpecification("ddd"), 1, 5);
     }
 
     @Test

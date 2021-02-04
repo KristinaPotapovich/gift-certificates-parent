@@ -46,6 +46,7 @@ public class TagRepositoryImpl implements TagRepository {
         session.remove(session.contains(tag) ? tag : session.merge(tag));
     }
 
+    @Override
     public Optional<Tag> findTagById(long id) {
         CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
         CriteriaQuery<Tag> tagCriteriaQuery = criteriaBuilder.createQuery(Tag.class);
@@ -55,6 +56,7 @@ public class TagRepositoryImpl implements TagRepository {
         return Optional.of(tag);
     }
 
+    @Override
     public List<Tag> findAllTags(int page, int size) {
         CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
         CriteriaQuery<Tag> tagCriteriaQuery =
@@ -62,18 +64,6 @@ public class TagRepositoryImpl implements TagRepository {
         Root<Tag> tagRootRoot = tagCriteriaQuery.from(Tag.class);
         tagCriteriaQuery.select(tagRootRoot);
         return session.createQuery(tagCriteriaQuery)
-                .setFirstResult((page - 1) * size)
-                .setMaxResults(size)
-                .getResultList();
-    }
-
-    public List<Tag> findAllTagsByCertificateId(long idCertificate, int page, int size) {
-        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-        CriteriaQuery<Tag> criteriaQuery = criteriaBuilder.createQuery(Tag.class);
-        Root<Tag> tagRoot = criteriaQuery.from(Tag.class);
-        criteriaQuery.select(tagRoot)
-                .where(criteriaBuilder.equal(tagRoot.join("certificates").get("id"), idCertificate));
-        return session.createQuery(criteriaQuery)
                 .setFirstResult((page - 1) * size)
                 .setMaxResults(size)
                 .getResultList();

@@ -90,37 +90,9 @@ public class TagController {
             @Valid @RequestParam(value = VALUE_SIZE, required = false, defaultValue = DEFAULT_SIZE)
             @Min(value = 1, message = VALIDATION_FAIL_SIZE_MESSAGE) int size) {
         List<TagDto> tagDtos = tagServiceImpl.findAllTags(page, size);
-        processExceptionForFindTagByName(tagDtos);
-        return new ResponseEntity<>(tagDtos, HttpStatus.OK);
-    }
-
-    private void processExceptionForFindTagByName(List<TagDto> tagDtos) {
         tagDtos.forEach(tag -> tag.add(linkTo(methodOn(TagController.class)
                 .findTagById(tag.getId())).withSelfRel()));
-    }
-
-    /**
-     * Find all tags by certificate id.
-     *
-     * @param idCertificate id certificate
-     * @param page          page
-     * @param size          size
-     * @return response entity
-     */
-    @GetMapping(value = "/{id}/certificates")
-    public ResponseEntity<List<TagDto>> findAllTagsByCertificateId(
-            @Valid @PathVariable(VALUE_ID) long idCertificate,
-            @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)
-            @Min(value = 1, message = VALIDATION_FAIL_PAGE_MESSAGE) int page,
-            @Valid @RequestParam(value = VALUE_SIZE, required = false, defaultValue = DEFAULT_SIZE)
-            @Min(value = 1, message = VALIDATION_FAIL_SIZE_MESSAGE) int size) {
-        Optional<List<TagDto>> tagDtosOptional = tagServiceImpl.findAllTagsByCertificateId(idCertificate, page, size);
-        if (tagDtosOptional.isPresent()) {
-            processExceptionForFindTagByName(tagDtosOptional.get());
-            return new ResponseEntity<>(tagDtosOptional.get(), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        return new ResponseEntity<>(tagDtos, HttpStatus.OK);
     }
 
     /**
@@ -193,7 +165,7 @@ public class TagController {
      *
      * @return response entity
      */
-    @GetMapping(value = "/tag")
+    @GetMapping(value = "/popular-tag")
     public ResponseEntity<EntityModel<TagDto>> findPopularTag() {
         Optional<TagDto> tagDtoOpt = tagServiceImpl.findPopularTag();
         return tagDtoOpt.map(tagDto -> new ResponseEntity<>(EntityModel.of(tagDto, linkTo(methodOn(TagController.class)
