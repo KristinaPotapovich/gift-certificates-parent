@@ -1,8 +1,9 @@
 package com.epam.esm.core.repository;
 
 import com.epam.esm.core.entity.GiftCertificate;
-import com.epam.esm.core.exception.RepositoryException;
-import com.epam.esm.core.repository.specification.SortByParamSpecification;
+import com.epam.esm.core.entity.Tag;
+import com.epam.esm.core.repository.specification.BaseSpecificationForSorting;
+import com.epam.esm.core.repository.specification.ResolverForSearchParams;
 
 import java.util.List;
 
@@ -15,60 +16,37 @@ public interface GiftCertificateRepository extends BaseRepository<GiftCertificat
      *
      * @param id the id
      * @return the gift certificate
-     * @throws RepositoryException the repository exception
      */
-    GiftCertificate findCertificateById(long id) throws RepositoryException;
+    GiftCertificate findCertificateById(long id);
 
     /**
-     * Find certificate by param list.
+     * Find all certificates list.
      *
-     * @param param the param
+     * @param resolver          the resolver
+     * @param baseSpecification the base specification
+     * @param page              the page
+     * @param size              the size
      * @return the list
-     * @throws RepositoryException the repository exception
      */
-    List<GiftCertificate> findCertificateByParam(String param) throws RepositoryException;
+    List<GiftCertificate> findAllCertificates(ResolverForSearchParams resolver,
+                                              BaseSpecificationForSorting<GiftCertificate> baseSpecification,
+                                              int page, int size);
 
     /**
-     * Create certificate and tag relation.
+     * Find certificate by name list.
+     *
+     * @param name the name
+     * @return the list
+     */
+    List<GiftCertificate> findCertificateByName(String name);
+
+    /**
+     * Find all tags by certificate id list.
      *
      * @param idCertificate the id certificate
-     * @param idTag         the id tag
-     * @throws RepositoryException the repository exception
-     */
-    void createCertificateAndTagRelation(long idCertificate, long idTag) throws RepositoryException;
-
-    /**
-     * Delete certificate and tag relation.
-     *
-     * @param idCertificate the id certificate
-     * @throws RepositoryException the repository exception
-     */
-    void deleteCertificateAndTagRelation(long idCertificate) throws RepositoryException;
-
-    /**
-     * Search all certificates by tag name list.
-     *
-     * @param tagName the tag name
+     * @param page          the page
+     * @param size          the size
      * @return the list
-     * @throws RepositoryException the repository exception
      */
-    List<GiftCertificate> searchAllCertificatesByTagName(String tagName) throws RepositoryException;
-
-    /**
-     * Sort by param list.
-     *
-     * @param sortByParamSpecification the sort by param specification
-     * @return the list
-     * @throws RepositoryException the repository exception
-     */
-    List<GiftCertificate> sortByParam(SortByParamSpecification sortByParamSpecification) throws RepositoryException;
-
-    /**
-     * Is certificate exist boolean.
-     *
-     * @param giftCertificate the gift certificate
-     * @return the boolean
-     * @throws RepositoryException the repository exception
-     */
-    boolean isCertificateExist(GiftCertificate giftCertificate) throws RepositoryException;
+    List<Tag> getInformationAboutCertificatesTags(long idCertificate, int page, int size);
 }

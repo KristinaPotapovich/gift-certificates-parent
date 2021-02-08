@@ -1,17 +1,11 @@
 package com.epam.esm.service.services.impl;
 
-import com.epam.esm.core.exception.RepositoryException;
-import com.epam.esm.core.repository.GiftCertificateRepository;
 import com.epam.esm.core.repository.TagRepository;
 import com.epam.esm.service.dto.TagDto;
 import com.epam.esm.core.entity.Tag;
-import com.epam.esm.service.exception.ServiceException;
-import com.epam.esm.service.exception.ValidationException;
 import com.epam.esm.service.mapper.TagConverter;
 import com.epam.esm.service.services.TagService;
-import com.epam.esm.service.util.Validation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,108 +13,69 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * The type Tag service.
+ * Tag service.
  */
 @Service
 public class TagServiceImpl implements TagService {
 
     private TagRepository tagRepository;
 
-    private Validation<TagDto> tagValidation;
-    private GiftCertificateRepository giftCertificateRepository;
 
     /**
      * Instantiates a new Tag service.
      *
-     * @param tagRepository             the tag repository
-     * @param tagValidation             the tag validation
-     * @param giftCertificateRepository the gift certificate repository
+     * @param tagRepository the tag repository
      */
     @Autowired
-    public TagServiceImpl(TagRepository tagRepository, Validation<TagDto> tagValidation,
-                          GiftCertificateRepository giftCertificateRepository) {
+    public TagServiceImpl(TagRepository tagRepository) {
         this.tagRepository = tagRepository;
-        this.tagValidation = tagValidation;
-        this.giftCertificateRepository = giftCertificateRepository;
     }
 
 
     @Override
-    public Optional<TagDto> create(TagDto tagDto) throws ServiceException {
-        Tag tag;
-        try {
-            tagValidation.validate(tagDto);
-            tag = TagConverter.mapToTag(tagDto);
-            tagDto = TagConverter.mapToTagDto(tagRepository.create(tag));
-            return Optional.ofNullable(tagDto);
-        } catch (RepositoryException | ValidationException e) {
-            throw new ServiceException(e.getMessage());
-        }
+    public Optional<TagDto> create(TagDto tagDto) {
+        Tag tag = TagConverter.mapToTag(tagDto);
+        tagDto = TagConverter.mapToTagDto(tagRepository.create(tag));
+        return Optional.ofNullable(tagDto);
     }
 
     @Override
-    public void update(TagDto tagDto) throws ServiceException {
-        Tag tag;
-        try {
-            tagValidation.validate(tagDto);
-            tag = TagConverter.mapToTag(tagDto);
-            tagRepository.update(tag);
-        } catch (RepositoryException | ValidationException e) {
-            throw new ServiceException(e.getMessage());
-        }
+    public Optional<TagDto> update(TagDto tagDto) {
+        Tag tag = TagConverter.mapToTag(tagDto);
+        tag = tagRepository.update(tag);
+        return Optional.ofNullable(TagConverter.mapToTagDto(tag));
     }
 
     @Override
-    public boolean delete(long id) throws ServiceException {
-        try {
-            giftCertificateRepository.deleteCertificateAndTagRelation(id);
-            return tagRepository.delete(id);
-        } catch (RepositoryException e) {
-            throw new ServiceException(e.getMessage());
-        }
+    public void delete(long id) {
+        Tag tag = new Tag();
+        tag.setId(id);
+        tagRepository.delete(tag);
     }
 
     @Override
-    @Nullable
-    public Optional<TagDto> findTagByName(String name) throws ServiceException {
-        TagDto tagDto = new TagDto();
-        try {
-            tagDto.setName(name);
-            tagValidation.validate(tagDto);
-            Optional<Tag> tagOptional = tagRepository.findTagByName(name);
-            if (tagOptional.isPresent()) {
-                return tagOptional.map(TagConverter::mapToTagDto);
-            }
-        } catch (RepositoryException | ValidationException e) {
-            throw new ServiceException(e.getMessage());
+    public Optional<TagDto> findTagById(long id) {
+        Optional<Tag> tagOptional = tagRepository.findTagById(id);
+        if (tagOptional.isPresent()) {
+            return tagOptional.map(TagConverter::mapToTagDto);
         }
         return Optional.empty();
     }
 
     @Override
-    public Optional<List<TagDto>> findAll() throws ServiceException {
+    public List<TagDto> findAllTags(int page, int size) {
         List<Tag> tags;
-        try {
-            tags = tagRepository.findAll();
-        } catch (RepositoryException e) {
-            throw new ServiceException(e.getMessage());
-        }
-        return Optional.of(tags.stream()
+        tags = tagRepository.findAllTags(page, size);
+        return tags.stream()
                 .map(TagConverter::mapToTagDto)
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Optional<List<TagDto>> findAllTagsByCertificateId(long idCertificate) throws ServiceException {
-        List<Tag> tags;
-        try {
-            tags = tagRepository.findAllTagsByCertificateId(idCertificate);
-        } catch (RepositoryException e) {
-            throw new ServiceException(e.getMessage());
-        }
-        return Optional.of(tags.stream()
-                .map(TagConverter::mapToTagDto)
-                .collect(Collectors.toList()));
+    public Optional<TagDto> findPopularTag() {
+        Tag tag = tagRepository.findPopularTag();
+        TagDto tagDto = TagConverter.mapToTagDto(tag);
+        return Optional.ofNullable(tagDto);
     }
 }
 

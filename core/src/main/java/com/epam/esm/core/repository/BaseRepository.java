@@ -1,8 +1,5 @@
 package com.epam.esm.core.repository;
 
-import com.epam.esm.core.exception.RepositoryException;
-
-import java.util.List;
 
 /**
  * The interface Base repository.
@@ -15,34 +12,31 @@ public interface BaseRepository<T> {
      *
      * @param t the t
      * @return the t
-     * @throws RepositoryException the repository exception
      */
-    T create(T t) throws RepositoryException;
+    T create(T t);
 
     /**
-     * Update boolean.
+     * Update t.
      *
      * @param t the t
-     * @return the boolean
-     * @throws RepositoryException the repository exception
+     * @return the t
      */
-    boolean update(T t) throws RepositoryException;
+    T update(T t);
 
     /**
-     * Delete boolean.
+     * Delete.
      *
-     * @param id the id
-     * @return the boolean
-     * @throws RepositoryException the repository exception
+     * @param t the t
      */
-    boolean delete(long id) throws RepositoryException;
+    void delete(T t);
 
     /**
      * Find all list.
      *
+     * @param page the page
+     * @param size the size
      * @return the list
-     * @throws RepositoryException the repository exception
      */
-    List<T> findAll() throws RepositoryException;
+
 
 }

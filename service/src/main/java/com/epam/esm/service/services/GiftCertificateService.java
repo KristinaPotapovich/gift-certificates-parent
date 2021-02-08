@@ -1,7 +1,7 @@
 package com.epam.esm.service.services;
 
 import com.epam.esm.service.dto.GiftCertificateDto;
-import com.epam.esm.service.exception.ServiceException;
+import com.epam.esm.service.dto.TagDto;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,34 +15,40 @@ public interface GiftCertificateService extends BaseService<GiftCertificateDto> 
      *
      * @param id the id
      * @return the optional
-     * @throws ServiceException the service exception
      */
-    Optional<GiftCertificateDto> findCertificateById(long id) throws ServiceException;
+    Optional<GiftCertificateDto> findCertificateById(long id);
 
     /**
-     * Find certificate by param optional.
+     * Patch optional.
      *
-     * @param param the param
-     * @return the optional
-     * @throws ServiceException the service exception
-     */
-    Optional<List<GiftCertificateDto>> findCertificateByParam(String param) throws ServiceException;
-
-    /**
-     * Search all certificates by tag name optional.
-     *
-     * @param tagName the tag name
+     * @param giftCertificateDto the gift certificate dto
      * @return the optional
      */
-    Optional<List<GiftCertificateDto>> searchAllCertificatesByTagName(String tagName);
+    Optional<GiftCertificateDto> patch(GiftCertificateDto giftCertificateDto);
 
     /**
-     * Sort by param optional.
+     * Find all certificates list.
      *
+     * @param param           the param
      * @param paramForSorting the param for sorting
+     * @param tags            the tags
      * @param order           the order
-     * @return the optional
-     * @throws ServiceException the service exception
+     * @param page            the page
+     * @param size            the size
+     * @return the list
      */
-    Optional<List<GiftCertificateDto>> sortByParam(String paramForSorting, String order) throws ServiceException;
+    List<GiftCertificateDto> findAllCertificates(String param, String paramForSorting,
+                                                 List<String> tags,
+                                                 String order, int page, int size);
+
+    /**
+     * Gets information about certificates tags.
+     *
+     * @param idCertificate the id certificate
+     * @param page          the page
+     * @param size          the size
+     * @return the information about certificates tags
+     */
+    Optional<List<TagDto>> getInformationAboutCertificatesTags(long idCertificate, int page, int size);
+
 }

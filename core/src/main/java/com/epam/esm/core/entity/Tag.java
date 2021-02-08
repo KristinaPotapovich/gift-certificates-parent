@@ -1,53 +1,35 @@
 package com.epam.esm.core.entity;
 
+import lombok.*;
+import org.hibernate.envers.Audited;
+import org.springframework.stereotype.Component;
 
+import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import java.util.List;
+
+/**
+ * Tag Entity.
+ */
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@EqualsAndHashCode
+@ToString
+@Audited
+@Entity
+@Component
+@Table(name = "tag")
 public class Tag {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_tag")
     private long id;
+    @NonNull
+    @NotBlank
+    @Column(name = "name", unique = true)
     private String name;
-
-    public Tag() {
-
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Tag)) return false;
-
-        Tag tag = (Tag) o;
-
-        if (getId() != tag.getId()) return false;
-        return getName() != null ? getName().equals(tag.getName()) : tag.getName() == null;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = (int) (getId() ^ (getId() >>> 32));
-        result = 31 * result + (getName() != null ? getName().hashCode() : 0);
-        return result;
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder stringBuilder = new StringBuilder();
-        return stringBuilder.append("Tag{").append("id=")
-                .append(id).append(", name='").append(name)
-                .append('\'').append('}').toString();
-    }
+    @ManyToMany(mappedBy = "tags", fetch = FetchType.LAZY)
+    private List<GiftCertificate> certificates;
 }

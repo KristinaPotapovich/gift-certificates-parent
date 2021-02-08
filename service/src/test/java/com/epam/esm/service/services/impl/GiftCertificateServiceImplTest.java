@@ -2,194 +2,148 @@ package com.epam.esm.service.services.impl;
 
 import com.epam.esm.core.entity.GiftCertificate;
 import com.epam.esm.core.entity.Tag;
-import com.epam.esm.core.exception.RepositoryException;
 import com.epam.esm.core.repository.GiftCertificateRepository;
-import com.epam.esm.core.repository.TagRepository;
 import com.epam.esm.core.repository.impl.GiftCertificateRepositoryImpl;
-import com.epam.esm.core.repository.impl.TagRepositoryImpl;
-import com.epam.esm.core.repository.specification.SortByParamSpecification;
 import com.epam.esm.service.dto.GiftCertificateDto;
 import com.epam.esm.service.dto.TagDto;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.mapper.GiftCertificateConverter;
-import com.epam.esm.service.mapper.TagConverter;
 import com.epam.esm.service.services.GiftCertificateService;
-import com.epam.esm.service.services.TagService;
-import com.epam.esm.service.util.impl.GiftCertificateValidation;
-import com.epam.esm.service.util.impl.TagValidation;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
+import org.junit.jupiter.api.TestInstance;
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class GiftCertificateServiceImplTest {
-    GiftCertificateService giftCertificateService;
-    GiftCertificateRepository giftCertificateRepository;
-    GiftCertificateValidation giftCertificateValidation;
-    GiftCertificateDto giftCertificateDto1;
-    GiftCertificateDto giftCertificateDto2;
-    TagService tagService;
-    TagRepository tagRepository;
-    TagValidation tagValidation;
-    TagDto tagDto;
-    List<GiftCertificateDto> giftCertificateDtos;
-    List<TagDto> tagDtos;
-    GiftCertificate giftCertificate;
-    GiftCertificate giftCertificate3;
-    List<GiftCertificate> giftCertificates;
-    Tag tag;
+
+    private GiftCertificateService giftCertificateService;
+    private GiftCertificateRepository giftCertificateRepository;
+    private TagDto tagDto;
+    private GiftCertificateDto giftCertificateDto1;
+    private List<GiftCertificateDto> giftCertificateDtos;
+    private List<TagDto> tagDtos;
+    private GiftCertificate giftCertificate;
+    private List<GiftCertificate> giftCertificates;
 
     @BeforeAll
-    void setUp() {
+    public void setUp() {
         giftCertificateRepository = mock(GiftCertificateRepositoryImpl.class);
-        tagRepository = mock(TagRepositoryImpl.class);
-        tagValidation = new TagValidation();
-        tagService = new TagServiceImpl(tagRepository, tagValidation, giftCertificateRepository);
-        giftCertificateValidation = new GiftCertificateValidation();
-        giftCertificateService = new GiftCertificateServiceImpl(giftCertificateRepository,
-                giftCertificateValidation, tagService);
-        giftCertificateDto1 = new GiftCertificateDto();
-        giftCertificateDto1.setId(1);
-        giftCertificateDto1.setName("testCertificate1");
-        giftCertificateDto1.setDescription("testDescription1");
-        giftCertificateDto1.setPrice(15.22);
-        giftCertificateDto1.setDurationInDays(5);
-        giftCertificateDto1.setCreateDate(LocalDateTime.of(2021, 1, 16, 19, 6));
-        giftCertificateDto1.setLastUpdateDate(LocalDateTime.of(2021, 1, 16, 19, 10));
-        giftCertificateDto2 = new GiftCertificateDto();
-        giftCertificateDto2.setId(2);
-        giftCertificateDto2.setName("testCertificate2");
-        giftCertificateDto2.setDescription("testDescription2");
-        giftCertificateDto2.setPrice(22);
-        giftCertificateDto2.setDurationInDays(2);
-        giftCertificateDto2.setCreateDate(LocalDateTime.of(2021, 1, 16, 19, 8));
-        giftCertificateDto2.setLastUpdateDate(LocalDateTime.of(2021, 1, 16, 19, 15));
-        tagDto = new TagDto();
-        tagDto.setId(1);
-        tagDto.setName("testTag");
+        giftCertificateService = new GiftCertificateServiceImpl(giftCertificateRepository);
+        giftCertificateDto1 = new GiftCertificateDto(1L, "testCertificate1", "testDescription1",
+                BigDecimal.valueOf(15.22), 5,
+                LocalDateTime.of(2021, 1, 16, 19, 10),
+                LocalDateTime.of(2021, 1, 16, 19, 10), tagDtos);
+        tagDto = new TagDto(1L, "testTag");
         giftCertificateDtos = new ArrayList<>();
         giftCertificateDtos.add(giftCertificateDto1);
-        giftCertificateDtos.add(giftCertificateDto2);
         tagDtos = new ArrayList<>();
         tagDtos.add(tagDto);
         giftCertificateDto1.setTags(tagDtos);
-        giftCertificateDto2.setTags(tagDtos);
         giftCertificate = GiftCertificateConverter.mapToGiftCertificate(giftCertificateDto1);
-        giftCertificate3 = GiftCertificateConverter.mapToGiftCertificate(giftCertificateDto2);
         giftCertificates = new ArrayList<>();
         giftCertificates.add(giftCertificate);
-        giftCertificates.add(giftCertificate3);
-        tag = TagConverter.mapToTag(tagDto);
-
     }
 
     @AfterAll
-    void tearDown() {
+    public void tearDown() {
         giftCertificateService = null;
         giftCertificateDto1 = null;
-        giftCertificateValidation = null;
-        giftCertificateDto2 = null;
         giftCertificateRepository = null;
         giftCertificateDtos = null;
         tagDto = null;
-        tagValidation = null;
-        tagService = null;
-        tagRepository = null;
         tagDtos = null;
         giftCertificate = null;
-        giftCertificate3 = null;
         giftCertificates = null;
-        tag = null;
     }
 
     @Test
-    void update() throws RepositoryException, ServiceException {
-        when(giftCertificateRepository.update(giftCertificate)).thenReturn(true);
-        when(tagRepository.findTagByName("testTag")).thenReturn(Optional.of(TagConverter.mapToTag(tagDto)));
-        doNothing().when(giftCertificateRepository).deleteCertificateAndTagRelation(giftCertificateDto1.getId());
-        giftCertificateService.update(giftCertificateDto1);
+    void createPositiveTest() {
+        Optional<GiftCertificateDto> expected = Optional.of(giftCertificateDto1);
+        when(giftCertificateRepository.create(giftCertificate)).thenReturn(giftCertificate);
+        Optional<GiftCertificateDto> actual = giftCertificateService.create(giftCertificateDto1);
+        verify(giftCertificateRepository).create(giftCertificate);
+        assertTrue(actual.isPresent());
+        assertEquals(actual, expected);
+    }
+
+    @Test
+    void createNegativeTest() {
+        when(giftCertificateRepository.create(any(GiftCertificate.class))).thenThrow(ServiceException.class);
+        assertThrows(ServiceException.class,
+                () -> giftCertificateService.create(giftCertificateDto1));
+    }
+
+    @Test
+    void updatePositiveTest() {
+        when(giftCertificateRepository.update(giftCertificate)).thenReturn(giftCertificate);
+        Optional<GiftCertificateDto> actual = giftCertificateService.update(giftCertificateDto1);
+        assertTrue(actual.isPresent());
+    }
+
+    @Test
+    void deletePositiveTest() {
+        GiftCertificate giftCertificateForDelete = new GiftCertificate();
+        giftCertificateForDelete.setId(1);
+        doNothing().when(giftCertificateRepository).delete(giftCertificateForDelete);
+        giftCertificateService.delete(giftCertificateForDelete.getId());
+        verify(giftCertificateRepository, times(1)).delete(giftCertificateForDelete);
+    }
+
+    @Test
+    void findCertificateByIdPositiveTest() {
+        when(giftCertificateRepository.findCertificateById(1)).thenReturn(giftCertificate);
+        Optional<GiftCertificateDto> actual = giftCertificateService.findCertificateById(1);
+        assertTrue(actual.isPresent());
+    }
+
+    @Test
+    void patch() {
+        when(giftCertificateRepository.findCertificateById(1)).thenReturn(giftCertificate);
+        when(giftCertificateRepository.update(giftCertificate)).thenReturn(giftCertificate);
+        GiftCertificateDto giftCertificateDto = new GiftCertificateDto();
+        giftCertificateDto.setId(1);
+        giftCertificateDto.setName("newCertificate");
+        Optional<GiftCertificateDto> actual = giftCertificateService.patch(giftCertificateDto);
+        assertTrue(actual.isPresent());
+        assertEquals("newCertificate", actual.get().getName());
+    }
+
+    @Test
+    void patchPositiveTest() {
+        when(giftCertificateRepository.findCertificateById(1L)).thenReturn(giftCertificate);
+        giftCertificate.setPrice(BigDecimal.valueOf(55));
+        when(giftCertificateRepository.update(giftCertificate)).thenReturn(giftCertificate);
+        giftCertificateDto1.setPrice(BigDecimal.valueOf(55));
+        Optional<GiftCertificateDto> expected = Optional.of(giftCertificateDto1);
+        Optional<GiftCertificateDto> actual = giftCertificateService
+                .patch(GiftCertificateConverter.mapToGiftCertificateDto(giftCertificate));
         verify(giftCertificateRepository).update(giftCertificate);
-
+        assertTrue(actual.isPresent());
+        assertEquals(actual, expected);
     }
 
     @Test
-    void delete() throws RepositoryException, ServiceException {
-        long id = 1;
-        doNothing().when(giftCertificateRepository).deleteCertificateAndTagRelation(giftCertificateDto1.getId());
-        when(giftCertificateRepository.delete(id)).thenReturn(true);
-        giftCertificateService.delete(id);
-        verify(giftCertificateRepository).delete(id);
-    }
-
-    @Test
-    void findAll() throws RepositoryException, ServiceException {
-        giftCertificates.add(giftCertificate);
-        giftCertificates.add(giftCertificate3);
-        when(giftCertificateRepository.findAll()).thenReturn(giftCertificates);
-        Optional<List<GiftCertificateDto>> actual = giftCertificateService.findAll();
-        verify(giftCertificateRepository).findAll();
-        Assertions.assertTrue(actual.isPresent());
-    }
-
-    @Test
-    void findCertificateByParam() throws RepositoryException, ServiceException {
-        GiftCertificate giftCertificate = GiftCertificateConverter.mapToGiftCertificate(giftCertificateDto1);
-        GiftCertificate giftCertificate3 = GiftCertificateConverter.mapToGiftCertificate(giftCertificateDto2);
-        List<GiftCertificate> giftCertificates = new ArrayList<>();
-        giftCertificates.add(giftCertificate);
-        giftCertificates.add(giftCertificate3);
-        when(giftCertificateRepository.findCertificateByParam(anyString())).thenReturn(giftCertificates);
-        Optional<List<GiftCertificateDto>> actual = giftCertificateService.findCertificateByParam(anyString());
-        verify(giftCertificateRepository).findCertificateByParam(anyString());
-        Assertions.assertTrue(actual.isPresent());
-    }
-
-    @Test
-    void findCertificateById() throws ServiceException, RepositoryException {
-        Tag tag = TagConverter.mapToTag(tagDto);
-        GiftCertificate giftCertificate = GiftCertificateConverter.mapToGiftCertificate(giftCertificateDto1);
-        when(tagRepository.findTagByName(giftCertificate.getName())).thenReturn(Optional.of(TagConverter.mapToTag(tagDto)));
-        when(tagRepository.create(TagConverter.mapToTag(tagDto))).thenReturn(tag);
-        doNothing().when(giftCertificateRepository)
-                .createCertificateAndTagRelation(giftCertificateDto1.getId(), tagDto.getId());
-        when(giftCertificateRepository.findCertificateById(anyLong()))
-                .thenReturn(giftCertificate);
-        Optional<GiftCertificateDto> actual = giftCertificateService.findCertificateById(giftCertificateDto1.getId());
-        verify(giftCertificateRepository).findCertificateById(anyLong());
-        Assertions.assertNotNull(actual);
-    }
-
-    @Test
-    void searchAllCertificatesByTagName() throws RepositoryException {
-        when(giftCertificateRepository.searchAllCertificatesByTagName(tag.getName())).thenReturn(giftCertificates);
-        when(tagRepository.findTagByName(giftCertificate.getName()))
-                .thenReturn(Optional.of(TagConverter.mapToTag(tagDto)));
-        when(tagRepository.create(TagConverter.mapToTag(tagDto))).thenReturn(tag);
-        doNothing().when(giftCertificateRepository)
-                .createCertificateAndTagRelation(giftCertificateDto1.getId(), tagDto.getId());
-        Optional<List<GiftCertificateDto>> actual = giftCertificateService
-                .searchAllCertificatesByTagName(tag.getName());
-        verify(giftCertificateRepository).searchAllCertificatesByTagName(tag.getName());
-        Assertions.assertTrue(actual.isPresent());
-    }
-
-    @Test
-    void sortByParamPositiveTest() throws RepositoryException, ServiceException {
-        SortByParamSpecification sortByParamSpecification =
-                new SortByParamSpecification("name","desc");
-        when(giftCertificateRepository.sortByParam(sortByParamSpecification)).thenReturn(giftCertificates);
-        when(tagRepository.findTagByName(giftCertificate.getName()))
-                .thenReturn(Optional.of(TagConverter.mapToTag(tagDto)));
-        when(tagRepository.create(TagConverter.mapToTag(tagDto))).thenReturn(tag);
-        doNothing().when(giftCertificateRepository)
-                .createCertificateAndTagRelation(giftCertificateDto1.getId(), tagDto.getId());
-        Optional<List<GiftCertificateDto>> actual = giftCertificateService
-                .sortByParam("name","desc");
-        Assertions.assertTrue(actual.isPresent());
+    void getInformationAboutCertificatesTags() {
+        Tag tag = new Tag();
+        tagDto.setId(1);
+        tag.setName("testTag");
+        List<Tag> tags = new ArrayList<>();
+        tags.add(tag);
+        when(giftCertificateRepository.getInformationAboutCertificatesTags(1, 1, 3))
+                .thenReturn(tags);
+        Optional<List<TagDto>> actual = giftCertificateService.getInformationAboutCertificatesTags(1, 1, 3);
+        verify(giftCertificateRepository).getInformationAboutCertificatesTags(1, 1, 3);
+        assertTrue(actual.isPresent());
     }
 }

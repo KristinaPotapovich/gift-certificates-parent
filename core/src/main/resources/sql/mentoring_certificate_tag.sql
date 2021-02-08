@@ -6,3 +6,4 @@ create table tag
     constraint tag_name_uindex
         unique (name)
 );
+

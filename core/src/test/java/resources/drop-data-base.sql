@@ -1,0 +1,13 @@
+DROP TABLE IF EXISTS user;
+DROP TABLE IF EXISTS orders_certificates;
+DROP TABLE IF EXISTS order_table;
+DROP TABLE IF EXISTS certificates_tags;
+DROP TABLE IF EXISTS tag;
+DROP TABLE IF EXISTS gift_certificate;
+DROP TABLE IF EXISTS tag_audit_log;
+DROP TABLE IF EXISTS orders_certificates_audit_log;
+DROP TABLE IF EXISTS order_table_audit_log;
+DROP TABLE IF EXISTS gift_certificate_audit_log;
+DROP TABLE IF EXISTS certificates_tags_audit_log;
+DROP TABLE IF EXISTS user_audit_log;
+DROP SCHEMA IF EXISTS gift_certificate_service;

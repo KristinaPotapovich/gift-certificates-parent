@@ -1,22 +1,28 @@
 package com.epam.esm.core.repository.impl;
 
-import com.epam.esm.core.config.TestConfig;
 import com.epam.esm.core.entity.Tag;
-import com.epam.esm.core.exception.RepositoryException;
 import com.epam.esm.core.repository.TagRepository;
+import com.epam.esm.core.repository.impl.config.TestConfig;
 import org.junit.Test;
-import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @Component
+@Transactional
+@Sql({"classpath:drop-data-base.sql", "classpath:gift-certificates-parent.sql", "classpath:init-data_test.sql"})
 @ContextConfiguration(classes = TestConfig.class)
 public class TagRepositoryImplTest {
 
@@ -24,40 +30,66 @@ public class TagRepositoryImplTest {
     public TagRepository tagRepository;
 
     @Test
-    public void create() throws RepositoryException {
+    public void createPositiveTest() {
         Tag tag = new Tag();
-        tag.setId(7);
         tag.setName("new tag");
-        Tag expected = tagRepository.create(tag);
-        List<Tag>tags = tagRepository.findAll();
-        Tag tagFromDB = tags.get(6);
-        Assertions.assertEquals(expected, tagFromDB);
+        Tag actual = tagRepository.create(tag);
+        assertNotNull(tag);
+        assertTrue(actual.getId() > 0);
+        assertEquals("new tag", actual.getName());
+    }
+
+    @Test(expected = DataIntegrityViolationException.class)
+    public void createNegativeTest() {
+        Tag tag = new Tag();
+        tag.setName("tag one");
+        tagRepository.create(tag);
     }
 
     @Test
-    public void delete() throws RepositoryException {
-        int expectedSizeOfList = tagRepository.findAll().size() -1;
-        boolean result = tagRepository.delete(5);
-        int actualSizeOfList = tagRepository.findAll().size();
-        Assertions.assertTrue(result);
-        Assertions.assertEquals(expectedSizeOfList, actualSizeOfList);
+    public void deletePositiveTest() {
+        Tag tag = new Tag();
+        tag.setId(5);
+        int expectedSizeOfList = tagRepository.findAllTags(1, 7).size() - 1;
+        tagRepository.delete(tag);
+        int actualSizeOfList = tagRepository.findAllTags(1, 7).size();
+        assertNotEquals(0, actualSizeOfList);
+        assertEquals(expectedSizeOfList, actualSizeOfList);
     }
 
     @Test
-    public void findTagByName() throws RepositoryException {
-        Optional<Tag>tag = tagRepository.findTagByName("tag two");
-        Assertions.assertTrue(tag.isPresent() && tag.get().getName().equals("tag two"));
+    public void findTagByIdPositiveTest()  {
+        Optional<Tag> tag = tagRepository.findTagById(4);
+        assertTrue(tag.isPresent() && tag.get().getId() == 4);
+    }
+
+    @Test(expected = EmptyResultDataAccessException.class)
+    public void findTagByIdNegativeTest() {
+        tagRepository.findTagById(7);
     }
 
     @Test
-    public void findAll() throws RepositoryException {
-        List<Tag> tags = tagRepository.findAll();
-        Assertions.assertEquals("tag one", tags.get(0).getName());
+    public void findAllPositiveTest()  {
+        List<Tag> tags = tagRepository.findAllTags(1, 5);
+        assertFalse(tags.isEmpty());
+        assertEquals(1, tags.get(0).getId());
+        assertEquals("tag one", tags.get(0).getName());
     }
 
     @Test
-    public void findAllTagsByCertificateId() throws RepositoryException {
-        List<Tag> tags = tagRepository.findAllTagsByCertificateId(2);
-        Assertions.assertFalse(tags.isEmpty());
+    public void updatePositiveTest() {
+        Tag tag = new Tag();
+        tag.setId(3);
+        tag.setName("new name");
+        tag = tagRepository.update(tag);
+        assertNotNull(tag);
+        assertTrue(tag.getId() > 0);
+        assertEquals(tag.getName(), "new name");
+    }
+
+    @Test
+    public void findPopularTagPositiveTest() {
+        Tag tag = tagRepository.findPopularTag();
+        assertNotNull(tag);
     }
 }
