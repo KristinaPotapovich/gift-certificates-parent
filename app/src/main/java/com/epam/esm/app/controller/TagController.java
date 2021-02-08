@@ -41,7 +41,6 @@ public class TagController {
     private static final String VALUE_PAGE = "page";
     private static final String VALUE_SIZE = "size";
     private static final String VALUE_ID = "id";
-    private static final String VALIDATION_FAIL = "validation_fail";
 
     /**
      * Instantiates a new Tag controller.

@@ -49,4 +49,7 @@ public class GiftCertificate {
             joinColumns = {@JoinColumn(name = "id_certificate", nullable = false)},
             inverseJoinColumns = {@JoinColumn(name = "id_tag", nullable = false)})
     private List<Tag> tags;
+    @NonNull
+    @Column(name = "is_deleted")
+    private boolean isDeleted;
 }

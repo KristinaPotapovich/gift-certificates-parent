@@ -78,7 +78,7 @@ class UserServiceImplTest {
                 "testDescription1",
                 BigDecimal.valueOf(15.22), 5,
                 LocalDateTime.of(2021, 1, 16, 19, 10),
-                LocalDateTime.of(2021, 1, 16, 19, 10), tags);
+                LocalDateTime.of(2021, 1, 16, 19, 10), tags,false);
         List<GiftCertificate> giftCertificates = new ArrayList<>();
         giftCertificates.add(giftCertificate);
         Order order = new Order(1L, BigDecimal.valueOf(15.22),

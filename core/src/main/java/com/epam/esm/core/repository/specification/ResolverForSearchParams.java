@@ -52,6 +52,7 @@ public class ResolverForSearchParams {
             specificationForSearch = new FindCertificatesByParamSpecification(param);
             predicates.add(specificationForSearch.buildWherePart(criteriaQuery, criteriaBuilder, root));
         }
+        predicates.add(criteriaBuilder.equal(root.get("isDeleted"),false));
         return predicates;
     }
 }
