@@ -1,6 +1,7 @@
 package com.epam.esm.app.exception;
 
 import com.epam.esm.core.exception.UnsupportedParametersForSorting;
+import com.epam.esm.service.exception.JwtAuthException;
 import com.epam.esm.service.exception.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -87,6 +88,17 @@ public class ControllerExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = ServiceException.class)
     public ErrorResponseMessage controllerError(ServiceException e, Locale locale) {
+        errorResponseMessage.setTimestamp(LocalDateTime.now());
+        errorResponseMessage.setCode(messageSource.getMessage(e.getMessage() + CODE,
+                new Object[]{}, locale));
+        errorResponseMessage.setError(HttpStatus.BAD_REQUEST.toString());
+        errorResponseMessage.setMessage(messageSource.getMessage(e.getMessage() + MESSAGE,
+                new Object[]{}, locale));
+        return errorResponseMessage;
+    }
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler(value = JwtAuthException.class)
+    public ErrorResponseMessage controllerError(JwtAuthException e, Locale locale) {
         errorResponseMessage.setTimestamp(LocalDateTime.now());
         errorResponseMessage.setCode(messageSource.getMessage(e.getMessage() + CODE,
                 new Object[]{}, locale));

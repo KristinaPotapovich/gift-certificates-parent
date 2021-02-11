@@ -28,14 +28,10 @@
             <artifactId>javaee-api</artifactId>
             <version>8.0</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-core</artifactId>
+            <version>3.3.7</version>
+        </dependency>
     </dependencies>
-
-<!--    <build>-->
-<!--        <testResources>-->
-<!--            <testResource>-->
-<!--                <directory>src/test/resources</directory>-->
-<!--            </testResource>-->
-<!--        </testResources>-->
-<!--    </build>-->
 </project>

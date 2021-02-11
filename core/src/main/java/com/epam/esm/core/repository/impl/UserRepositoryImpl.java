@@ -11,6 +11,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * User repository.
@@ -24,7 +25,8 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User create(User user) {
-        return null;
+         session.save(user);
+         return session.find(User.class,user.getId());
     }
 
     @Override
@@ -50,6 +52,15 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    public List<User> findUserByLogin(String login) {
+        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
+        Root<User> userRoot = criteriaQuery.from(User.class);
+        criteriaQuery.where(criteriaBuilder.equal(userRoot.get("login"), login));
+        return session.createQuery(criteriaQuery).getResultList();
+    }
+
+    @Override
     public List<Order> getInformationAboutUsersOrders(long id, int page, int size) {
         CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
         CriteriaQuery<Order> criteriaQuery = criteriaBuilder.createQuery(Order.class);
@@ -70,4 +81,5 @@ public class UserRepositoryImpl implements UserRepository {
         criteriaQuery.where(criteriaBuilder.equal(userRoot.get("id"), id));
         return session.createQuery(criteriaQuery).getSingleResult();
     }
+
 }

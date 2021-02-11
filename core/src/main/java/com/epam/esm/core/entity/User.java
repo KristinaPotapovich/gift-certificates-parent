@@ -15,7 +15,6 @@ import java.util.List;
 @Getter
 @Setter
 @EqualsAndHashCode
-@ToString
 @Audited
 @Component
 @Table(name = "user")
@@ -31,10 +30,9 @@ public class User {
     @NonNull
     @Column(name = "password")
     private String password;
-    @NonNull
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
-    private UserRole userRole;
-    @OneToMany(cascade = {CascadeType.MERGE}, fetch = FetchType.LAZY, mappedBy = "user")
+    private Role userRole;
+    @OneToMany(cascade = {CascadeType.MERGE}, fetch = FetchType.EAGER, mappedBy = "user")
     private List<Order> orders;
 }

@@ -3,7 +3,7 @@ package com.epam.esm.service.services.impl;
 import com.epam.esm.core.entity.GiftCertificate;
 import com.epam.esm.core.entity.Order;
 import com.epam.esm.core.entity.User;
-import com.epam.esm.core.entity.UserRole;
+import com.epam.esm.core.entity.Role;
 import com.epam.esm.core.repository.GiftCertificateRepository;
 import com.epam.esm.core.repository.OrderRepository;
 import com.epam.esm.core.repository.UserRepository;
@@ -18,6 +18,7 @@ import com.epam.esm.service.services.GiftCertificateService;
 import com.epam.esm.service.services.OrderService;
 import com.epam.esm.service.services.UserService;
 import org.junit.jupiter.api.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -51,7 +52,8 @@ class OrderServiceImplTest {
         userRepository = mock(UserRepositoryImpl.class);
         giftCertificateRepository = mock(GiftCertificateRepositoryImpl.class);
         giftCertificateService = new GiftCertificateServiceImpl(giftCertificateRepository);
-        userService = new UserServiceImpl(userRepository);
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        userService = new UserServiceImpl(userRepository,bCryptPasswordEncoder);
         orderService = new OrderServiceImpl(giftCertificateService, userService, orderRepository);
         TagDto tagDto = new TagDto(1L, "tag");
         List<TagDto> tagDtos = new ArrayList<>();
@@ -62,7 +64,7 @@ class OrderServiceImplTest {
                 LocalDateTime.of(2021, 1, 16, 19, 10), tagDtos);
         List<GiftCertificateDto> giftCertificateDtos = new ArrayList<>();
         giftCertificateDtos.add(giftCertificateDto1);
-        user = new UserDto(1L, "kristina", "123fghj", UserRole.USER);
+        user = new UserDto(1L, "kristina", "123fghj", Role.USER);
         orderDto = new OrderDto(1L, BigDecimal.valueOf(15.22),
                 LocalDateTime.of(2021, 1, 16, 19, 15), giftCertificateDtos, user);
         order = OrderConverter.mapToOrder(orderDto);
@@ -117,7 +119,7 @@ class OrderServiceImplTest {
 
     @Test
     void findOrderById() {
-        User user1 = new User(1L, "testLogin", "testPassword", UserRole.USER, orders);
+        User user1 = new User(1L, "testLogin", "testPassword", Role.USER, orders);
         Order orderForCreate = new Order(1L, BigDecimal.valueOf(15.22),
                 LocalDateTime.of(2021, 1, 16, 19, 15), giftCertificates,
                 user1);

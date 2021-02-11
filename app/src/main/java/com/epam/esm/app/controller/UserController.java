@@ -59,6 +59,18 @@ public class UserController {
         this.userService = userService;
     }
 
+    @PostMapping
+    public ResponseEntity<EntityModel<UserDto>> create(@RequestBody UserDto userDto) {
+        Optional<UserDto> optionalUserDto = userService.create(userDto);
+        return optionalUserDto.map(dto -> new ResponseEntity<>(EntityModel.of(dto,
+                linkTo(methodOn(UserController.class)
+                        .create(userDto)).withSelfRel(),
+                linkTo(methodOn(UserController.class).findUserById(dto.getId()))
+                        .withRel(CURRENT_USER)
+                        .withType(HttpMethod.GET.name())), HttpStatus.CREATED)).orElseGet(() ->
+                new ResponseEntity<>(HttpStatus.BAD_REQUEST));
+    }
+
     /**
      * Find all users.
      *
@@ -104,7 +116,7 @@ public class UserController {
     /**
      * Find user by id.
      *
-     * @param id   id
+     * @param id id
      * @return response entity
      */
     @GetMapping(value = "/{id}")
@@ -116,7 +128,7 @@ public class UserController {
                         .findUserById(userDto.getId()))
                         .withSelfRel(),
                 linkTo(methodOn(UserController.class).getInformationAboutUsersOrders(userDto.getId(),
-                        PAGE,SIZE))
+                        PAGE, SIZE))
                         .withRel(ORDERS)
                         .withType(HttpMethod.GET.name())), HttpStatus.OK)).orElseGet(() ->
                 new ResponseEntity<>(HttpStatus.BAD_REQUEST));

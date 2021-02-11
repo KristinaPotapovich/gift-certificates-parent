@@ -4,6 +4,7 @@ import com.epam.esm.core.entity.Order;
 import com.epam.esm.core.entity.User;
 
 import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -36,4 +37,6 @@ public interface UserRepository extends BaseRepository<User> {
      * @return the list
      */
     List<User> findAllUsers(int page, int size);
+
+    List<User> findUserByLogin(String login);
 }

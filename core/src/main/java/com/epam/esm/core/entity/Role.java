@@ -3,7 +3,7 @@ package com.epam.esm.core.entity;
 /**
  * Enum User role.
  */
-public enum UserRole {
+public enum Role {
     /**
      * Admin role.
      */

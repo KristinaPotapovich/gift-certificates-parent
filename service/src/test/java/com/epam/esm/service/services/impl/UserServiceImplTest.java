@@ -3,17 +3,15 @@ package com.epam.esm.service.services.impl;
 import com.epam.esm.core.entity.*;
 import com.epam.esm.core.repository.UserRepository;
 import com.epam.esm.core.repository.impl.UserRepositoryImpl;
-import com.epam.esm.service.dto.GiftCertificateDto;
 import com.epam.esm.service.dto.OrderDto;
-import com.epam.esm.service.dto.TagDto;
 import com.epam.esm.service.dto.UserDto;
-import com.epam.esm.service.mapper.OrderConverter;
 import com.epam.esm.service.mapper.UserConverter;
 import com.epam.esm.service.services.UserService;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -35,8 +33,9 @@ class UserServiceImplTest {
     @BeforeAll
     void setUp() {
         userRepository = mock(UserRepositoryImpl.class);
-        userService = new UserServiceImpl(userRepository);
-        UserDto userDto = new UserDto(1L, "testLogin", "testPassword", UserRole.USER);
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        userService = new UserServiceImpl(userRepository,bCryptPasswordEncoder);
+        UserDto userDto = new UserDto(1L, "testLogin", "testPassword", Role.USER);
         user = UserConverter.mapToUser(userDto);
         users = new ArrayList<>();
         users.add(user);
