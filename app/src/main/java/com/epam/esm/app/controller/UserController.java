@@ -14,6 +14,7 @@ import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -78,6 +79,7 @@ public class UserController {
      * @param size size
      * @return response entity
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<List<UserDto>> findAllUsers(
             @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)
@@ -97,6 +99,7 @@ public class UserController {
      * @param size size
      * @return response entity
      */
+    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
     @GetMapping(value = "/{id}/orders")
     public ResponseEntity<List<OrderDto>> getInformationAboutUsersOrders(
             @Valid @PathVariable(VALUE_ID) Long id,
@@ -119,6 +122,7 @@ public class UserController {
      * @param id id
      * @return response entity
      */
+    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
     @GetMapping(value = "/{id}")
     public ResponseEntity<EntityModel<UserDto>> findUserById(
             @Valid @PathVariable(VALUE_ID) long id) {

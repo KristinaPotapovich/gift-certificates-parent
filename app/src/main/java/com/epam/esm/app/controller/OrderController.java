@@ -8,12 +8,15 @@ import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -59,6 +62,7 @@ public class OrderController {
      * @param purchaseParam purchase param
      * @return response entity
      */
+    @PreAuthorize("isAuthenticated()")
     @PostMapping
     public ResponseEntity<EntityModel<OrderDto>> purchaseCertificate(@Valid @RequestBody PurchaseParam purchaseParam) {
         Optional<OrderDto> orderDto = orderService.purchaseCertificate(purchaseParam);
@@ -76,6 +80,7 @@ public class OrderController {
      * @param id id
      * @return response entity
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping(value = "/{id}")
     public ResponseEntity<Map<String, Object>> findOrderById(@Valid @PathVariable(VALUE_ID) long id) {
         return orderService.findOrderById(id)
@@ -90,6 +95,7 @@ public class OrderController {
      * @param size size
      * @return response entity
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<List<OrderDto>> findAllOrders(
             @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)

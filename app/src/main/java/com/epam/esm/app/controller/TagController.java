@@ -8,6 +8,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -58,6 +59,7 @@ public class TagController {
      * @param id id
      * @return response entity
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping(value = "/{id}")
     public ResponseEntity<EntityModel<TagDto>> findTagById(@Valid @PathVariable(VALUE_ID) long id) {
         Optional<TagDto> tagDto = tagServiceImpl.findTagById(id);
@@ -100,6 +102,7 @@ public class TagController {
      * @param tagDto tag dto
      * @return response entity
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<EntityModel<TagDto>> createTag(@Valid @RequestBody TagDto tagDto) {
         Optional<TagDto> tagDtos = tagServiceImpl.create(tagDto);
@@ -123,6 +126,7 @@ public class TagController {
      * @param tagDto tag dto
      * @return response entity
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping(value = "/{id}")
     public ResponseEntity<EntityModel<TagDto>> updateTag(
             @Valid @PathVariable(VALUE_ID) long id,
@@ -148,6 +152,7 @@ public class TagController {
      * @param id id
      * @return response entity
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<HttpStatus> deleteTag(
             @Valid @PathVariable(VALUE_ID) long id) {

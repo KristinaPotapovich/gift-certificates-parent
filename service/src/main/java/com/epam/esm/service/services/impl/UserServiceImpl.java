@@ -1,6 +1,7 @@
 package com.epam.esm.service.services.impl;
 
 import com.epam.esm.core.entity.Order;
+import com.epam.esm.core.entity.Role;
 import com.epam.esm.core.entity.User;
 import com.epam.esm.core.repository.UserRepository;
 import com.epam.esm.service.dto.OrderDto;
@@ -53,7 +54,7 @@ public class UserServiceImpl implements UserService {
         }
         String actualPassword = userDto.getPassword();
         userDto.setPassword(bCryptPasswordEncoder.encode(actualPassword));
-
+        userDto.setUserRole(Role.USER);
         User user = userRepository.create(UserConverter.mapToUser(userDto));
         return Optional.ofNullable(UserConverter.mapToUserDto(user));
     }

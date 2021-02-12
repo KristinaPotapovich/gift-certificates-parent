@@ -15,14 +15,15 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @Configuration
 @EnableGlobalMethodSecurity(
         prePostEnabled = true,
-        securedEnabled = true,
-        jsr250Enabled = true)
+        securedEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private static final String AUTH_LOGIN = "/auth/login";
     private static final String USERS_REGISTRATION = "/users";
     private static final String CERTIFICATES = "/certificates";
     private static final String FIND_CERTIFICATE_BY_ID = "/certificates/{id}";
+    private static final String FIND_ALL_TAGS = "/tags";
+    private static final String FIND_POPULAR_TAGS = "/tags/popular-tag";
 
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -53,6 +54,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, USERS_REGISTRATION).anonymous()
                 .antMatchers(HttpMethod.GET, CERTIFICATES).permitAll()
                 .antMatchers(HttpMethod.GET, FIND_CERTIFICATE_BY_ID).permitAll()
+                .antMatchers(HttpMethod.GET,FIND_ALL_TAGS).permitAll()
+                .antMatchers(HttpMethod.GET,FIND_POPULAR_TAGS).permitAll()
                 .anyRequest().fullyAuthenticated()
                 .and()
                 .apply(new JwtConfig(jwtTokenProvider))
