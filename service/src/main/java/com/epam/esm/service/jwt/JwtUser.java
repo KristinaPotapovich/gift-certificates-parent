@@ -6,15 +6,16 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.List;
 
 
 public class JwtUser implements UserDetails{
     private final long id;
     private final String username;
     private final String password;
-    private final Collection<? extends GrantedAuthority> authorities;
+    private final List<GrantedAuthority> authorities;
 
-    public JwtUser(long id, String username, String password, Collection<? extends GrantedAuthority> authorities) {
+    public JwtUser(long id, String username, String password, List<GrantedAuthority> authorities) {
         this.id = id;
         this.username = username;
         this.password = password;

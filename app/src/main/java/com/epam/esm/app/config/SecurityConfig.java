@@ -1,6 +1,5 @@
 package com.epam.esm.app.config;
 
-import com.epam.esm.core.entity.Role;
 import com.epam.esm.service.jwt.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
