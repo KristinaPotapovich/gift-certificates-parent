@@ -1,5 +1,6 @@
 package com.epam.esm.app.config;
 
+import com.epam.esm.core.entity.Role;
 import com.epam.esm.service.jwt.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -56,7 +57,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, FIND_CERTIFICATE_BY_ID).permitAll()
                 .antMatchers(HttpMethod.GET,FIND_ALL_TAGS).permitAll()
                 .antMatchers(HttpMethod.GET,FIND_POPULAR_TAGS).permitAll()
-                .anyRequest().fullyAuthenticated()
+                .anyRequest().authenticated()
                 .and()
                 .apply(new JwtConfig(jwtTokenProvider))
                 .and().cors();

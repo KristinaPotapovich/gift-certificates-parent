@@ -8,6 +8,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -33,6 +34,7 @@ public class ControllerExceptionHandler {
     private static final String NO_RESULT_MESSAGE = "no_result";
     private static final String TAG_WITHOUT_ID_MESSAGE = "tag_without_id";
     private static final String METHOD_NOT_ALLOWED_MESSAGE = "method_not_allowed";
+    private static final String ACCESS_IS_DENIED_MESSAGE = "access_is_denied";
 
     /**
      * Instantiates a new Controller exception handler.
@@ -96,14 +98,14 @@ public class ControllerExceptionHandler {
                 new Object[]{}, locale));
         return errorResponseMessage;
     }
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    @ExceptionHandler(value = JwtAuthException.class)
-    public ErrorResponseMessage controllerError(JwtAuthException e, Locale locale) {
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(value = AccessDeniedException.class)
+    public ErrorResponseMessage controllerErrorForUnAuth(Locale locale) {
         errorResponseMessage.setTimestamp(LocalDateTime.now());
-        errorResponseMessage.setCode(messageSource.getMessage(e.getMessage() + CODE,
+        errorResponseMessage.setCode(messageSource.getMessage(ACCESS_IS_DENIED_MESSAGE + CODE,
                 new Object[]{}, locale));
-        errorResponseMessage.setError(HttpStatus.BAD_REQUEST.toString());
-        errorResponseMessage.setMessage(messageSource.getMessage(e.getMessage() + MESSAGE,
+        errorResponseMessage.setError(HttpStatus.FORBIDDEN.toString());
+        errorResponseMessage.setMessage(messageSource.getMessage(ACCESS_IS_DENIED_MESSAGE + MESSAGE,
                 new Object[]{}, locale));
         return errorResponseMessage;
     }

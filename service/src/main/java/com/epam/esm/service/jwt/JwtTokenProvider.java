@@ -25,6 +25,7 @@ public class JwtTokenProvider {
     private long validityTokenMillis;
     private static final String AUTHORIZATION = "Authorization";
     private static final String BEARER = "Bearer";
+    private static final String ROLES = "roles";
 
     @Autowired
     public JwtTokenProvider(JwtUserDetailsService userDetailsService) {
@@ -36,9 +37,9 @@ public class JwtTokenProvider {
         secret = Base64.getEncoder().encodeToString(secret.getBytes());
     }
 
-    public String createToken(String login, Role role) {
+    public String generateToken(String login, Role role) {
         Claims claims = Jwts.claims().setSubject(login);
-        claims.put("roles", role);
+        claims.put(ROLES, role);
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityTokenMillis);
         return Jwts.builder()

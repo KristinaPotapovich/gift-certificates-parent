@@ -3,18 +3,22 @@ package com.epam.esm.app.controller;
 import com.epam.esm.service.dto.OrderDto;
 import com.epam.esm.service.dto.TagDto;
 import com.epam.esm.service.dto.UserDto;
+import com.epam.esm.service.jwt.JwtTokenProvider;
 import com.epam.esm.service.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
+import org.springframework.data.repository.query.Param;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.access.prepost.PreFilter;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -99,8 +103,8 @@ public class UserController {
      * @param size size
      * @return response entity
      */
-    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
     @GetMapping(value = "/{id}/orders")
+    @PreAuthorize("hasAuthority('ADMIN') or @userSecurity.hasUserId(authentication, #id)")
     public ResponseEntity<List<OrderDto>> getInformationAboutUsersOrders(
             @Valid @PathVariable(VALUE_ID) Long id,
             @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)
@@ -115,15 +119,14 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
-
     /**
      * Find user by id.
      *
      * @param id id
      * @return response entity
      */
-    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
     @GetMapping(value = "/{id}")
+    @PreAuthorize("hasAuthority('ADMIN') or @userSecurity.hasUserId(authentication, #id)")
     public ResponseEntity<EntityModel<UserDto>> findUserById(
             @Valid @PathVariable(VALUE_ID) long id) {
         Optional<UserDto> userDtoOpt = userService.findUserById(id);

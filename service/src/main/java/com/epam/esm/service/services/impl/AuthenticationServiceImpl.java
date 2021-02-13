@@ -45,7 +45,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             if (users.isEmpty()) {
                 throw new ServiceException(USER_NOT_FOUND_MESSAGE);
             }
-            String token = jwtTokenProvider.createToken(login, users.get(0).getUserRole());
+            String token = jwtTokenProvider.generateToken(login, users.get(0).getUserRole());
             return new ResponseTokenDto(token, validityTokenMillis);
         } catch (AuthenticationException e) {
             throw new ServiceException(USER_NOT_FOUND_MESSAGE);
