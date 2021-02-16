@@ -56,7 +56,6 @@ public class ControllerExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = UnsupportedParametersForSorting.class)
     public ErrorResponseMessage controllerError(UnsupportedParametersForSorting e, Locale locale) {
-        errorResponseMessage.setTimestamp(LocalDateTime.now());
         errorResponseMessage.setCode(messageSource.getMessage(e.getMessage() + CODE,
                 new Object[]{}, locale));
         errorResponseMessage.setError(HttpStatus.BAD_REQUEST.toString());
@@ -79,7 +78,6 @@ public class ControllerExceptionHandler {
                     errorResponseMessage.setCode(messageSource.getMessage(message + CODE,
                             new Object[]{}, locale));
                     errorResponseMessage.setError(HttpStatus.BAD_REQUEST.toString());
-                    errorResponseMessage.setTimestamp(LocalDateTime.now());
                     errorResponseMessage.setMessage(messageSource.getMessage(message + MESSAGE,
                             new Object[]{}, locale));
                     return errorResponseMessage;
@@ -90,7 +88,6 @@ public class ControllerExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = ServiceException.class)
     public ErrorResponseMessage controllerError(ServiceException e, Locale locale) {
-        errorResponseMessage.setTimestamp(LocalDateTime.now());
         errorResponseMessage.setCode(messageSource.getMessage(e.getMessage() + CODE,
                 new Object[]{}, locale));
         errorResponseMessage.setError(HttpStatus.BAD_REQUEST.toString());
@@ -101,7 +98,6 @@ public class ControllerExceptionHandler {
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(value = AccessDeniedException.class)
     public ErrorResponseMessage controllerErrorForUnAuth(Locale locale) {
-        errorResponseMessage.setTimestamp(LocalDateTime.now());
         errorResponseMessage.setCode(messageSource.getMessage(ACCESS_IS_DENIED_MESSAGE + CODE,
                 new Object[]{}, locale));
         errorResponseMessage.setError(HttpStatus.FORBIDDEN.toString());
@@ -113,7 +109,6 @@ public class ControllerExceptionHandler {
     @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
     @ExceptionHandler(value = HttpRequestMethodNotSupportedException.class)
     public ErrorResponseMessage controllerErrorForMethod(Locale locale) {
-        errorResponseMessage.setTimestamp(LocalDateTime.now());
         errorResponseMessage.setCode(messageSource.getMessage(METHOD_NOT_ALLOWED_MESSAGE + CODE,
                 new Object[]{}, locale));
         errorResponseMessage.setError(HttpStatus.METHOD_NOT_ALLOWED.toString());
@@ -125,7 +120,6 @@ public class ControllerExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(value = EmptyResultDataAccessException.class)
     public ErrorResponseMessage controllerError(Locale locale) {
-        errorResponseMessage.setTimestamp(LocalDateTime.now());
         errorResponseMessage.setCode(messageSource.getMessage(NO_RESULT_MESSAGE + CODE,
                 new Object[]{}, locale));
         errorResponseMessage.setError(HttpStatus.NOT_FOUND.toString());
@@ -137,7 +131,6 @@ public class ControllerExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = DataIntegrityViolationException.class)
     public ErrorResponseMessage handleError(Locale locale) {
-        errorResponseMessage.setTimestamp(LocalDateTime.now());
         errorResponseMessage.setCode(messageSource.getMessage(TAG_WITHOUT_ID_MESSAGE + CODE,
                 new Object[]{}, locale));
         errorResponseMessage.setError(HttpStatus.BAD_REQUEST.toString());
@@ -156,7 +149,6 @@ public class ControllerExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({RuntimeException.class})
     public ErrorResponseMessage handleIllegalArgumentException(RuntimeException e, Locale locale) {
-        errorResponseMessage.setTimestamp(LocalDateTime.now());
         errorResponseMessage.setCode(messageSource.getMessage(e.getMessage(),
                 new Object[]{}, locale));
         errorResponseMessage.setError(HttpStatus.BAD_REQUEST.toString());

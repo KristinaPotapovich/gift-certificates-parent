@@ -59,7 +59,7 @@ public class TagController {
      * @param id id
      * @return response entity
      */
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping(value = "/{id}")
     public ResponseEntity<EntityModel<TagDto>> findTagById(@Valid @PathVariable(VALUE_ID) long id) {
         Optional<TagDto> tagDto = tagServiceImpl.findTagById(id);
@@ -73,7 +73,8 @@ public class TagController {
                         .withType(HttpMethod.DELETE.name()),
                 linkTo(methodOn(TagController.class)
                         .updateTag(dto.getId(), dto)).withRel(UPDATE_TAG)
-                        .withType(HttpMethod.PUT.name())), HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.BAD_REQUEST));
+                        .withType(HttpMethod.PUT.name())), HttpStatus.OK)).orElseGet(() ->
+                new ResponseEntity<>(HttpStatus.BAD_REQUEST));
     }
 
 
@@ -116,7 +117,8 @@ public class TagController {
                         .withType(HttpMethod.DELETE.name()),
                 linkTo(methodOn(TagController.class)
                         .updateTag(dto.getId(), dto)).withRel(UPDATE_TAG)
-                        .withType(HttpMethod.PUT.name())), HttpStatus.CREATED)).orElseGet(() -> new ResponseEntity<>(HttpStatus.BAD_REQUEST));
+                        .withType(HttpMethod.PUT.name())), HttpStatus.CREATED)).orElseGet(() ->
+                new ResponseEntity<>(HttpStatus.BAD_REQUEST));
     }
 
     /**
@@ -143,7 +145,8 @@ public class TagController {
                         .withType(HttpMethod.DELETE.name()),
                 linkTo(methodOn(TagController.class)
                         .createTag(dto)).withRel(CREATE_TAG)
-                        .withType(HttpMethod.POST.name())), HttpStatus.CREATED)).orElseGet(() -> new ResponseEntity<>(HttpStatus.BAD_REQUEST));
+                        .withType(HttpMethod.POST.name())), HttpStatus.CREATED)).orElseGet(() ->
+                new ResponseEntity<>(HttpStatus.BAD_REQUEST));
     }
 
     /**
@@ -185,6 +188,7 @@ public class TagController {
                         .withType(HttpMethod.POST.name()),
                 linkTo(methodOn(TagController.class)
                         .updateTag(tagDto.getId(), tagDto)).withRel(UPDATE_TAG)
-                        .withType(HttpMethod.PUT.name())), HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.BAD_REQUEST));
+                        .withType(HttpMethod.PUT.name())), HttpStatus.OK)).orElseGet(() ->
+                new ResponseEntity<>(HttpStatus.BAD_REQUEST));
     }
 }

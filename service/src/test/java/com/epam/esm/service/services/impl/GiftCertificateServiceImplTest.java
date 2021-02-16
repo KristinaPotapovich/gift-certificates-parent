@@ -4,6 +4,11 @@ import com.epam.esm.core.entity.GiftCertificate;
 import com.epam.esm.core.entity.Tag;
 import com.epam.esm.core.repository.GiftCertificateRepository;
 import com.epam.esm.core.repository.impl.GiftCertificateRepositoryImpl;
+import com.epam.esm.core.repository.specification.BaseSpecificationForSorting;
+import com.epam.esm.core.repository.specification.ParamForSorting;
+import com.epam.esm.core.repository.specification.ResolverForSearchParams;
+import com.epam.esm.core.repository.specification.SortingParameters;
+import com.epam.esm.core.repository.specification.impl.SortingNameSpecification;
 import com.epam.esm.service.dto.GiftCertificateDto;
 import com.epam.esm.service.dto.TagDto;
 import com.epam.esm.service.exception.ServiceException;
@@ -14,6 +19,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import org.junit.jupiter.api.TestInstance;
+import org.mockito.Mockito;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -105,6 +111,20 @@ class GiftCertificateServiceImplTest {
         when(giftCertificateRepository.findCertificateById(1)).thenReturn(giftCertificate);
         Optional<GiftCertificateDto> actual = giftCertificateService.findCertificateById(1);
         assertTrue(actual.isPresent());
+    }
+
+    @Test
+    void findAllCertificates() {
+        List<String> tags = new ArrayList<>();
+        tags.add("testTag");
+        ResolverForSearchParams resolverForSearchParams = mock(ResolverForSearchParams.class);
+        SortingNameSpecification sortingNameSpecification = mock(SortingNameSpecification.class);
+        when(giftCertificateRepository
+                .findAllCertificates(resolverForSearchParams, sortingNameSpecification, 1, 5))
+                .thenReturn(giftCertificates);
+        List<GiftCertificateDto> certificateDtos = giftCertificateService
+                .findAllCertificates("test", "name", tags, "asc", 1, 5);
+        assertFalse(certificateDtos.isEmpty());
     }
 
     @Test

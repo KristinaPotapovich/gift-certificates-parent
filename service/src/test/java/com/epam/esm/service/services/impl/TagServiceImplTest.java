@@ -27,9 +27,7 @@ class TagServiceImplTest {
     public void setUp() {
         tagRepository = mock(TagRepositoryImpl.class);
         tagService = new TagServiceImpl(tagRepository);
-        tagDto = new TagDto();
-        tagDto.setId(1);
-        tagDto.setName("testTag");
+        tagDto = new TagDto(1,"testTag");
         tag = TagConverter.mapToTag(tagDto);
         tags = new ArrayList<>();
         tags.add(tag);

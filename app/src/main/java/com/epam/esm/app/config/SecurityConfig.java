@@ -24,6 +24,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String FIND_CERTIFICATE_BY_ID = "/certificates/{id}";
     private static final String FIND_ALL_TAGS = "/tags";
     private static final String FIND_POPULAR_TAGS = "/tags/popular-tag";
+    private static final String FIND_INFORMATION_ABOUT_CERTIFICATES_TAGS = "/certificates/{id}/tags";
 
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -56,6 +57,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, FIND_CERTIFICATE_BY_ID).permitAll()
                 .antMatchers(HttpMethod.GET,FIND_ALL_TAGS).permitAll()
                 .antMatchers(HttpMethod.GET,FIND_POPULAR_TAGS).permitAll()
+                .antMatchers(HttpMethod.GET,FIND_INFORMATION_ABOUT_CERTIFICATES_TAGS).permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .apply(new JwtConfig(jwtTokenProvider))

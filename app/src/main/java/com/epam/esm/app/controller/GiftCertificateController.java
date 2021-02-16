@@ -202,7 +202,8 @@ public class GiftCertificateController {
                         .updateOneFieldGiftCertificate(certificateDto.getId(),
                                 certificateDto, page, size))
                         .withRel(UPDATE_ONE_FIELD_CERTIFICATE)
-                        .withType(HttpMethod.PATCH.name())), HttpStatus.CREATED)).orElseGet(() -> new ResponseEntity<>(HttpStatus.BAD_REQUEST));
+                        .withType(HttpMethod.PATCH.name())), HttpStatus.CREATED)).orElseGet(() ->
+                new ResponseEntity<>(HttpStatus.BAD_REQUEST));
     }
 
     /**
