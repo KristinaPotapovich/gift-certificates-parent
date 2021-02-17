@@ -52,7 +52,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         criteriaQuery.select(tagRoot)
                 .where(criteriaBuilder.and(criteriaBuilder
                                 .equal(tagRoot.join("certificates").get("id"), idCertificate)),
-                        criteriaBuilder.equal(tagRoot.get("certificates").get("isDeleted"), false));
+                        criteriaBuilder.equal(tagRoot.join("certificates").get("isDeleted"), false));
         return session.createQuery(criteriaQuery)
                 .setFirstResult((page - 1) * size)
                 .setMaxResults(size)

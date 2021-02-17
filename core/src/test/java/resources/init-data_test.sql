@@ -1,9 +1,9 @@
 
-INSERT INTO gift_certificate (name, description, price, duration)
-VALUES ('certificate one', 'description', 12.5, 5),
-       ('certificate two', 'some text', 8.5,9),
-       ('certificate three', 'third row', 2.5,18),
-       ('certificate four', 'fourth row', 3.5,17);
+INSERT INTO gift_certificate (name, description, price, duration,is_deleted)
+VALUES ('certificate one', 'description', 12.5, 5,false ),
+       ('certificate two', 'some text', 8.5,9,false ),
+       ('certificate three', 'third row', 2.5,18,false ),
+       ('certificate four', 'fourth row', 3.5,17,false );
 
 INSERT INTO tag (id_tag, name)
 VALUES (1,'tag one'),

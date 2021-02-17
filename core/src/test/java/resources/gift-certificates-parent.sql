@@ -7,7 +7,8 @@ create table gift_certificate
     price            double                              not null,
     duration         int                                 not null,
     create_date      timestamp                           null,
-    last_update_date timestamp                           null
+    last_update_date timestamp                           null,
+    is_deleted       bit                                 not null
 );
 create table tag
 (

@@ -67,16 +67,9 @@ public class GiftCertificateRepositoryImplTest {
     public void deletePositiveTest() {
         GiftCertificate giftCertificate = new GiftCertificate();
         giftCertificate.setId(1);
-        List<String> tags = new ArrayList<>();
-        tags.add("tag one");
-        int expectedSizeOfList = giftCertificateRepository
-                .findAllCertificates(new ResolverForSearchParams(tags, ""),
-                        new SortingNameSpecification("asc"), 1, 5).size() - 1;
+        giftCertificate.setDeleted(true);
         giftCertificateRepository.delete(giftCertificate);
-        int actualSizeOfList = giftCertificateRepository
-                .findAllCertificates(new ResolverForSearchParams(tags, ""),
-                        new SortingNameSpecification("asc"), 1, 5).size();
-        assertEquals(expectedSizeOfList, actualSizeOfList);
+        assertTrue(giftCertificate.isDeleted());
     }
 
     @Test(expected = DataIntegrityViolationException.class)
