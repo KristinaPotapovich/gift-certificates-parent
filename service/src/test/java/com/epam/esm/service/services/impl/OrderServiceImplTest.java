@@ -13,7 +13,7 @@ import com.epam.esm.core.repository.impl.UserRepositoryImpl;
 import com.epam.esm.service.dto.*;
 import com.epam.esm.service.mapper.GiftCertificateConverter;
 import com.epam.esm.service.mapper.OrderConverter;
-import com.epam.esm.service.mapper.UserConverter;
+import com.epam.esm.service.mapper.UserDtoConverter;
 import com.epam.esm.service.services.GiftCertificateService;
 import com.epam.esm.service.services.OrderService;
 import com.epam.esm.service.services.UserService;
@@ -64,7 +64,7 @@ class OrderServiceImplTest {
                 LocalDateTime.of(2021, 1, 16, 19, 10), tagDtos);
         List<GiftCertificateDto> giftCertificateDtos = new ArrayList<>();
         giftCertificateDtos.add(giftCertificateDto1);
-        user = new UserDto(1L, "kristina", "123fghj", Role.USER);
+        user = new UserDto(1L, "kristina", Role.USER);
         orderDto = new OrderDto(1L, BigDecimal.valueOf(15.22),
                 LocalDateTime.of(2021, 1, 16, 19, 15), giftCertificateDtos, user);
         order = OrderConverter.mapToOrder(orderDto);
@@ -97,7 +97,7 @@ class OrderServiceImplTest {
     void purchaseCertificate() {
         when(giftCertificateRepository.findCertificateById(1L))
                 .thenReturn(GiftCertificateConverter.mapToGiftCertificate(giftCertificateDto1));
-        when(userRepository.findUserById(1L)).thenReturn(UserConverter.mapToUser(user));
+        when(userRepository.findUserById(1L)).thenReturn(UserDtoConverter.mapToUser(user));
         order.setId(0);
         when(orderRepository.create(order)).thenReturn(order);
         List<Long> idCertificates = new ArrayList<>();

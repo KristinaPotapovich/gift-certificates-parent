@@ -5,10 +5,12 @@ import com.epam.esm.core.entity.Role;
 import com.epam.esm.core.entity.User;
 import com.epam.esm.core.repository.UserRepository;
 import com.epam.esm.service.dto.OrderDto;
+import com.epam.esm.service.dto.FullInfoUserDto;
 import com.epam.esm.service.dto.UserDto;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.mapper.OrderConverter;
-import com.epam.esm.service.mapper.UserConverter;
+import com.epam.esm.service.mapper.UserFullInfoConverter;
+import com.epam.esm.service.mapper.UserDtoConverter;
 import com.epam.esm.service.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -41,26 +43,26 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<UserDto> findUserById(long id) {
-        UserDto userDto = UserConverter.mapToUserDto(userRepository.findUserById(id));
+        UserDto userDto = UserDtoConverter.mapToUserDto(userRepository.findUserById(id));
         return Optional.of(userDto);
     }
 
     @Transactional
     @Override
-    public Optional<UserDto> create(UserDto userDto) {
-        List<User> users = userRepository.findUserByLogin(userDto.getLogin());
-        if (!users.isEmpty()) {
+    public Optional<FullInfoUserDto> create(FullInfoUserDto fullInfoUserDto) {
+       User user = userRepository.findUserByLogin(fullInfoUserDto.getLogin());
+        if (user != null) {
             throw new ServiceException(USER_IS_EXIST_MESSAGE);
         }
-        String actualPassword = userDto.getPassword();
-        userDto.setPassword(bCryptPasswordEncoder.encode(actualPassword));
-        userDto.setUserRole(Role.USER);
-        User user = userRepository.create(UserConverter.mapToUser(userDto));
-        return Optional.ofNullable(UserConverter.mapToUserDto(user));
+        String actualPassword = fullInfoUserDto.getPassword();
+        fullInfoUserDto.setPassword(bCryptPasswordEncoder.encode(actualPassword));
+        fullInfoUserDto.setUserRole(Role.USER);
+        user = userRepository.create(UserFullInfoConverter.mapToUser(fullInfoUserDto));
+        return Optional.ofNullable(UserFullInfoConverter.mapToUserDto(user));
     }
 
     @Override
-    public Optional<UserDto> update(UserDto userDto) {
+    public Optional<FullInfoUserDto> update(FullInfoUserDto fullInfoUserDto) {
         return Optional.empty();
     }
 
@@ -70,10 +72,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDto> findAllUsers(int page, int size) {
+    public List<FullInfoUserDto> findAllUsers(int page, int size) {
         List<User> users = userRepository.findAllUsers(page, size);
         return users.stream()
-                .map(UserConverter::mapToUserDto)
+                .map(UserFullInfoConverter::mapToUserDto)
                 .collect(Collectors.toList());
     }
 

@@ -60,7 +60,7 @@ public class OrderController {
      * @param purchaseParam purchase param
      * @return response entity
      */
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('ADMIN') and hasAuthority('USER')")
     @PostMapping
     public ResponseEntity<EntityModel<OrderDto>> purchaseCertificate(@Valid @RequestBody PurchaseParam purchaseParam) {
         Optional<OrderDto> orderDto = orderService.purchaseCertificate(purchaseParam);
@@ -79,7 +79,7 @@ public class OrderController {
      * @param id id
      * @return response entity
      */
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping(value = "/{id}")
     public ResponseEntity<Map<String, Object>> findOrderById(@Valid @PathVariable(VALUE_ID) long id) {
         return orderService.findOrderById(id)
@@ -94,7 +94,7 @@ public class OrderController {
      * @param size size
      * @return response entity
      */
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping
     public ResponseEntity<List<OrderDto>> findAllOrders(
             @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)

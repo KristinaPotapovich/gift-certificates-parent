@@ -2,23 +2,19 @@ package com.epam.esm.app.controller;
 
 import com.epam.esm.service.dto.OrderDto;
 import com.epam.esm.service.dto.TagDto;
+import com.epam.esm.service.dto.FullInfoUserDto;
 import com.epam.esm.service.dto.UserDto;
-import com.epam.esm.service.jwt.JwtTokenProvider;
 import com.epam.esm.service.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
-
-import org.springframework.data.repository.query.Param;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.access.prepost.PreFilter;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -65,11 +61,11 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<EntityModel<UserDto>> create(@RequestBody UserDto userDto) {
-        Optional<UserDto> optionalUserDto = userService.create(userDto);
+    public ResponseEntity<EntityModel<FullInfoUserDto>> create(@RequestBody FullInfoUserDto fullInfoUserDto) {
+        Optional<FullInfoUserDto> optionalUserDto = userService.create(fullInfoUserDto);
         return optionalUserDto.map(dto -> new ResponseEntity<>(EntityModel.of(dto,
                 linkTo(methodOn(UserController.class)
-                        .create(userDto)).withSelfRel(),
+                        .create(fullInfoUserDto)).withSelfRel(),
                 linkTo(methodOn(UserController.class).findUserById(dto.getId()))
                         .withRel(CURRENT_USER)
                         .withType(HttpMethod.GET.name())), HttpStatus.CREATED)).orElseGet(() ->
@@ -83,16 +79,16 @@ public class UserController {
      * @param size size
      * @return response entity
      */
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
-    public ResponseEntity<List<UserDto>> findAllUsers(
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<List<FullInfoUserDto>> findAllUsers(
             @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)
             @Min(value = 1, message = VALIDATION_FAIL_PAGE_MESSAGE) int page,
             @Valid @RequestParam(value = VALUE_SIZE, required = false, defaultValue = DEFAULT_SIZE)
             @Min(value = 1, message = VALIDATION_FAIL_SIZE_MESSAGE) int size) {
-        List<UserDto> userDtos = userService.findAllUsers(page, size);
-        userDtos.forEach(userDto -> buildLinkForUser(page, size, userDto));
-        return new ResponseEntity<>(userDtos, HttpStatus.OK);
+        List<FullInfoUserDto> fullInfoUserDtos = userService.findAllUsers(page, size);
+        fullInfoUserDtos.forEach(userDto -> buildLinkForUser(page, size, userDto));
+        return new ResponseEntity<>(fullInfoUserDtos, HttpStatus.OK);
     }
 
     /**
@@ -104,7 +100,8 @@ public class UserController {
      * @return response entity
      */
     @GetMapping(value = "/{id}/orders")
-    @PreAuthorize("hasAuthority('ADMIN') or @userSecurity.hasUserId(authentication, #id)")
+    @PreAuthorize("hasAuthority('ADMIN') or (@userSecurity.hasUserId(authentication, #id) " +
+            "and hasAuthority('USER'))")
     public ResponseEntity<List<OrderDto>> getInformationAboutUsersOrders(
             @Valid @PathVariable(VALUE_ID) Long id,
             @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)
@@ -126,7 +123,8 @@ public class UserController {
      * @return response entity
      */
     @GetMapping(value = "/{id}")
-    @PreAuthorize("hasAuthority('ADMIN') or @userSecurity.hasUserId(authentication, #id)")
+    @PreAuthorize("hasAuthority('ADMIN') or (@userSecurity.hasUserId(authentication, #id) " +
+            "and hasAuthority('USER'))")
     public ResponseEntity<EntityModel<UserDto>> findUserById(
             @Valid @PathVariable(VALUE_ID) long id) {
         Optional<UserDto> userDtoOpt = userService.findUserById(id);
@@ -141,12 +139,12 @@ public class UserController {
                 new ResponseEntity<>(HttpStatus.BAD_REQUEST));
     }
 
-    private void buildLinkForUser(int page, int size, UserDto userDto) {
-        userDto
-                .add(linkTo(methodOn(UserController.class).findUserById(userDto.getId()))
+    private void buildLinkForUser(int page, int size, FullInfoUserDto fullInfoUserDto) {
+        fullInfoUserDto
+                .add(linkTo(methodOn(UserController.class).findUserById(fullInfoUserDto.getId()))
                         .withRel(CURRENT_USER)
                         .withType(HttpMethod.GET.name()));
-        userDto.add(linkTo(methodOn(UserController.class).getInformationAboutUsersOrders(userDto.getId(), page, size))
+        fullInfoUserDto.add(linkTo(methodOn(UserController.class).getInformationAboutUsersOrders(fullInfoUserDto.getId(), page, size))
                 .withRel(ORDERS)
                 .withType(HttpMethod.GET.name()));
     }

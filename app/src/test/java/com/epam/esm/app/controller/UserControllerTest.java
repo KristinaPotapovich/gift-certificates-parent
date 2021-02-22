@@ -2,10 +2,7 @@ package com.epam.esm.app.controller;
 
 import com.epam.esm.app.config.GiftCertificatesParentApplication;
 import com.epam.esm.core.entity.Role;
-import com.epam.esm.service.dto.GiftCertificateDto;
-import com.epam.esm.service.dto.OrderDto;
-import com.epam.esm.service.dto.TagDto;
-import com.epam.esm.service.dto.UserDto;
+import com.epam.esm.service.dto.*;
 import com.epam.esm.service.jwt.JwtUser;
 import com.epam.esm.service.services.UserService;
 import com.epam.esm.service.services.impl.JwtUserDetailsService;
@@ -49,13 +46,17 @@ class UserControllerTest {
     @MockBean
     private JwtUserDetailsService jwtUserDetailsService;
     private UserDto userDto;
+    private FullInfoUserDto fullInfoUserDto;
+
 
     @Autowired
     private MockMvc mvc;
 
     @BeforeEach
     void setUp() {
-        userDto = new UserDto(1, "testUser", "testPassword", Role.USER);
+        userDto =
+                new UserDto(1, "testUser",  Role.USER);
+        fullInfoUserDto = new FullInfoUserDto(1,"testUser","testPassword",Role.USER);
     }
 
     @AfterEach
@@ -66,10 +67,10 @@ class UserControllerTest {
     @WithAnonymousUser
     @Test
     void createPositiveTest() throws Exception {
-        UserDto userDto1 = new UserDto();
-        userDto1.setLogin("testUser");
-        userDto1.setPassword("testPassword");
-        when(userService.create(userDto1)).thenReturn(Optional.of(userDto));
+        FullInfoUserDto fullInfoUserDto1 = new FullInfoUserDto();
+        fullInfoUserDto1.setLogin("testUser");
+        fullInfoUserDto1.setPassword("testPassword");
+        when(userService.create(fullInfoUserDto1)).thenReturn(Optional.of(fullInfoUserDto));
         mvc.perform(post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{" +
@@ -77,15 +78,15 @@ class UserControllerTest {
                         "        \"password\": \"testPassword\"" +
                         "}"))
                 .andExpect(status().isCreated());
-        verify(userService).create(userDto1);
+        verify(userService).create(fullInfoUserDto1);
     }
 
     @WithMockUser(username = "mary", roles = {"ADMIN"})
     @Test
     void findAllUsersPositiveTest() throws Exception {
-        List<UserDto> userDtos = new ArrayList<>();
-        userDtos.add(userDto);
-        when(userService.findAllUsers(1, 5)).thenReturn(userDtos);
+        List<FullInfoUserDto> fullInfoUserDtos = new ArrayList<>();
+        fullInfoUserDtos.add(fullInfoUserDto);
+        when(userService.findAllUsers(1, 5)).thenReturn(fullInfoUserDtos);
         mvc.perform(get("/users"))
                 .andExpect(status().isOk());
     }
@@ -93,9 +94,9 @@ class UserControllerTest {
     @WithMockUser(username = "mary")
     @Test
     void findAllUsersNegativeTestByUser() throws Exception {
-        List<UserDto> userDtos = new ArrayList<>();
-        userDtos.add(userDto);
-        when(userService.findAllUsers(1, 5)).thenReturn(userDtos);
+        List<FullInfoUserDto> fullInfoUserDtos = new ArrayList<>();
+        fullInfoUserDtos.add(fullInfoUserDto);
+        when(userService.findAllUsers(1, 5)).thenReturn(fullInfoUserDtos);
         mvc.perform(get("/users"))
                 .andExpect(status().isForbidden());
     }

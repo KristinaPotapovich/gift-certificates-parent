@@ -26,12 +26,10 @@ public class JwtUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String login) {
-        List<User> users = userRepository.findUserByLogin(login);
-        if (users.isEmpty()) {
+        User user = userRepository.findUserByLogin(login);
+        if (user == null) {
             throw new ServiceException(USER_NOT_FOUND_MESSAGE);
-        }
-        User user = users.get(0);
-        return new JwtUser(
+        }return new JwtUser(
                 user.getId(),
                 user.getLogin(),
                 user.getPassword(),

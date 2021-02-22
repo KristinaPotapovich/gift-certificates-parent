@@ -59,7 +59,7 @@ public class TagController {
      * @param id id
      * @return response entity
      */
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('ADMIN') and hasAuthority('USER')")
     @GetMapping(value = "/{id}")
     public ResponseEntity<EntityModel<TagDto>> findTagById(@Valid @PathVariable(VALUE_ID) long id) {
         Optional<TagDto> tagDto = tagServiceImpl.findTagById(id);
@@ -103,7 +103,7 @@ public class TagController {
      * @param tagDto tag dto
      * @return response entity
      */
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping
     public ResponseEntity<EntityModel<TagDto>> createTag(@Valid @RequestBody TagDto tagDto) {
         Optional<TagDto> tagDtos = tagServiceImpl.create(tagDto);
@@ -128,7 +128,7 @@ public class TagController {
      * @param tagDto tag dto
      * @return response entity
      */
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping(value = "/{id}")
     public ResponseEntity<EntityModel<TagDto>> updateTag(
             @Valid @PathVariable(VALUE_ID) long id,
@@ -155,7 +155,7 @@ public class TagController {
      * @param id id
      * @return response entity
      */
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<HttpStatus> deleteTag(
             @Valid @PathVariable(VALUE_ID) long id) {

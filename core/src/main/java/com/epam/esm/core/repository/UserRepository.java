@@ -38,5 +38,5 @@ public interface UserRepository extends BaseRepository<User> {
      */
     List<User> findAllUsers(int page, int size);
 
-    List<User> findUserByLogin(String login);
+    User findUserByLogin(String login);
 }

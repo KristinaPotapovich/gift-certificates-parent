@@ -129,7 +129,7 @@ public class GiftCertificateController {
      * @param size               size
      * @return the response entity
      */
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping
     public ResponseEntity<EntityModel<GiftCertificateDto>> createGiftCertificate(
             @Valid @RequestBody GiftCertificateDto giftCertificateDto,
@@ -170,7 +170,7 @@ public class GiftCertificateController {
      * @param size               size
      * @return response entity
      */
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping(value = "/{id}")
     public ResponseEntity<EntityModel<GiftCertificateDto>> updateGiftCertificate(
             @Valid @PathVariable(VALUE_ID) long id,
@@ -240,7 +240,7 @@ public class GiftCertificateController {
      * @param size               size
      * @return the entity model
      */
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PatchMapping(value = "/{id}")
     public ResponseEntity<EntityModel<GiftCertificateDto>> updateOneFieldGiftCertificate(
             @Valid @PathVariable(VALUE_ID) long id,
@@ -281,7 +281,7 @@ public class GiftCertificateController {
      * @param id id
      * @return response entity
      */
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<HttpStatus> deleteGiftCertificate(@Valid @PathVariable(VALUE_ID) long id) {
         if (giftCertificateServiceImpl.findCertificateById(id).isPresent()) {

@@ -53,7 +53,7 @@ class OrderControllerTest {
                 LocalDateTime.of(2021, 1, 16, 19, 10), tagDtos);
         List<GiftCertificateDto> giftCertificateDtos = new ArrayList<>();
         giftCertificateDtos.add(giftCertificateDto1);
-        UserDto user = new UserDto(1L, "kristina", "123fghj", Role.USER);
+        UserDto user = new UserDto(1L, "kristina",  Role.USER);
         orderDto = new OrderDto(1L, BigDecimal.valueOf(15.22),
                 LocalDateTime.of(2021, 1, 16, 19, 15), giftCertificateDtos, user);
     }

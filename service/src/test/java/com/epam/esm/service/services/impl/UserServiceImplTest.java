@@ -4,8 +4,9 @@ import com.epam.esm.core.entity.*;
 import com.epam.esm.core.repository.UserRepository;
 import com.epam.esm.core.repository.impl.UserRepositoryImpl;
 import com.epam.esm.service.dto.OrderDto;
+import com.epam.esm.service.dto.FullInfoUserDto;
 import com.epam.esm.service.dto.UserDto;
-import com.epam.esm.service.mapper.UserConverter;
+import com.epam.esm.service.mapper.UserFullInfoConverter;
 import com.epam.esm.service.services.UserService;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -35,8 +36,8 @@ class UserServiceImplTest {
         userRepository = mock(UserRepositoryImpl.class);
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         userService = new UserServiceImpl(userRepository,bCryptPasswordEncoder);
-        UserDto userDto = new UserDto(1L, "testLogin", "testPassword", Role.USER);
-        user = UserConverter.mapToUser(userDto);
+        FullInfoUserDto fullInfoUserDto = new FullInfoUserDto(1L, "testLogin", "testPassword", Role.USER);
+        user = UserFullInfoConverter.mapToUser(fullInfoUserDto);
         users = new ArrayList<>();
         users.add(user);
     }
@@ -60,7 +61,7 @@ class UserServiceImplTest {
     @Test
     void findAll() {
         when(userRepository.findAllUsers(1, 3)).thenReturn(users);
-        List<UserDto> actual = userService.findAllUsers(1, 3);
+        List<FullInfoUserDto> actual = userService.findAllUsers(1, 3);
         verify(userRepository).findAllUsers(1, 3);
         assertFalse(actual.isEmpty());
         assertEquals(1, actual.get(0).getId());

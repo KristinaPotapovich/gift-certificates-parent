@@ -41,11 +41,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             String login = requestTokenDto.getLogin();
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(login,
                     requestTokenDto.getPassword()));
-            List<User> users = userRepository.findUserByLogin(login);
-            if (users.isEmpty()) {
+            User user = userRepository.findUserByLogin(login);
+            if (user == null) {
                 throw new ServiceException(USER_NOT_FOUND_MESSAGE);
             }
-            String token = jwtTokenProvider.generateToken(login, users.get(0).getUserRole());
+            String token = jwtTokenProvider.generateToken(login, user.getUserRole());
             return new ResponseTokenDto(token, validityTokenMillis);
         } catch (AuthenticationException e) {
             throw new ServiceException(USER_NOT_FOUND_MESSAGE);
