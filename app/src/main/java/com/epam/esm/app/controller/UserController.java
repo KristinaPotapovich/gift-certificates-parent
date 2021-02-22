@@ -61,9 +61,16 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<EntityModel<FullInfoUserDto>> create(@RequestBody FullInfoUserDto fullInfoUserDto) {
+    public ResponseEntity<EntityModel<UserDto>> create(@RequestBody FullInfoUserDto fullInfoUserDto) {
         Optional<FullInfoUserDto> optionalUserDto = userService.create(fullInfoUserDto);
-        return optionalUserDto.map(dto -> new ResponseEntity<>(EntityModel.of(dto,
+        UserDto userDto = new UserDto();
+        if (optionalUserDto.isPresent()){
+            userDto.setId(optionalUserDto.get().getId());
+            userDto.setLogin(optionalUserDto.get().getLogin());
+            userDto.setUserRole(optionalUserDto.get().getUserRole());
+        }
+        Optional <UserDto>userDtoOptional = Optional.of(userDto);
+        return userDtoOptional.map(dto -> new ResponseEntity<>(EntityModel.of(dto,
                 linkTo(methodOn(UserController.class)
                         .create(fullInfoUserDto)).withSelfRel(),
                 linkTo(methodOn(UserController.class).findUserById(dto.getId()))

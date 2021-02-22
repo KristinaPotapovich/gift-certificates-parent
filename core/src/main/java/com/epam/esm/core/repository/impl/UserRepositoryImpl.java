@@ -4,8 +4,10 @@ import com.epam.esm.core.entity.Order;
 import com.epam.esm.core.entity.User;
 import com.epam.esm.core.repository.UserRepository;
 import org.hibernate.Session;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -25,8 +27,8 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User create(User user) {
-         session.save(user);
-         return session.find(User.class,user.getId());
+        session.save(user);
+        return session.find(User.class, user.getId());
     }
 
     @Override
@@ -53,11 +55,15 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User findUserByLogin(String login) {
+        try {
             CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
             CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
             Root<User> userRoot = criteriaQuery.from(User.class);
             criteriaQuery.where(criteriaBuilder.equal(userRoot.get("login"), login));
             return session.createQuery(criteriaQuery).getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 
     @Override
