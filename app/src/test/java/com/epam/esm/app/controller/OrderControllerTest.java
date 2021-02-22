@@ -17,6 +17,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 
 
@@ -62,7 +63,7 @@ class OrderControllerTest {
     void tearDown() {
     }
 
-    @WithMockUser(username = "mary", roles = {"ADMIN", "USER"})
+    @WithMockUser(authorities = {"ADMIN", "USER"})
     @Test
     void purchaseCertificatePositiveTest() throws Exception {
         List<Long> certificates = new ArrayList<>();
@@ -87,7 +88,7 @@ class OrderControllerTest {
         mvc.perform(post("/orders")).andExpect(status().isForbidden());
     }
 
-    @WithMockUser(username = "mary", roles = {"ADMIN"})
+    @WithUserDetails("admin")
     @Test
     void findOrderByIdPositiveTest() throws Exception {
         Map<String, Object> orders = new HashMap<>();
@@ -116,7 +117,7 @@ class OrderControllerTest {
         mvc.perform(get("/orders/1")).andExpect(status().isForbidden());
     }
 
-    @WithMockUser(username = "mary", roles = {"ADMIN"})
+    @WithUserDetails("admin")
     @Test
     void findAllOrdersPositiveTest() throws Exception {
         List<OrderDto>orderDtos = new ArrayList<>();

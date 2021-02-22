@@ -21,6 +21,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 
 
@@ -81,7 +82,7 @@ class UserControllerTest {
         verify(userService).create(fullInfoUserDto1);
     }
 
-    @WithMockUser(username = "mary", roles = {"ADMIN"})
+    @WithMockUser(authorities = {"ADMIN"})
     @Test
     void findAllUsersPositiveTest() throws Exception {
         List<FullInfoUserDto> fullInfoUserDtos = new ArrayList<>();
@@ -107,35 +108,7 @@ class UserControllerTest {
         mvc.perform(get("/users")).andExpect(status().isForbidden());
     }
 
-    @WithMockUser(username = "mary", roles = {"ADMIN"})
-    @Test
-    void getInformationAboutUsersOrdersPositiveTest() throws Exception {
-        TagDto tagDto = new TagDto(1L, "tag");
-        List<TagDto> tagDtos = new ArrayList<>();
-        tagDtos.add(tagDto);
-        GiftCertificateDto giftCertificateDto1 = new GiftCertificateDto(1L, "testCertificate2", "testDescription1",
-                BigDecimal.valueOf(15.22), 5,
-                LocalDateTime.of(2021, 1, 16, 19, 10),
-                LocalDateTime.of(2021, 1, 16, 19, 10), tagDtos);
-        List<GiftCertificateDto> giftCertificateDtos = new ArrayList<>();
-        giftCertificateDtos.add(giftCertificateDto1);
-        OrderDto orderDto = new OrderDto(1L, BigDecimal.valueOf(15.22),
-                LocalDateTime.of(2021, 1, 16, 19, 15), giftCertificateDtos, userDto);
-        List<OrderDto> orderDtos = new ArrayList<>();
-        orderDtos.add(orderDto);
-        List<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(Role.ADMIN.toString()));
-        JwtUser jwtUser = new JwtUser(1, "mary", "123", authorities);
-        when(jwtUserDetailsService.loadUserByUsername("mary")).thenReturn(jwtUser);
-        when(userService.getInformationAboutUsersOrders(1, 1, 5)).thenReturn(Optional.of(orderDtos));
-        mvc.perform(get("/users/1/orders")
-                .param("page", "1")
-                .param("size", "5"))
-                .andExpect(status().isOk());
-        verify(userService).getInformationAboutUsersOrders(1, 1, 5);
-    }
-
-    @WithMockUser(username = "mary")
+    @WithMockUser(authorities = {"ADMIN", "USER"})
     @Test
     void getInformationAboutUsersOrdersPositiveTestByUser() throws Exception {
         TagDto tagDto = new TagDto(1L, "tag");
@@ -196,21 +169,7 @@ class UserControllerTest {
         mvc.perform(get("/users/1/orders")).andExpect(status().isForbidden());
     }
 
-    @WithMockUser(username = "mary", roles = {"ADMIN"})
-    @Test
-    void findUserByIdPositiveTest() throws Exception {
-        List<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(Role.ADMIN.toString()));
-        JwtUser jwtUser = new JwtUser(1, "mary", "123", authorities);
-        when(jwtUserDetailsService.loadUserByUsername("mary")).thenReturn(jwtUser);
-        when(userService.findUserById(1)).thenReturn(Optional.of(userDto));
-        mvc.perform(get("/users/1")
-                .param("page", "1")
-                .param("size", "5"))
-                .andExpect(status().isOk());
-        verify(userService).findUserById(1);
-    }
-    @WithMockUser(username = "mary")
+    @WithMockUser(authorities = {"ADMIN", "USER"})
     @Test
     void findUserByIdPositiveTestByUser() throws Exception {
         List<GrantedAuthority> authorities = new ArrayList<>();
