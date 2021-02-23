@@ -60,7 +60,7 @@ public class OrderController {
      * @param purchaseParam purchase param
      * @return response entity
      */
-    @PreAuthorize("hasAuthority('ADMIN') and hasAuthority('USER')")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
     @PostMapping
     public ResponseEntity<EntityModel<OrderDto>> purchaseCertificate(@Valid @RequestBody PurchaseParam purchaseParam) {
         Optional<OrderDto> orderDto = orderService.purchaseCertificate(purchaseParam);

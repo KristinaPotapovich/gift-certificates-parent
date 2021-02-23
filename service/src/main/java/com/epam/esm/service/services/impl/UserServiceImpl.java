@@ -50,14 +50,13 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public Optional<FullInfoUserDto> create(FullInfoUserDto fullInfoUserDto) {
-       User user = userRepository.findUserByLogin(fullInfoUserDto.getLogin());
-        if (user != null) {
+        if (userRepository.isUserExist(fullInfoUserDto.getLogin())) {
             throw new ServiceException(USER_IS_EXIST_MESSAGE);
         }
         String actualPassword = fullInfoUserDto.getPassword();
         fullInfoUserDto.setPassword(bCryptPasswordEncoder.encode(actualPassword));
         fullInfoUserDto.setUserRole(Role.USER);
-        user = userRepository.create(UserFullInfoConverter.mapToUser(fullInfoUserDto));
+        User user = userRepository.create(UserFullInfoConverter.mapToUser(fullInfoUserDto));
         return Optional.ofNullable(UserFullInfoConverter.mapToUserDto(user));
     }
 

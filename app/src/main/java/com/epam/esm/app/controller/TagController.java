@@ -59,7 +59,7 @@ public class TagController {
      * @param id id
      * @return response entity
      */
-    @PreAuthorize("hasAuthority('ADMIN') and hasAuthority('USER')")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
     @GetMapping(value = "/{id}")
     public ResponseEntity<EntityModel<TagDto>> findTagById(@Valid @PathVariable(VALUE_ID) long id) {
         Optional<TagDto> tagDto = tagServiceImpl.findTagById(id);

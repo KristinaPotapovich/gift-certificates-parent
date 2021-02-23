@@ -55,15 +55,22 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User findUserByLogin(String login) {
-        try {
-            CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-            CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
-            Root<User> userRoot = criteriaQuery.from(User.class);
-            criteriaQuery.where(criteriaBuilder.equal(userRoot.get("login"), login));
-            return session.createQuery(criteriaQuery).getSingleResult();
-        } catch (NoResultException e) {
-            return null;
-        }
+        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
+        Root<User> userRoot = criteriaQuery.from(User.class);
+        criteriaQuery.where(criteriaBuilder.equal(userRoot.get("login"), login));
+        return session.createQuery(criteriaQuery).getSingleResult();
+    }
+
+    @Override
+    public boolean isUserExist(String login) {
+        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+        Root<User> root = criteriaQuery.from(User.class);
+        criteriaQuery.select(criteriaBuilder.count(root))
+                .where(criteriaBuilder.equal(root.get("login"), login));
+        return session.createQuery(criteriaQuery)
+                .getSingleResult() > 0;
     }
 
     @Override

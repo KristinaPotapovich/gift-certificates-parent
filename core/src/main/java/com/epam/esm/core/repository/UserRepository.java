@@ -39,4 +39,6 @@ public interface UserRepository extends BaseRepository<User> {
     List<User> findAllUsers(int page, int size);
 
     User findUserByLogin(String login);
+
+    boolean isUserExist(String login);
 }
