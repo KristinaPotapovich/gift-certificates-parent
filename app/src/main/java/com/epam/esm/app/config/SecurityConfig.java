@@ -60,6 +60,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET,FIND_INFORMATION_ABOUT_CERTIFICATES_TAGS).permitAll()
                 .anyRequest().authenticated()
                 .and()
+                .logout()
+                .logoutUrl("/logout")
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID")
+                .logoutSuccessUrl(CERTIFICATES)
+                .and()
                 .apply(new JwtConfig(jwtTokenProvider))
                 .and().cors();
     }
