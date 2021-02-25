@@ -73,9 +73,11 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Transactional
     @Override
     public void delete(long id) {
-        GiftCertificate giftCertificate = new GiftCertificate();
-        giftCertificate.setId(id);
-        giftCertificateRepositoryImpl.delete(giftCertificate);
+        GiftCertificate giftCertificate = giftCertificateRepositoryImpl.findCertificateById(id);
+        if (giftCertificate != null) {
+            giftCertificate.setDeleted(true);
+            giftCertificateRepositoryImpl.delete(giftCertificate);
+        }
     }
 
     @Override

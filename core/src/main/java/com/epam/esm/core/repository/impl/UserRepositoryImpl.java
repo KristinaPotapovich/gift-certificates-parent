@@ -4,13 +4,16 @@ import com.epam.esm.core.entity.Order;
 import com.epam.esm.core.entity.User;
 import com.epam.esm.core.repository.UserRepository;
 import org.hibernate.Session;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * User repository.
@@ -24,7 +27,8 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User create(User user) {
-        return null;
+        session.save(user);
+        return session.find(User.class, user.getId());
     }
 
     @Override
@@ -50,6 +54,26 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    public User findUserByLogin(String login) {
+        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
+        Root<User> userRoot = criteriaQuery.from(User.class);
+        criteriaQuery.where(criteriaBuilder.equal(userRoot.get("login"), login));
+        return session.createQuery(criteriaQuery).getSingleResult();
+    }
+
+    @Override
+    public boolean isUserExist(String login) {
+        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+        Root<User> root = criteriaQuery.from(User.class);
+        criteriaQuery.select(criteriaBuilder.count(root))
+                .where(criteriaBuilder.equal(root.get("login"), login));
+        return session.createQuery(criteriaQuery)
+                .getSingleResult() > 0;
+    }
+
+    @Override
     public List<Order> getInformationAboutUsersOrders(long id, int page, int size) {
         CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
         CriteriaQuery<Order> criteriaQuery = criteriaBuilder.createQuery(Order.class);
@@ -70,4 +94,5 @@ public class UserRepositoryImpl implements UserRepository {
         criteriaQuery.where(criteriaBuilder.equal(userRoot.get("id"), id));
         return session.createQuery(criteriaQuery).getSingleResult();
     }
+
 }

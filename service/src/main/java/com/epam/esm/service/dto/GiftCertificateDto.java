@@ -25,11 +25,9 @@ public class GiftCertificateDto extends RepresentationModel<GiftCertificateDto> 
     private long id;
     @NotBlank
     @Size(min = 3, max = 50)
-    @Pattern(regexp = "^[a-zA-Zа-яА-ЯёЁ0-9\\s?!,.:'\\-]+$")
     private String name;
     @NotBlank
     @Size(min = 3, max = 250)
-    @Pattern(regexp = "^[a-zA-Zа-яА-ЯёЁ0-9\\s?!,.:'\\-]+$")
     private String description;
     @DecimalMin("0.0")
     private BigDecimal price;

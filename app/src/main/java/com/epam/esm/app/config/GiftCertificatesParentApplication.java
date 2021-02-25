@@ -16,6 +16,5 @@ public class GiftCertificatesParentApplication {
      */
     public static void main(String[] args) {
         SpringApplication.run(GiftCertificatesParentApplication.class, args);
-
     }
 }

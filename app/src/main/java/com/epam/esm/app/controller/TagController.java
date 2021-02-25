@@ -8,6 +8,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,7 +42,6 @@ public class TagController {
     private static final String VALUE_PAGE = "page";
     private static final String VALUE_SIZE = "size";
     private static final String VALUE_ID = "id";
-    private static final String VALIDATION_FAIL = "validation_fail";
 
     /**
      * Instantiates a new Tag controller.
@@ -59,6 +59,7 @@ public class TagController {
      * @param id id
      * @return response entity
      */
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
     @GetMapping(value = "/{id}")
     public ResponseEntity<EntityModel<TagDto>> findTagById(@Valid @PathVariable(VALUE_ID) long id) {
         Optional<TagDto> tagDto = tagServiceImpl.findTagById(id);
@@ -72,7 +73,8 @@ public class TagController {
                         .withType(HttpMethod.DELETE.name()),
                 linkTo(methodOn(TagController.class)
                         .updateTag(dto.getId(), dto)).withRel(UPDATE_TAG)
-                        .withType(HttpMethod.PUT.name())), HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.BAD_REQUEST));
+                        .withType(HttpMethod.PUT.name())), HttpStatus.OK)).orElseGet(() ->
+                new ResponseEntity<>(HttpStatus.BAD_REQUEST));
     }
 
 
@@ -101,6 +103,7 @@ public class TagController {
      * @param tagDto tag dto
      * @return response entity
      */
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping
     public ResponseEntity<EntityModel<TagDto>> createTag(@Valid @RequestBody TagDto tagDto) {
         Optional<TagDto> tagDtos = tagServiceImpl.create(tagDto);
@@ -114,7 +117,8 @@ public class TagController {
                         .withType(HttpMethod.DELETE.name()),
                 linkTo(methodOn(TagController.class)
                         .updateTag(dto.getId(), dto)).withRel(UPDATE_TAG)
-                        .withType(HttpMethod.PUT.name())), HttpStatus.CREATED)).orElseGet(() -> new ResponseEntity<>(HttpStatus.BAD_REQUEST));
+                        .withType(HttpMethod.PUT.name())), HttpStatus.CREATED)).orElseGet(() ->
+                new ResponseEntity<>(HttpStatus.BAD_REQUEST));
     }
 
     /**
@@ -124,6 +128,7 @@ public class TagController {
      * @param tagDto tag dto
      * @return response entity
      */
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping(value = "/{id}")
     public ResponseEntity<EntityModel<TagDto>> updateTag(
             @Valid @PathVariable(VALUE_ID) long id,
@@ -140,7 +145,8 @@ public class TagController {
                         .withType(HttpMethod.DELETE.name()),
                 linkTo(methodOn(TagController.class)
                         .createTag(dto)).withRel(CREATE_TAG)
-                        .withType(HttpMethod.POST.name())), HttpStatus.CREATED)).orElseGet(() -> new ResponseEntity<>(HttpStatus.BAD_REQUEST));
+                        .withType(HttpMethod.POST.name())), HttpStatus.CREATED)).orElseGet(() ->
+                new ResponseEntity<>(HttpStatus.BAD_REQUEST));
     }
 
     /**
@@ -149,6 +155,7 @@ public class TagController {
      * @param id id
      * @return response entity
      */
+    @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<HttpStatus> deleteTag(
             @Valid @PathVariable(VALUE_ID) long id) {
@@ -181,6 +188,7 @@ public class TagController {
                         .withType(HttpMethod.POST.name()),
                 linkTo(methodOn(TagController.class)
                         .updateTag(tagDto.getId(), tagDto)).withRel(UPDATE_TAG)
-                        .withType(HttpMethod.PUT.name())), HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.BAD_REQUEST));
+                        .withType(HttpMethod.PUT.name())), HttpStatus.OK)).orElseGet(() ->
+                new ResponseEntity<>(HttpStatus.BAD_REQUEST));
     }
 }

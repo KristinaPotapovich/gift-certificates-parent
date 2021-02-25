@@ -36,7 +36,7 @@ public class OrderConverter {
                     .map(GiftCertificateConverter::mapToGiftCertificateDto)
                     .collect(Collectors.toList());
             orderDto.setCertificates(certificateDtos);
-            UserDto userDto = UserConverter.mapToUserDto(order.getUser());
+            UserDto userDto = UserDtoConverter.mapToUserDto(order.getUser());
             orderDto.setUser(userDto);
         }
         return orderDto;
@@ -63,7 +63,7 @@ public class OrderConverter {
                     .map(GiftCertificateConverter::mapToGiftCertificate)
                     .collect(Collectors.toList());
             order.setCertificates(certificates);
-            User user = UserConverter.mapToUser(orderDto.getUser());
+            User user = UserDtoConverter.mapToUser(orderDto.getUser());
             order.setUser(user);
         }
         return order;

@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
@@ -46,7 +45,6 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public Optional<OrderDto> purchaseCertificate(PurchaseParam purchaseParam) {
         OrderDto orderDto = new OrderDto();
-        AtomicReference<BigDecimal> fullPrice = new AtomicReference<>(new BigDecimal(0));
         List<GiftCertificateDto> certificates = purchaseParam.getCertificatesIds()
                 .stream()
                 .map(idCertificate -> giftCertificateService.findCertificateById(idCertificate))
@@ -56,11 +54,11 @@ public class OrderServiceImpl implements OrderService {
         userService.findUserById(purchaseParam.getUserId())
                 .ifPresent(orderDto::setUser);
         orderDto.setCertificates(certificates);
-        certificates.stream()
+        BigDecimal fullPrice = certificates
+                .stream()
                 .map(GiftCertificateDto::getPrice)
-                .map(bigDecimal1 -> fullPrice.get().add(bigDecimal1))
-                .forEach(fullPrice::set);
-        orderDto.setPrice(fullPrice.get());
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        orderDto.setPrice(fullPrice);
         Order order = orderRepository.create(OrderConverter.mapToOrder(orderDto));
         return Optional.ofNullable(OrderConverter.mapToOrderDto(order));
     }

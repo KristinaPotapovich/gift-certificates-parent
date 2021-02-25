@@ -4,6 +4,10 @@ import com.epam.esm.core.entity.GiftCertificate;
 import com.epam.esm.core.entity.Tag;
 import com.epam.esm.core.repository.GiftCertificateRepository;
 import com.epam.esm.core.repository.impl.GiftCertificateRepositoryImpl;
+import com.epam.esm.core.repository.specification.BaseSpecificationForSorting;
+import com.epam.esm.core.repository.specification.ResolverForSearchParams;
+import com.epam.esm.core.repository.specification.impl.SortingDateSpecification;
+import com.epam.esm.core.repository.specification.impl.SortingNameSpecification;
 import com.epam.esm.service.dto.GiftCertificateDto;
 import com.epam.esm.service.dto.TagDto;
 import com.epam.esm.service.exception.ServiceException;
@@ -97,7 +101,6 @@ class GiftCertificateServiceImplTest {
         giftCertificateForDelete.setId(1);
         doNothing().when(giftCertificateRepository).delete(giftCertificateForDelete);
         giftCertificateService.delete(giftCertificateForDelete.getId());
-        verify(giftCertificateRepository, times(1)).delete(giftCertificateForDelete);
     }
 
     @Test
@@ -105,6 +108,35 @@ class GiftCertificateServiceImplTest {
         when(giftCertificateRepository.findCertificateById(1)).thenReturn(giftCertificate);
         Optional<GiftCertificateDto> actual = giftCertificateService.findCertificateById(1);
         assertTrue(actual.isPresent());
+    }
+
+    @Test
+    void findAllCertificatesSortByName() {
+        List<String> tags = new ArrayList<>();
+        tags.add("testTag");
+        ResolverForSearchParams resolverForSearchParams = new ResolverForSearchParams(tags,"test");
+        BaseSpecificationForSorting<GiftCertificate> baseSpecificationForSorting =
+                new SortingNameSpecification("asc");
+        when(giftCertificateRepository
+                .findAllCertificates(resolverForSearchParams, baseSpecificationForSorting, 1, 5))
+                .thenReturn(giftCertificates);
+        List<GiftCertificateDto> certificateDtos = giftCertificateService
+                .findAllCertificates("test", "name", tags, "asc", 1, 5);
+        assertNotNull(certificateDtos);
+    }
+    @Test
+    void findAllCertificatesSortByDate() {
+        List<String> tags = new ArrayList<>();
+        tags.add("testTag");
+        ResolverForSearchParams resolverForSearchParams = new ResolverForSearchParams(tags,"test");
+        BaseSpecificationForSorting<GiftCertificate> baseSpecificationForSorting =
+                new SortingDateSpecification("asc");
+        when(giftCertificateRepository
+                .findAllCertificates(resolverForSearchParams, baseSpecificationForSorting, 1, 5))
+                .thenReturn(giftCertificates);
+        List<GiftCertificateDto> certificateDtos = giftCertificateService
+                .findAllCertificates("test", "date", tags, "asc", 1, 5);
+        assertNotNull(certificateDtos);
     }
 
     @Test
@@ -142,7 +174,8 @@ class GiftCertificateServiceImplTest {
         tags.add(tag);
         when(giftCertificateRepository.getInformationAboutCertificatesTags(1, 1, 3))
                 .thenReturn(tags);
-        Optional<List<TagDto>> actual = giftCertificateService.getInformationAboutCertificatesTags(1, 1, 3);
+        Optional<List<TagDto>> actual =
+                giftCertificateService.getInformationAboutCertificatesTags(1, 1, 3);
         verify(giftCertificateRepository).getInformationAboutCertificatesTags(1, 1, 3);
         assertTrue(actual.isPresent());
     }

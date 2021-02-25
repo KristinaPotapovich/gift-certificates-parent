@@ -8,6 +8,7 @@ import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -59,6 +60,7 @@ public class OrderController {
      * @param purchaseParam purchase param
      * @return response entity
      */
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
     @PostMapping
     public ResponseEntity<EntityModel<OrderDto>> purchaseCertificate(@Valid @RequestBody PurchaseParam purchaseParam) {
         Optional<OrderDto> orderDto = orderService.purchaseCertificate(purchaseParam);
@@ -66,7 +68,8 @@ public class OrderController {
                         .purchaseCertificate(purchaseParam)).withSelfRel(),
                 linkTo(methodOn(OrderController.class).findOrderById(dto.getId()))
                         .withRel(CURRENT_ORDER)
-                        .withType(HttpMethod.GET.name())), HttpStatus.CREATED)).orElseGet(() -> new ResponseEntity<>(HttpStatus.BAD_REQUEST));
+                        .withType(HttpMethod.GET.name())), HttpStatus.CREATED))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.BAD_REQUEST));
     }
 
 
@@ -76,6 +79,7 @@ public class OrderController {
      * @param id id
      * @return response entity
      */
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping(value = "/{id}")
     public ResponseEntity<Map<String, Object>> findOrderById(@Valid @PathVariable(VALUE_ID) long id) {
         return orderService.findOrderById(id)
@@ -90,6 +94,7 @@ public class OrderController {
      * @param size size
      * @return response entity
      */
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping
     public ResponseEntity<List<OrderDto>> findAllOrders(
             @Valid @RequestParam(value = VALUE_PAGE, required = false, defaultValue = DEFAULT_PAGE)

@@ -1,6 +1,7 @@
 package com.epam.esm.service.services;
 
 
+
 import java.util.Optional;
 
 /**
@@ -8,7 +9,7 @@ import java.util.Optional;
  *
  * @param <T> the type parameter
  */
-public interface BaseService<T> {
+public interface BaseService<T>  {
     /**
      * Create optional.
      *

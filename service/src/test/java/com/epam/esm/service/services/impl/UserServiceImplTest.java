@@ -3,17 +3,16 @@ package com.epam.esm.service.services.impl;
 import com.epam.esm.core.entity.*;
 import com.epam.esm.core.repository.UserRepository;
 import com.epam.esm.core.repository.impl.UserRepositoryImpl;
-import com.epam.esm.service.dto.GiftCertificateDto;
 import com.epam.esm.service.dto.OrderDto;
-import com.epam.esm.service.dto.TagDto;
+import com.epam.esm.service.dto.FullInfoUserDto;
 import com.epam.esm.service.dto.UserDto;
-import com.epam.esm.service.mapper.OrderConverter;
-import com.epam.esm.service.mapper.UserConverter;
+import com.epam.esm.service.mapper.UserFullInfoConverter;
 import com.epam.esm.service.services.UserService;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -35,9 +34,10 @@ class UserServiceImplTest {
     @BeforeAll
     void setUp() {
         userRepository = mock(UserRepositoryImpl.class);
-        userService = new UserServiceImpl(userRepository);
-        UserDto userDto = new UserDto(1L, "testLogin", "testPassword", UserRole.USER);
-        user = UserConverter.mapToUser(userDto);
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        userService = new UserServiceImpl(userRepository,bCryptPasswordEncoder);
+        FullInfoUserDto fullInfoUserDto = new FullInfoUserDto(1L, "testLogin", "testPassword", Role.USER);
+        user = UserFullInfoConverter.mapToUser(fullInfoUserDto);
         users = new ArrayList<>();
         users.add(user);
     }
@@ -61,7 +61,7 @@ class UserServiceImplTest {
     @Test
     void findAll() {
         when(userRepository.findAllUsers(1, 3)).thenReturn(users);
-        List<UserDto> actual = userService.findAllUsers(1, 3);
+        List<FullInfoUserDto> actual = userService.findAllUsers(1, 3);
         verify(userRepository).findAllUsers(1, 3);
         assertFalse(actual.isEmpty());
         assertEquals(1, actual.get(0).getId());
@@ -78,7 +78,7 @@ class UserServiceImplTest {
                 "testDescription1",
                 BigDecimal.valueOf(15.22), 5,
                 LocalDateTime.of(2021, 1, 16, 19, 10),
-                LocalDateTime.of(2021, 1, 16, 19, 10), tags);
+                LocalDateTime.of(2021, 1, 16, 19, 10), tags,false);
         List<GiftCertificate> giftCertificates = new ArrayList<>();
         giftCertificates.add(giftCertificate);
         Order order = new Order(1L, BigDecimal.valueOf(15.22),

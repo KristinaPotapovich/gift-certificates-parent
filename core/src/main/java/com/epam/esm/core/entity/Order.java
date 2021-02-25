@@ -38,7 +38,7 @@ public class Order {
             joinColumns = {@JoinColumn(name = "id_order")},
             inverseJoinColumns = {@JoinColumn(name = "id_certificate")})
     private List<GiftCertificate> certificates;
-    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE})
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_user", nullable = false)
     private User user;
 }

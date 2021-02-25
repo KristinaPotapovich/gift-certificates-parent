@@ -10,6 +10,7 @@ import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -128,6 +129,7 @@ public class GiftCertificateController {
      * @param size               size
      * @return the response entity
      */
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping
     public ResponseEntity<EntityModel<GiftCertificateDto>> createGiftCertificate(
             @Valid @RequestBody GiftCertificateDto giftCertificateDto,
@@ -168,6 +170,7 @@ public class GiftCertificateController {
      * @param size               size
      * @return response entity
      */
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping(value = "/{id}")
     public ResponseEntity<EntityModel<GiftCertificateDto>> updateGiftCertificate(
             @Valid @PathVariable(VALUE_ID) long id,
@@ -199,7 +202,8 @@ public class GiftCertificateController {
                         .updateOneFieldGiftCertificate(certificateDto.getId(),
                                 certificateDto, page, size))
                         .withRel(UPDATE_ONE_FIELD_CERTIFICATE)
-                        .withType(HttpMethod.PATCH.name())), HttpStatus.CREATED)).orElseGet(() -> new ResponseEntity<>(HttpStatus.BAD_REQUEST));
+                        .withType(HttpMethod.PATCH.name())), HttpStatus.CREATED)).orElseGet(() ->
+                new ResponseEntity<>(HttpStatus.BAD_REQUEST));
     }
 
     /**
@@ -236,6 +240,7 @@ public class GiftCertificateController {
      * @param size               size
      * @return the entity model
      */
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PatchMapping(value = "/{id}")
     public ResponseEntity<EntityModel<GiftCertificateDto>> updateOneFieldGiftCertificate(
             @Valid @PathVariable(VALUE_ID) long id,
@@ -276,6 +281,7 @@ public class GiftCertificateController {
      * @param id id
      * @return response entity
      */
+    @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<HttpStatus> deleteGiftCertificate(@Valid @PathVariable(VALUE_ID) long id) {
         if (giftCertificateServiceImpl.findCertificateById(id).isPresent()) {

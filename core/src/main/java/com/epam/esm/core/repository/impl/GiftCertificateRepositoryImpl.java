@@ -23,7 +23,6 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     @PersistenceContext
     private Session session;
     private static final String ID_CERTIFICATE = "id";
-    private static final String TAGS = "tags";
 
 
     @Override
@@ -42,7 +41,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
 
     @Override
     public void delete(GiftCertificate giftCertificate) {
-        session.remove(session.contains(giftCertificate) ? giftCertificate : session.merge(giftCertificate));
+        session.merge(giftCertificate);
     }
 
     @Override
@@ -51,7 +50,9 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         CriteriaQuery<Tag> criteriaQuery = criteriaBuilder.createQuery(Tag.class);
         Root<Tag> tagRoot = criteriaQuery.from(Tag.class);
         criteriaQuery.select(tagRoot)
-                .where(criteriaBuilder.equal(tagRoot.join("certificates").get("id"), idCertificate));
+                .where(criteriaBuilder.and(criteriaBuilder
+                                .equal(tagRoot.join("certificates").get("id"), idCertificate)),
+                        criteriaBuilder.equal(tagRoot.join("certificates").get("isDeleted"), false));
         return session.createQuery(criteriaQuery)
                 .setFirstResult((page - 1) * size)
                 .setMaxResults(size)
@@ -67,12 +68,10 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
                 criteriaBuilder.createQuery(GiftCertificate.class);
         Root<GiftCertificate> giftCertificateRoot = giftCertificateCriteriaQuery.from(GiftCertificate.class);
         CriteriaQuery<GiftCertificate> query = giftCertificateCriteriaQuery.select(giftCertificateRoot);
-        if (resolver != null) {
-            Expression<Long> countCertificates = criteriaBuilder.count(giftCertificateRoot);
-            query = query.distinct(true).where(resolver.buildListPredicatesForQuery(query,
-                    criteriaBuilder, giftCertificateRoot).toArray(new Predicate[0]));
-            concatQuery(query, criteriaBuilder, countCertificates, resolver, giftCertificateRoot);
-        }
+        Expression<Long> countCertificates = criteriaBuilder.count(giftCertificateRoot);
+        query = query.distinct(true).where(resolver.buildListPredicatesForQuery(query,
+                criteriaBuilder, giftCertificateRoot).toArray(new Predicate[0]));
+        concatQuery(query, criteriaBuilder, countCertificates, resolver, giftCertificateRoot);
         if (specification != null) {
             specification.buildQuery(query, criteriaBuilder, giftCertificateRoot);
         }
@@ -87,7 +86,8 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
         CriteriaQuery<GiftCertificate> criteriaQuery = criteriaBuilder.createQuery(GiftCertificate.class);
         Root<GiftCertificate> giftCertificateRoot = criteriaQuery.from(GiftCertificate.class);
-        criteriaQuery.where(criteriaBuilder.equal(giftCertificateRoot.get(ID_CERTIFICATE), id));
+        criteriaQuery.where(criteriaBuilder.and(criteriaBuilder.equal(giftCertificateRoot.get(ID_CERTIFICATE), id)),
+                criteriaBuilder.equal(giftCertificateRoot.get("isDeleted"), false));
         return session.createQuery(criteriaQuery).getSingleResult();
     }
 

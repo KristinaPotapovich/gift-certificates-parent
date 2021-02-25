@@ -11,8 +11,6 @@ public class ErrorResponseMessage {
     private String error;
     private String message;
     private String code;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
-    private LocalDateTime timestamp;
 
     /**
      * Instantiates a new Error response message.
@@ -27,13 +25,11 @@ public class ErrorResponseMessage {
      * @param error     the error
      * @param message   the message
      * @param code      the code
-     * @param timestamp the timestamp
      */
-    public ErrorResponseMessage(String error, String message, String code, LocalDateTime timestamp) {
+    public ErrorResponseMessage(String error, String message, String code) {
         this.error = error;
         this.message = message;
         this.code = code;
-        this.timestamp = timestamp;
     }
 
     /**
@@ -90,21 +86,4 @@ public class ErrorResponseMessage {
         this.code = code;
     }
 
-    /**
-     * Gets timestamp.
-     *
-     * @return the timestamp
-     */
-    public LocalDateTime getTimestamp() {
-        return timestamp;
-    }
-
-    /**
-     * Sets timestamp.
-     *
-     * @param timestamp the timestamp
-     */
-    public void setTimestamp(LocalDateTime timestamp) {
-        this.timestamp = timestamp;
-    }
 }
