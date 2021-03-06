@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS user;
+DROP TABLE IF EXISTS user_table;
 DROP TABLE IF EXISTS orders_certificates;
 DROP TABLE IF EXISTS order_table;
 DROP TABLE IF EXISTS certificates_tags;

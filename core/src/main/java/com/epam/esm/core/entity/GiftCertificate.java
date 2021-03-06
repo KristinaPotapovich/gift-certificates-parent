@@ -19,8 +19,6 @@ import java.util.List;
 @Getter
 @Setter
 @EqualsAndHashCode
-@ToString
-@Audited
 @Component
 @Table(name = "gift_certificate")
 @Entity

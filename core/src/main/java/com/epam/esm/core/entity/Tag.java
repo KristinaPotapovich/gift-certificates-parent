@@ -17,7 +17,6 @@ import java.util.List;
 @Setter
 @EqualsAndHashCode
 @ToString
-@Audited
 @Entity
 @Component
 @Table(name = "tag")

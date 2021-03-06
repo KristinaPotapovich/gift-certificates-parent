@@ -15,9 +15,8 @@ import java.util.List;
 @Getter
 @Setter
 @EqualsAndHashCode
-@Audited
 @Component
-@Table(name = "user")
+@Table(name = "user_table")
 @Entity
 public class User {
     @Id

@@ -21,7 +21,7 @@ VALUES
        (2,3),
        (2,4);
 
-INSERT INTO user (id_user,login,password,role)
+INSERT INTO user_table (id_user,login,password,role)
 VALUES
 (1,'user1','passwword1','USER'),
 (2,'user2','passwword2','USER'),

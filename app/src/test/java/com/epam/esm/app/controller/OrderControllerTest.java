@@ -88,7 +88,7 @@ class OrderControllerTest {
         mvc.perform(post("/orders")).andExpect(status().isForbidden());
     }
 
-    @WithUserDetails("admin")
+    @WithMockUser(authorities = {"ADMIN"})
     @Test
     void findOrderByIdPositiveTest() throws Exception {
         Map<String, Object> orders = new HashMap<>();
@@ -117,7 +117,7 @@ class OrderControllerTest {
         mvc.perform(get("/orders/1")).andExpect(status().isForbidden());
     }
 
-    @WithUserDetails("admin")
+    @WithMockUser(authorities = {"ADMIN"})
     @Test
     void findAllOrdersPositiveTest() throws Exception {
         List<OrderDto>orderDtos = new ArrayList<>();

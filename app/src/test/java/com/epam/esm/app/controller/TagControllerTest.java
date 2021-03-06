@@ -79,7 +79,7 @@ class TagControllerTest {
         verify(tagService).findAllTags(1, 5);
     }
 
-    @WithUserDetails("admin")
+    @WithMockUser(authorities = {"ADMIN"})
     @Test
     void createTagPositiveTest() throws Exception {
         when(tagService.create(tagDto)).thenReturn(Optional.of(tagDto));
@@ -114,7 +114,7 @@ class TagControllerTest {
         mvc.perform(post("/tags")).andExpect(status().isForbidden());
     }
 
-    @WithUserDetails("admin")
+    @WithMockUser(authorities = {"ADMIN"})
     @Test
     void updateTagPositiveTest() throws Exception {
         when(tagService.update(tagDto)).thenReturn(Optional.of(tagDto));
@@ -141,7 +141,7 @@ class TagControllerTest {
         mvc.perform(put("/tags")).andExpect(status().isForbidden());
     }
 
-    @WithUserDetails("admin")
+    @WithMockUser(authorities = {"ADMIN"})
     @Test
     void deleteTagPositiveTest() throws Exception {
         when(tagService.findTagById(1)).thenReturn(Optional.of(tagDto));

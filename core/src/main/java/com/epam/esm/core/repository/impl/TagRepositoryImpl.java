@@ -26,7 +26,7 @@ public class TagRepositoryImpl implements TagRepository {
                     "  JOIN gift_certificate gc ON ct.id_certificate=gc.id_certificate " +
                     "  JOIN orders_certificates oc ON gc.id_certificate = oc.id_certificate " +
                     "  JOIN order_table ot ON ot.id_order = oc.id_order" +
-                    "  JOIN user u ON ot.id_user = u.id_user " +
+                    "  JOIN user_table u ON ot.id_user = u.id_user " +
                     "GROUP BY t.id_tag, ot.price, u.login " +
                     "ORDER BY COUNT(t.id_tag) DESC limit 1";
 

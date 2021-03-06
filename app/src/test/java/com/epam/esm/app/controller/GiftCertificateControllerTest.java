@@ -76,7 +76,7 @@ class GiftCertificateControllerTest {
         giftCertificateDto = null;
     }
 
-    @WithUserDetails("admin")
+    @WithMockUser(authorities = {"ADMIN"})
     @Test
     void createPositiveTest() throws Exception {
         GiftCertificateDto giftCertificateDto1 = new GiftCertificateDto(0,
@@ -116,7 +116,7 @@ class GiftCertificateControllerTest {
                 .andExpect(status().isForbidden());
     }
 
-    @WithUserDetails("admin")
+    @WithMockUser(authorities = {"ADMIN"})
     @Test
     void updateGiftCertificatePositiveTest() throws Exception {
         when(giftCertificateService.update(giftCertificateDto)).thenReturn(Optional.of(giftCertificateDto));
@@ -159,7 +159,7 @@ class GiftCertificateControllerTest {
         verify(giftCertificateService).getInformationAboutCertificatesTags(1, 1, 5);
     }
 
-    @WithUserDetails("admin")
+    @WithMockUser(authorities = {"ADMIN"})
     @Test
     void updateOneFieldGiftCertificatePositiveTest() throws Exception {
         when(giftCertificateService.patch(giftCertificateDto)).thenReturn(Optional.of(giftCertificateDto));
@@ -190,7 +190,7 @@ class GiftCertificateControllerTest {
         mvc.perform(patch("/certificates")).andExpect(status().isForbidden());
     }
 
-    @WithUserDetails("admin")
+    @WithMockUser(authorities = {"ADMIN"})
     @Test
     void deleteGiftCertificatePositiveTest() throws Exception {
         when(giftCertificateService.findCertificateById(1)).thenReturn(Optional.of(giftCertificateDto));

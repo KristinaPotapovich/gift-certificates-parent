@@ -18,7 +18,6 @@ import java.util.List;
 @Setter
 @EqualsAndHashCode
 @ToString
-@Audited
 @Component
 @Table(name = "order_table")
 @Entity

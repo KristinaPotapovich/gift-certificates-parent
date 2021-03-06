@@ -37,7 +37,7 @@ create index id_tag
     on certificates_tags (id_tag);
 
 
-create table user
+create table user_table
 (
     id_user  bigint auto_increment
         primary key,
@@ -55,8 +55,8 @@ create table user
     price            decimal   not null,
     time_of_purchase timestamp not null,
     id_user          bigint    null,
-    constraint order_table_user_id_user_fk
-        foreign key (id_user) references user (id_user)
+    constraint order_table_user_table_id_user_fk
+        foreign key (id_user) references user_table (id_user)
 );
 create table orders_certificates
 (
