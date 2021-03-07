@@ -30,7 +30,8 @@ import static org.mockito.Mockito.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class GiftCertificateServiceImplTest {
-
+    private static String NAME_CERTIFICATE = "testCertificate1";
+    private static String NAME_TAG = "testTag";
     private GiftCertificateService giftCertificateService;
     private GiftCertificateRepository giftCertificateRepository;
     private TagDto tagDto;
@@ -44,11 +45,11 @@ class GiftCertificateServiceImplTest {
     public void setUp() {
         giftCertificateRepository = mock(GiftCertificateRepositoryImpl.class);
         giftCertificateService = new GiftCertificateServiceImpl(giftCertificateRepository);
-        giftCertificateDto1 = new GiftCertificateDto(1L, "testCertificate1", "testDescription1",
+        giftCertificateDto1 = new GiftCertificateDto(1L,NAME_CERTIFICATE , "testDescription1",
                 BigDecimal.valueOf(15.22), 5,
                 LocalDateTime.of(2021, 1, 16, 19, 10),
                 LocalDateTime.of(2021, 1, 16, 19, 10), tagDtos);
-        tagDto = new TagDto(1L, "testTag");
+        tagDto = new TagDto(1L, NAME_TAG);
         giftCertificateDtos = new ArrayList<>();
         giftCertificateDtos.add(giftCertificateDto1);
         tagDtos = new ArrayList<>();
@@ -113,7 +114,7 @@ class GiftCertificateServiceImplTest {
     @Test
     void findAllCertificatesSortByName() {
         List<String> tags = new ArrayList<>();
-        tags.add("testTag");
+        tags.add(NAME_TAG);
         ResolverForSearchParams resolverForSearchParams = new ResolverForSearchParams(tags,"test");
         BaseSpecificationForSorting<GiftCertificate> baseSpecificationForSorting =
                 new SortingNameSpecification("asc");
@@ -127,7 +128,7 @@ class GiftCertificateServiceImplTest {
     @Test
     void findAllCertificatesSortByDate() {
         List<String> tags = new ArrayList<>();
-        tags.add("testTag");
+        tags.add(NAME_TAG);
         ResolverForSearchParams resolverForSearchParams = new ResolverForSearchParams(tags,"test");
         BaseSpecificationForSorting<GiftCertificate> baseSpecificationForSorting =
                 new SortingDateSpecification("asc");
@@ -169,7 +170,7 @@ class GiftCertificateServiceImplTest {
     void getInformationAboutCertificatesTags() {
         Tag tag = new Tag();
         tagDto.setId(1);
-        tag.setName("testTag");
+        tag.setName(NAME_TAG);
         List<Tag> tags = new ArrayList<>();
         tags.add(tag);
         when(giftCertificateRepository.getInformationAboutCertificatesTags(1, 1, 3))

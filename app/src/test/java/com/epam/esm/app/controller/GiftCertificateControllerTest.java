@@ -17,7 +17,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
@@ -52,6 +51,10 @@ class GiftCertificateControllerTest {
             "                 ]" +
             "     }";
     private GiftCertificateDto giftCertificateDto;
+    private static final String NAME_CERTIFICATE = "testCertificate1";
+    private static final String DESCRIPTION_CERTIFICATE = "testDescription1";
+    private static final String URL_ALL_CERTIFICATES = "/certificates";
+    private static final String URL_CERTIFICATE = "/certificates/1";
     private TagDto tagDto;
     private List<TagDto> tagDtos;
 
@@ -63,7 +66,7 @@ class GiftCertificateControllerTest {
         tagDto = new TagDto(1L, "testTag");
         tagDtos = new ArrayList<>();
         tagDtos.add(tagDto);
-        giftCertificateDto = new GiftCertificateDto(1L, "testCertificate1", "testDescription1",
+        giftCertificateDto = new GiftCertificateDto(1L, NAME_CERTIFICATE,DESCRIPTION_CERTIFICATE ,
                 BigDecimal.valueOf(15.22), 5,
                 LocalDateTime.of(2021, 1, 16, 19, 10),
                 null, tagDtos);
@@ -80,12 +83,12 @@ class GiftCertificateControllerTest {
     @Test
     void createPositiveTest() throws Exception {
         GiftCertificateDto giftCertificateDto1 = new GiftCertificateDto(0,
-                "testCertificate1", "testDescription1",
+                NAME_CERTIFICATE, DESCRIPTION_CERTIFICATE,
                 BigDecimal.valueOf(15.22), 5,
                 LocalDateTime.of(2021, 1, 16, 19, 10),
                 null, tagDtos);
         when(giftCertificateService.create(giftCertificateDto1)).thenReturn(Optional.of(giftCertificateDto));
-        mvc.perform(post("/certificates")
+        mvc.perform(post(URL_ALL_CERTIFICATES)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(REQUEST_JSON)
                 .param("page", "1")
@@ -97,18 +100,18 @@ class GiftCertificateControllerTest {
     @WithAnonymousUser
     @Test
     void createGiftCertificateNegativeTest() throws Exception {
-        mvc.perform(post("/certificates")).andExpect(status().isForbidden());
+        mvc.perform(post(URL_ALL_CERTIFICATES)).andExpect(status().isForbidden());
     }
 
     @WithMockUser(username = "mary")
     @Test
     void createGiftCertificateNegativeTestByUser() throws Exception {
-        GiftCertificateDto giftCertificateDto1 = new GiftCertificateDto(0, "testCertificate1", "testDescription1",
+        GiftCertificateDto giftCertificateDto1 = new GiftCertificateDto(0, NAME_CERTIFICATE, DESCRIPTION_CERTIFICATE,
                 BigDecimal.valueOf(15.22), 5,
                 LocalDateTime.of(2021, 1, 16, 19, 10),
                 null, tagDtos);
         when(giftCertificateService.create(giftCertificateDto1)).thenReturn(Optional.of(giftCertificateDto));
-        mvc.perform(post("/certificates")
+        mvc.perform(post(URL_ALL_CERTIFICATES)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(REQUEST_JSON)
                 .param("page", "1")
@@ -120,7 +123,7 @@ class GiftCertificateControllerTest {
     @Test
     void updateGiftCertificatePositiveTest() throws Exception {
         when(giftCertificateService.update(giftCertificateDto)).thenReturn(Optional.of(giftCertificateDto));
-        mvc.perform(put("/certificates/1")
+        mvc.perform(put(URL_CERTIFICATE)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(REQUEST_JSON)
                 .param("page", "1")
@@ -132,14 +135,14 @@ class GiftCertificateControllerTest {
     @WithAnonymousUser
     @Test
     void updateGiftCertificateNegativeTest() throws Exception {
-        mvc.perform(put("/certificates")).andExpect(status().isForbidden());
+        mvc.perform(put(URL_ALL_CERTIFICATES)).andExpect(status().isForbidden());
     }
 
     @WithMockUser(username = "mary")
     @Test
     void updateGiftCertificateNegativeTestByUser() throws Exception {
         when(giftCertificateService.update(giftCertificateDto)).thenReturn(Optional.of(giftCertificateDto));
-        mvc.perform(put("/certificates/1")
+        mvc.perform(put(URL_CERTIFICATE)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(REQUEST_JSON)
                 .param("page", "1")
@@ -163,7 +166,7 @@ class GiftCertificateControllerTest {
     @Test
     void updateOneFieldGiftCertificatePositiveTest() throws Exception {
         when(giftCertificateService.patch(giftCertificateDto)).thenReturn(Optional.of(giftCertificateDto));
-        mvc.perform(patch("/certificates/1")
+        mvc.perform(patch(URL_CERTIFICATE)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(REQUEST_JSON)
                 .param("page", "1")
@@ -176,7 +179,7 @@ class GiftCertificateControllerTest {
     @Test
     void updateOneFieldGiftCertificateNegativeTestByUser() throws Exception {
         when(giftCertificateService.patch(giftCertificateDto)).thenReturn(Optional.of(giftCertificateDto));
-        mvc.perform(patch("/certificates/1")
+        mvc.perform(patch(URL_CERTIFICATE)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(REQUEST_JSON)
                 .param("page", "1")
@@ -187,7 +190,7 @@ class GiftCertificateControllerTest {
     @WithAnonymousUser
     @Test
     void updateOneFieldGiftCertificateNegativeTest() throws Exception {
-        mvc.perform(patch("/certificates")).andExpect(status().isForbidden());
+        mvc.perform(patch(URL_ALL_CERTIFICATES)).andExpect(status().isForbidden());
     }
 
     @WithMockUser(authorities = {"ADMIN"})
@@ -195,7 +198,7 @@ class GiftCertificateControllerTest {
     void deleteGiftCertificatePositiveTest() throws Exception {
         when(giftCertificateService.findCertificateById(1)).thenReturn(Optional.of(giftCertificateDto));
         doNothing().when(giftCertificateService).delete(1);
-        mvc.perform(delete("/certificates/1")).andExpect(status().isNoContent());
+        mvc.perform(delete(URL_CERTIFICATE)).andExpect(status().isNoContent());
         verify(giftCertificateService).delete(1);
     }
 
@@ -204,12 +207,12 @@ class GiftCertificateControllerTest {
     void deleteGiftCertificateNegativeTestByUser() throws Exception {
         when(giftCertificateService.findCertificateById(1)).thenReturn(Optional.of(giftCertificateDto));
         doNothing().when(giftCertificateService).delete(1);
-        mvc.perform(delete("/certificates/1")).andExpect(status().isForbidden());
+        mvc.perform(delete(URL_CERTIFICATE)).andExpect(status().isForbidden());
     }
 
     @WithAnonymousUser
     @Test
     void deleteGiftCertificateNegativeTest() throws Exception {
-        mvc.perform(delete("/certificates/1")).andExpect(status().isForbidden());
+        mvc.perform(delete(URL_CERTIFICATE)).andExpect(status().isForbidden());
     }
 }

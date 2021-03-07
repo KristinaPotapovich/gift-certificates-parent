@@ -16,7 +16,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.ArrayList;
@@ -37,6 +36,8 @@ class TagControllerTest {
     @MockBean
     private TagService tagService;
     private TagDto tagDto;
+    private static final String URL_ALL_TAGS = "/tags";
+    private static final String URL_TAG = "/tags/1";
 
     @Autowired
     private MockMvc mvc;
@@ -55,7 +56,7 @@ class TagControllerTest {
     @Test
     void findTagByIdPositiveTest() throws Exception {
         when(tagService.findTagById(1)).thenReturn(Optional.of(tagDto));
-        mvc.perform(get("/tags/1"))
+        mvc.perform(get(URL_TAG))
                 .andExpect(status().isOk());
         verify(tagService).findTagById(1);
     }
@@ -63,7 +64,7 @@ class TagControllerTest {
     @WithAnonymousUser
     @Test
     void findTagByIdNegativeTest() throws Exception {
-        mvc.perform(get("/tags/1")).andExpect(status().isForbidden());
+        mvc.perform(get(URL_TAG)).andExpect(status().isForbidden());
     }
 
     @WithAnonymousUser
@@ -72,7 +73,7 @@ class TagControllerTest {
         List<TagDto> tagDtos = new ArrayList<>();
         tagDtos.add(tagDto);
         when(tagService.findAllTags(1, 5)).thenReturn(tagDtos);
-        mvc.perform(get("/tags")
+        mvc.perform(get(URL_ALL_TAGS)
                 .param("page", "1")
                 .param("size", "5"))
                 .andExpect(status().isOk());
@@ -83,7 +84,7 @@ class TagControllerTest {
     @Test
     void createTagPositiveTest() throws Exception {
         when(tagService.create(tagDto)).thenReturn(Optional.of(tagDto));
-        mvc.perform(post("/tags")
+        mvc.perform(post(URL_ALL_TAGS)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{" +
                         "    \"id\": " +
@@ -98,7 +99,7 @@ class TagControllerTest {
     @Test
     void createTagNegativeTestByUser() throws Exception {
         when(tagService.create(tagDto)).thenReturn(Optional.of(tagDto));
-        mvc.perform(post("/tags")
+        mvc.perform(post(URL_ALL_TAGS)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{" +
                         "    \"id\": " +
@@ -111,14 +112,14 @@ class TagControllerTest {
     @WithAnonymousUser
     @Test
     void createTagNegativeTest() throws Exception {
-        mvc.perform(post("/tags")).andExpect(status().isForbidden());
+        mvc.perform(post(URL_ALL_TAGS)).andExpect(status().isForbidden());
     }
 
     @WithMockUser(authorities = {"ADMIN"})
     @Test
     void updateTagPositiveTest() throws Exception {
         when(tagService.update(tagDto)).thenReturn(Optional.of(tagDto));
-        mvc.perform(put("/tags/1")
+        mvc.perform(put(URL_TAG)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"name\" : \"testTag\"}"))
                 .andExpect(status().isCreated());
@@ -129,7 +130,7 @@ class TagControllerTest {
     @Test
     void updateTagNegativeTestByUser() throws Exception {
         when(tagService.update(tagDto)).thenReturn(Optional.of(tagDto));
-        mvc.perform(put("/tags/1")
+        mvc.perform(put(URL_TAG)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"name\" : \"testTag\"}"))
                 .andExpect(status().isForbidden());
@@ -138,7 +139,7 @@ class TagControllerTest {
     @WithAnonymousUser
     @Test
     void updateTagNegativeTest() throws Exception {
-        mvc.perform(put("/tags")).andExpect(status().isForbidden());
+        mvc.perform(put(URL_ALL_TAGS)).andExpect(status().isForbidden());
     }
 
     @WithMockUser(authorities = {"ADMIN"})
@@ -146,7 +147,7 @@ class TagControllerTest {
     void deleteTagPositiveTest() throws Exception {
         when(tagService.findTagById(1)).thenReturn(Optional.of(tagDto));
         doNothing().when(tagService).delete(1);
-        mvc.perform(delete("/tags/1"))
+        mvc.perform(delete(URL_TAG))
                 .andExpect(status().isNoContent());
         verify(tagService).delete(1);
     }
@@ -156,14 +157,14 @@ class TagControllerTest {
     void deleteTagNegativeTestByUser() throws Exception {
         when(tagService.findTagById(1)).thenReturn(Optional.of(tagDto));
         doNothing().when(tagService).delete(1);
-        mvc.perform(delete("/tags/1"))
+        mvc.perform(delete(URL_TAG))
                 .andExpect(status().isForbidden());
     }
 
     @WithAnonymousUser
     @Test
     void deleteTagNegativeTest() throws Exception {
-        mvc.perform(delete("/tags/1")).andExpect(status().isForbidden());
+        mvc.perform(delete(URL_TAG)).andExpect(status().isForbidden());
     }
 
     @WithAnonymousUser

@@ -17,7 +17,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 
 
@@ -40,6 +39,8 @@ class OrderControllerTest {
     @MockBean
     private OrderService orderService;
     private OrderDto orderDto;
+    private static final String URL_ALL_ORDERS = "/orders";
+    private static final String URL_ORDER = "/orders/1";
     @Autowired
     private MockMvc mvc;
 
@@ -61,6 +62,7 @@ class OrderControllerTest {
 
     @AfterEach
     void tearDown() {
+        orderDto = null;
     }
 
     @WithMockUser(authorities = {"ADMIN", "USER"})
@@ -70,7 +72,7 @@ class OrderControllerTest {
         certificates.add(1L);
         PurchaseParam purchaseParam = new PurchaseParam(certificates, 1);
         when(orderService.purchaseCertificate(purchaseParam)).thenReturn(Optional.of(orderDto));
-        mvc.perform(post("/orders")
+        mvc.perform(post(URL_ALL_ORDERS)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{" +
                         "    \"certificatesIds\": [" +
@@ -85,7 +87,7 @@ class OrderControllerTest {
     @WithAnonymousUser
     @Test
     void purchaseCertificateNegativeTest() throws Exception {
-        mvc.perform(post("/orders")).andExpect(status().isForbidden());
+        mvc.perform(post(URL_ALL_ORDERS)).andExpect(status().isForbidden());
     }
 
     @WithMockUser(authorities = {"ADMIN"})
@@ -95,7 +97,7 @@ class OrderControllerTest {
         orders.put("time_of_purchase", orderDto.getTimeOfPurchase());
         orders.put("price", orderDto.getPrice());
         when(orderService.findOrderById(1)).thenReturn(Optional.of(orders));
-        mvc.perform(get("/orders/1"))
+        mvc.perform(get(URL_ORDER))
                 .andExpect(status().isOk());
         verify(orderService).findOrderById(1);
     }
@@ -107,14 +109,14 @@ class OrderControllerTest {
         orders.put("time_of_purchase", orderDto.getTimeOfPurchase());
         orders.put("price", orderDto.getPrice());
         when(orderService.findOrderById(1)).thenReturn(Optional.of(orders));
-        mvc.perform(get("/orders/1"))
+        mvc.perform(get(URL_ORDER))
                 .andExpect(status().isForbidden());
     }
 
     @WithAnonymousUser
     @Test
     void findOrderByIdNegativeTest() throws Exception {
-        mvc.perform(get("/orders/1")).andExpect(status().isForbidden());
+        mvc.perform(get(URL_ORDER)).andExpect(status().isForbidden());
     }
 
     @WithMockUser(authorities = {"ADMIN"})
@@ -123,7 +125,7 @@ class OrderControllerTest {
         List<OrderDto>orderDtos = new ArrayList<>();
         orderDtos.add(orderDto);
         when(orderService.findAllOrders(1,5)).thenReturn(orderDtos);
-        mvc.perform(get("/orders")
+        mvc.perform(get(URL_ALL_ORDERS)
                 .param("page", "1")
                 .param("size", "5"))
                 .andExpect(status().isOk());
@@ -135,7 +137,7 @@ class OrderControllerTest {
         List<OrderDto>orderDtos = new ArrayList<>();
         orderDtos.add(orderDto);
         when(orderService.findAllOrders(1,5)).thenReturn(orderDtos);
-        mvc.perform(get("/orders")
+        mvc.perform(get(URL_ALL_ORDERS)
                 .param("page", "1")
                 .param("size", "5"))
                 .andExpect(status().isForbidden());
@@ -143,6 +145,6 @@ class OrderControllerTest {
     @WithAnonymousUser
     @Test
     void findAllOrdersNegativeTest() throws Exception {
-        mvc.perform(get("/orders")).andExpect(status().isForbidden());
+        mvc.perform(get(URL_ALL_ORDERS)).andExpect(status().isForbidden());
     }
 }

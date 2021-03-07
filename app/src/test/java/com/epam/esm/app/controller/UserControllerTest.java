@@ -21,7 +21,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 
 
@@ -48,6 +47,13 @@ class UserControllerTest {
     private JwtUserDetailsService jwtUserDetailsService;
     private UserDto userDto;
     private FullInfoUserDto fullInfoUserDto;
+    private static final String NAME_CERTIFICATE = "testCertificate2";
+    private static final String DESCRIPTION_CERTIFICATE = "testDescription1";
+    private static final String LOGIN = "testUser";
+    private static final String PASSWORD = "testPassword";
+    private static final String URL_ALL_USERS = "/users";
+    private static final String URL_USER_ORDER = "/users/1/orders";
+    private static final String URL_USER="/users/1";
 
 
     @Autowired
@@ -56,8 +62,8 @@ class UserControllerTest {
     @BeforeEach
     void setUp() {
         userDto =
-                new UserDto(1, "testUser",  Role.USER);
-        fullInfoUserDto = new FullInfoUserDto(1,"testUser","testPassword",Role.USER);
+                new UserDto(1, LOGIN,  Role.USER);
+        fullInfoUserDto = new FullInfoUserDto(1,LOGIN,PASSWORD,Role.USER);
     }
 
     @AfterEach
@@ -69,10 +75,10 @@ class UserControllerTest {
     @Test
     void createPositiveTest() throws Exception {
         FullInfoUserDto fullInfoUserDto1 = new FullInfoUserDto();
-        fullInfoUserDto1.setLogin("testUser");
-        fullInfoUserDto1.setPassword("testPassword");
+        fullInfoUserDto1.setLogin(LOGIN);
+        fullInfoUserDto1.setPassword(PASSWORD);
         when(userService.create(fullInfoUserDto1)).thenReturn(Optional.of(fullInfoUserDto));
-        mvc.perform(post("/users")
+        mvc.perform(post(URL_ALL_USERS)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{" +
                         "        \"login\": \"testUser\"," +
@@ -88,7 +94,7 @@ class UserControllerTest {
         List<FullInfoUserDto> fullInfoUserDtos = new ArrayList<>();
         fullInfoUserDtos.add(fullInfoUserDto);
         when(userService.findAllUsers(1, 5)).thenReturn(fullInfoUserDtos);
-        mvc.perform(get("/users"))
+        mvc.perform(get(URL_ALL_USERS))
                 .andExpect(status().isOk());
     }
 
@@ -98,14 +104,14 @@ class UserControllerTest {
         List<FullInfoUserDto> fullInfoUserDtos = new ArrayList<>();
         fullInfoUserDtos.add(fullInfoUserDto);
         when(userService.findAllUsers(1, 5)).thenReturn(fullInfoUserDtos);
-        mvc.perform(get("/users"))
+        mvc.perform(get(URL_ALL_USERS))
                 .andExpect(status().isForbidden());
     }
 
     @WithAnonymousUser
     @Test
     void findAllUsersNegativeTest() throws Exception {
-        mvc.perform(get("/users")).andExpect(status().isForbidden());
+        mvc.perform(get(URL_ALL_USERS)).andExpect(status().isForbidden());
     }
 
     @WithMockUser(authorities = {"ADMIN", "USER"})
@@ -114,7 +120,8 @@ class UserControllerTest {
         TagDto tagDto = new TagDto(1L, "tag");
         List<TagDto> tagDtos = new ArrayList<>();
         tagDtos.add(tagDto);
-        GiftCertificateDto giftCertificateDto1 = new GiftCertificateDto(1L, "testCertificate2", "testDescription1",
+        GiftCertificateDto giftCertificateDto1 = new GiftCertificateDto(1L, NAME_CERTIFICATE,
+                DESCRIPTION_CERTIFICATE,
                 BigDecimal.valueOf(15.22), 5,
                 LocalDateTime.of(2021, 1, 16, 19, 10),
                 LocalDateTime.of(2021, 1, 16, 19, 10), tagDtos);
@@ -129,7 +136,7 @@ class UserControllerTest {
         JwtUser jwtUser = new JwtUser(1, "mary", "123", authorities);
         when(jwtUserDetailsService.loadUserByUsername("mary")).thenReturn(jwtUser);
         when(userService.getInformationAboutUsersOrders(1, 1, 5)).thenReturn(Optional.of(orderDtos));
-        mvc.perform(get("/users/1/orders")
+        mvc.perform(get(URL_USER_ORDER)
                 .param("page", "1")
                 .param("size", "5"))
                 .andExpect(status().isOk());
@@ -142,7 +149,8 @@ class UserControllerTest {
         TagDto tagDto = new TagDto(1L, "tag");
         List<TagDto> tagDtos = new ArrayList<>();
         tagDtos.add(tagDto);
-        GiftCertificateDto giftCertificateDto1 = new GiftCertificateDto(1L, "testCertificate2", "testDescription1",
+        GiftCertificateDto giftCertificateDto1 = new GiftCertificateDto(1L, NAME_CERTIFICATE,
+                DESCRIPTION_CERTIFICATE,
                 BigDecimal.valueOf(15.22), 5,
                 LocalDateTime.of(2021, 1, 16, 19, 10),
                 LocalDateTime.of(2021, 1, 16, 19, 10), tagDtos);
@@ -157,7 +165,7 @@ class UserControllerTest {
         JwtUser jwtUser = new JwtUser(2, "mary", "123", authorities);
         when(jwtUserDetailsService.loadUserByUsername("mary")).thenReturn(jwtUser);
         when(userService.getInformationAboutUsersOrders(1, 1, 5)).thenReturn(Optional.of(orderDtos));
-        mvc.perform(get("/users/1/orders")
+        mvc.perform(get(URL_USER_ORDER)
                 .param("page", "1")
                 .param("size", "5"))
                 .andExpect(status().isForbidden());
@@ -177,7 +185,7 @@ class UserControllerTest {
         JwtUser jwtUser = new JwtUser(1, "mary", "123", authorities);
         when(jwtUserDetailsService.loadUserByUsername("mary")).thenReturn(jwtUser);
         when(userService.findUserById(1)).thenReturn(Optional.of(userDto));
-        mvc.perform(get("/users/1")
+        mvc.perform(get(URL_USER)
                 .param("page", "1")
                 .param("size", "5"))
                 .andExpect(status().isOk());
@@ -191,7 +199,7 @@ class UserControllerTest {
         JwtUser jwtUser = new JwtUser(2, "mary", "123", authorities);
         when(jwtUserDetailsService.loadUserByUsername("mary")).thenReturn(jwtUser);
         when(userService.findUserById(1)).thenReturn(Optional.of(userDto));
-        mvc.perform(get("/users/1")
+        mvc.perform(get(URL_USER)
                 .param("page", "1")
                 .param("size", "5"))
                 .andExpect(status().isForbidden());
@@ -199,6 +207,6 @@ class UserControllerTest {
     @WithAnonymousUser
     @Test
     void findUserByIdNegativeTest() throws Exception {
-        mvc.perform(get("/users/1")).andExpect(status().isForbidden());
+        mvc.perform(get(URL_USER)).andExpect(status().isForbidden());
     }
 }
