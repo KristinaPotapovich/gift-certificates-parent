@@ -9,7 +9,9 @@
     </parent>
     <packaging>war</packaging>
     <modelVersion>4.0.0</modelVersion>
-
+    <properties>
+    <sonar.coverage.jacoco.xmlReportPaths>${basedir}/${aggregate.report.dir}</sonar.coverage.jacoco.xmlReportPaths>
+    </properties>
     <artifactId>app</artifactId>
     <dependencies>
         <dependency>

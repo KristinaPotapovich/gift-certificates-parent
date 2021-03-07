@@ -174,7 +174,7 @@ class UserControllerTest {
     @WithAnonymousUser
     @Test
     void getInformationAboutUsersOrdersNegativeTest() throws Exception {
-        mvc.perform(get("/users/1/orders")).andExpect(status().isForbidden());
+        mvc.perform(get(URL_USER_ORDER)).andExpect(status().isForbidden());
     }
 
     @WithMockUser(authorities = {"ADMIN", "USER"})
