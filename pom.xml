@@ -100,12 +100,6 @@
             <artifactId>spring-batch-test</artifactId>
             <scope>test</scope>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.jacoco/jacoco-maven-plugin -->
-<!--        <dependency>-->
-<!--            <groupId>org.jacoco</groupId>-->
-<!--            <artifactId>jacoco-maven-plugin</artifactId>-->
-<!--            <version>0.8.4</version>-->
-<!--        </dependency>-->
 
         <!-- https://mvnrepository.com/artifact/commons-logging/commons-logging -->
         <dependency>
