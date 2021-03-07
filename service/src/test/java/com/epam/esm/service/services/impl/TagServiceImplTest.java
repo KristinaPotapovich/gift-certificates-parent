@@ -48,7 +48,7 @@ class TagServiceImplTest {
         Optional<TagDto> actual = tagService.create(tagDto);
         verify(tagRepository).create(tag);
         assertTrue(actual.isPresent());
-        assertTrue(actual.get().getId() > 0);
+        actual.ifPresent(dto -> assertTrue(dto.getId() > 0));
     }
 
     @Test

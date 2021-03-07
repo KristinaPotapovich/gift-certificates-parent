@@ -148,7 +148,7 @@ class GiftCertificateServiceImplTest {
         giftCertificateDto.setName("newCertificate");
         Optional<GiftCertificateDto> actual = giftCertificateService.patch(giftCertificateDto);
         assertTrue(actual.isPresent());
-        assertEquals("newCertificate", actual.get().getName());
+        actual.ifPresent(certificateDto -> assertEquals("newCertificate", certificateDto.getName()));
     }
 
     @Test
