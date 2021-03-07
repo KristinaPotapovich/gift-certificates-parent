@@ -15,7 +15,6 @@
         <module>app</module>
         <module>core</module>
         <module>service</module>
-        <module>jacoco-report</module>
     </modules>
     <name>gift-certificates-parent</name>
     <packaging>pom</packaging>
@@ -24,9 +23,9 @@
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <sonar.coverage.exclusions>jacoco-report/**</sonar.coverage.exclusions>
-<!--        <aggregate.report.dir>../jacoco-report/target/site/jacoco-aggregate/jacoco.xml</aggregate.report.dir>-->
-<!--        <sonar.coverage.jacoco.xmlReportPaths>${basedir}/${aggregate.report.dir}-->
-<!--        </sonar.coverage.jacoco.xmlReportPaths>-->
+        <aggregate.report.dir>../jacoco-report/target/site/jacoco/jacoco.xml</aggregate.report.dir>
+        <sonar.coverage.jacoco.xmlReportPaths>${basedir}/${aggregate.report.dir}
+        </sonar.coverage.jacoco.xmlReportPaths>
     </properties>
     <dependencies>
         <dependency>
