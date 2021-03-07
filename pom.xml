@@ -23,7 +23,7 @@
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <sonar.coverage.exclusions>jacoco-report/**</sonar.coverage.exclusions>
-        <aggregate.report.dir>..target/site/jacoco/jacoco.xml,target/site/jacoco-it/jacoco.xml,build/reports/jacoco/test/jacocoTestReport.xml</aggregate.report.dir>
+        <aggregate.report.dir>C:\Windows\System32\config\systemprofile\AppData\Local\Jenkins\.jenkins\workspace\giftJob\jacoco-report\target\site\jacoco-aggregate.xml</aggregate.report.dir>
         <sonar.coverage.jacoco.xmlReportPaths>${basedir}/${aggregate.report.dir}
         </sonar.coverage.jacoco.xmlReportPaths>
     </properties>
