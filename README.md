@@ -36,4 +36,6 @@ and push the button "send". Result
     "name": "json"
 }
 - DELETE (for delete Tag). url : http://{server_url}/app_war/tags/10 and push the button "send". Result HttpStatus.NO_CONTENT
-#### 2. Gift Certificate (start with Postman):
+#### jenkins
+login kristina
+password admin1234
