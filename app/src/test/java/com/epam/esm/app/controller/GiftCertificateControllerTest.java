@@ -103,21 +103,21 @@ class GiftCertificateControllerTest {
         mvc.perform(post(URL_ALL_CERTIFICATES)).andExpect(status().isForbidden());
     }
 
-    @WithMockUser(username = "mary")
-    @Test
-    void createGiftCertificateNegativeTestByUser() throws Exception {
-        GiftCertificateDto giftCertificateDto1 = new GiftCertificateDto(0, NAME_CERTIFICATE, DESCRIPTION_CERTIFICATE,
-                BigDecimal.valueOf(15.22), 5,
-                LocalDateTime.of(2021, 1, 16, 19, 10),
-                null, tagDtos);
-        when(giftCertificateService.create(giftCertificateDto1)).thenReturn(Optional.of(giftCertificateDto));
-        mvc.perform(post(URL_ALL_CERTIFICATES)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(REQUEST_JSON)
-                .param("page", "1")
-                .param("size", "5"))
-                .andExpect(status().isForbidden());
-    }
+//    @WithMockUser(username = "mary")
+//    @Test
+//    void createGiftCertificateNegativeTestByUser() throws Exception {
+//        GiftCertificateDto giftCertificateDto1 = new GiftCertificateDto(0, NAME_CERTIFICATE, DESCRIPTION_CERTIFICATE,
+//                BigDecimal.valueOf(15.22), 5,
+//                LocalDateTime.of(2021, 1, 16, 19, 10),
+//                null, tagDtos);
+//        when(giftCertificateService.create(giftCertificateDto1)).thenReturn(Optional.of(giftCertificateDto));
+//        mvc.perform(post(URL_ALL_CERTIFICATES)
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .content(REQUEST_JSON)
+//                .param("page", "1")
+//                .param("size", "5"))
+//                .andExpect(status().isForbidden());
+//    }
 
     @WithMockUser(authorities = {"ADMIN"})
     @Test
