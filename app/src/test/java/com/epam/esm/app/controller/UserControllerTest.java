@@ -189,26 +189,26 @@ class UserControllerTest {
                 .andExpect(status().isForbidden());
     }
 
-    @WithAnonymousUser
-    @Test
-    void getInformationAboutUsersOrdersNegativeTest() throws Exception {
-        mvc.perform(get("/users/1/orders")).andExpect(status().isForbidden());
-    }
-
-    @WithMockUser(username = "mary", roles = {"ADMIN"})
-    @Test
-    void findUserByIdPositiveTest() throws Exception {
-        List<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(Role.ADMIN.toString()));
-        JwtUser jwtUser = new JwtUser(1, "mary", "123", authorities);
-        when(jwtUserDetailsService.loadUserByUsername("mary")).thenReturn(jwtUser);
-        when(userService.findUserById(1)).thenReturn(Optional.of(userDto));
-        mvc.perform(get("/users/1")
-                .param("page", "1")
-                .param("size", "5"))
-                .andExpect(status().isOk());
-        verify(userService).findUserById(1);
-    }
+//    @WithAnonymousUser
+//    @Test
+//    void getInformationAboutUsersOrdersNegativeTest() throws Exception {
+//        mvc.perform(get("/users/1/orders")).andExpect(status().isForbidden());
+//    }
+//
+//    @WithMockUser(username = "mary", roles = {"ADMIN"})
+//    @Test
+//    void findUserByIdPositiveTest() throws Exception {
+//        List<GrantedAuthority> authorities = new ArrayList<>();
+//        authorities.add(new SimpleGrantedAuthority(Role.ADMIN.toString()));
+//        JwtUser jwtUser = new JwtUser(1, "mary", "123", authorities);
+//        when(jwtUserDetailsService.loadUserByUsername("mary")).thenReturn(jwtUser);
+//        when(userService.findUserById(1)).thenReturn(Optional.of(userDto));
+//        mvc.perform(get("/users/1")
+//                .param("page", "1")
+//                .param("size", "5"))
+//                .andExpect(status().isOk());
+//        verify(userService).findUserById(1);
+//    }
     @WithMockUser(username = "mary")
     @Test
     void findUserByIdPositiveTestByUser() throws Exception {
