@@ -127,35 +127,35 @@ class GiftCertificateControllerTest {
         verify(giftCertificateService).update(giftCertificateDto);
     }
 
-    @WithAnonymousUser
-    @Test
-    void updateGiftCertificateNegativeTest() throws Exception {
-        mvc.perform(put("/certificates")).andExpect(status().isForbidden());
-    }
-
-    @WithMockUser(username = "mary")
-    @Test
-    void updateGiftCertificateNegativeTestByUser() throws Exception {
-        when(giftCertificateService.update(giftCertificateDto)).thenReturn(Optional.of(giftCertificateDto));
-        mvc.perform(put("/certificates/1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(REQUEST_JSON)
-                .param("page", "1")
-                .param("size", "5"))
-                .andExpect(status().isForbidden());
-    }
-
-    @WithAnonymousUser
-    @Test
-    void getInformationAboutCertificatesTagsPositiveTest() throws Exception {
-        when(giftCertificateService.getInformationAboutCertificatesTags(1, 1, 5))
-                .thenReturn(Optional.of(tagDtos));
-        mvc.perform(get("/certificates/1/tags")
-                .param("page", "1")
-                .param("size", "5"))
-                .andExpect(status().isOk());
-        verify(giftCertificateService).getInformationAboutCertificatesTags(1, 1, 5);
-    }
+//    @WithAnonymousUser
+//    @Test
+//    void updateGiftCertificateNegativeTest() throws Exception {
+//        mvc.perform(put("/certificates")).andExpect(status().isForbidden());
+//    }
+//
+//    @WithMockUser(username = "mary")
+//    @Test
+//    void updateGiftCertificateNegativeTestByUser() throws Exception {
+//        when(giftCertificateService.update(giftCertificateDto)).thenReturn(Optional.of(giftCertificateDto));
+//        mvc.perform(put("/certificates/1")
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .content(REQUEST_JSON)
+//                .param("page", "1")
+//                .param("size", "5"))
+//                .andExpect(status().isForbidden());
+//    }
+//
+//    @WithAnonymousUser
+//    @Test
+//    void getInformationAboutCertificatesTagsPositiveTest() throws Exception {
+//        when(giftCertificateService.getInformationAboutCertificatesTags(1, 1, 5))
+//                .thenReturn(Optional.of(tagDtos));
+//        mvc.perform(get("/certificates/1/tags")
+//                .param("page", "1")
+//                .param("size", "5"))
+//                .andExpect(status().isOk());
+//        verify(giftCertificateService).getInformationAboutCertificatesTags(1, 1, 5);
+//    }
 
     @WithMockUser(username = "mary", roles = {"ADMIN"})
     @Test
