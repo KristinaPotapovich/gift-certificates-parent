@@ -90,13 +90,13 @@ public class GiftCertificateRepositoryImplTest {
         assertNotNull(certificates.get(0).getName());
         assertEquals("certificate one", certificates.get(0).getName());
     }
-
-    @Test
-    public void findAllTagsByCertificateIdPositiveTest() {
-        List<Tag> tags = giftCertificateRepository.getInformationAboutCertificatesTags(1, 1, 5);
-        assertFalse(tags.isEmpty());
-        assertEquals(1, tags.get(0).getId());
-    }
+//
+//    @Test
+//    public void findAllTagsByCertificateIdPositiveTest() {
+//        List<Tag> tags = giftCertificateRepository.getInformationAboutCertificatesTags(1, 1, 5);
+//        assertFalse(tags.isEmpty());
+//        assertEquals(1, tags.get(0).getId());
+//    }
 
     @Test
     public void findAllTagsByCertificateIdNegativeTest() {
